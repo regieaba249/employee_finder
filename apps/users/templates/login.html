@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Login {% endblock %}
+{% block user_login %} active {% endblock %}
+{% block css %}
+  <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block navbar %}{% endblock %}
+{% block messages %}{% endblock %}
+{% block body %}
+
+  <div class="content">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <img src="{% static '/images/undraw_remotely_2j6y.svg' %}" alt="Image" class="img-fluid">
+        </div>
+        <div class="col-md-6 contents">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="mb-4">
+                <h3>Sign In</h3>
+                <p class="mb-4">Start your career the right way! Find the right place for you here at Employee Finder</p>
+              </div>
+              {% if messages %}
+              <div id="message-container">
+                  {% for message in messages %}
+                  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                  {% endfor %}
+              </div>
+              {% endif %}
+              <form action="#" method="post">
+                {% csrf_token %}
+                <div class="form-outline mb-2">
+                  <input type="text" id="email" name="email" class="form-control form-control-lg" />
+                  <label class="form-label" for="email">Email</label>
+                </div>
+                <div class="form-outline mb-4">
+                  <input type="password" id="password" name="password" class="form-control form-control-lg" />
+                  <label class="form-label" for="password">Password</label>
+                </div>
+                <div class="d-flex mb-3 align-items-center">
+                  <label class="control control--checkbox mb-0"><span class="caption">Remember me</span>
+                    <input type="checkbox" checked="checked" name="remember_me"/>
+                    <div class="control__indicator"></div>
+                  </label>
+                  <span class="ml-auto">
+                  {# <a href="#" class="forgot-pass">Forgot Password</a></span> #}
+                </div>
+                <div class="align-items-center text-center">
+                  <input type="submit" value="Sign In" class="btn btn-primary w-100 mb-3">
+                  <span class="w-100 text-muted">&mdash; or login with &mdash;</span>
+                  <a class="w-100 mt-3 btn btn-light disabled" style="vertical-align: bottom; color: #dd4b39;">
+                    <i class="fab fa-lg fa-google"></i> oogle
+                  </a>
+                </div>
+              </form>
+              <div class="mt-5">
+                <p class="mb-4">Register now! Be an applicant and look for jobs or an employer and setup your company profile.</p>
+                <div class="w-100 text-center">
+                  <a class="btn btn-outline-primary btn-rounded waves-effect" role="button" href="{% url 'users:register' _type='applicant'%}">Applicant</a>
+                  <a class="btn btn-outline-primary btn-rounded waves-effect" role="button" href="{% url 'users:register' _type='employer'%}">Employer</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block js %}{% endblock %}

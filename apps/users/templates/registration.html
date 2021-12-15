@@ -1,0 +1,430 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Registration {% endblock %}
+{% block user_login %} active {% endblock %}
+<style type="text/css">
+  .file-field.big .file-path-wrapper {
+  height: 3.2rem; }
+  .file-field.big .file-path-wrapper .file-path {
+  height: 3rem; }
+</style>
+{% block css %}
+  <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block navbar %}{% endblock %}
+{% block messages %}{% endblock %}
+{% block body %}
+
+  <div class="content">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 contents">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="d-flex justify-content-between mb-4">
+                {% if user_type == 'applicant' %}
+                <h3>User Registration</h3>
+                {% else %}
+                <h3>Company Registration</h3>
+                {% endif %}
+                <a href="{% url 'login'%}"><i class="fas fa-angle-left mr-1"></i> Back to Login</a>
+              </div>
+              <p class="mb-4">Register now! Be an applicant and look for jobs or an employer and setup your company profile</p>
+
+            {% if messages %}
+            <div id="message-container">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form action="#" method="post" enctype="multipart/form-data">
+              <!-- Tabs navs -->
+              <ul class="nav nav-tabs nav-fill mb-3" id="ex1" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <a
+                    class="nav-link active"
+                    id="ex2-tab-1"
+                    data-mdb-toggle="tab"
+                    href="#ex2-tabs-1"
+                    role="tab"
+                    aria-controls="ex2-tabs-1"
+                    aria-selected="true">
+                    {% if user_type == 'applicant' %}
+                    Personal
+                    {% else %}
+                    Owner Details
+                    {% endif %}
+                  </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <a
+                    class="nav-link"
+                    id="ex2-tab-2"
+                    data-mdb-toggle="tab"
+                    href="#ex2-tabs-2"
+                    role="tab"
+                    aria-controls="ex2-tabs-2"
+                    aria-selected="false">
+                    Login
+                  </a>
+                </li>
+
+                {% if user_type == 'applicant' %}
+                <li class="nav-item" role="presentation">
+                  <a
+                    class="nav-link"
+                    id="ex2-tab-3"
+                    data-mdb-toggle="tab"
+                    href="#ex2-tabs-3"
+                    role="tab"
+                    aria-controls="ex2-tabs-3"
+                    aria-selected="false">
+                    Experience
+                  </a>
+                </li>
+                <!--<li class="nav-item" role="presentation">
+                  <a
+                    class="nav-link"
+                    id="ex2-tab-4"
+                    data-mdb-toggle="tab"
+                    href="#ex2-tabs-4"
+                    role="tab"
+                    aria-controls="ex2-tabs-4"
+                    aria-selected="false">
+                    Education
+                  </a>
+                </li>-->
+                {% else %}
+                <li class="nav-item" role="presentation">
+                  <a
+                    class="nav-link"
+                    id="ex2-tab-5"
+                    data-mdb-toggle="tab"
+                    href="#ex2-tabs-5"
+                    role="tab"
+                    aria-controls="ex2-tabs-5"
+                    aria-selected="false">
+                    Company Details
+                  </a>
+                </li>
+                {% endif %}
+              </ul>
+
+              <!-- Tabs content -->
+              <div class="tab-content" id="ex2-content">
+
+                <!-- Personal -->
+                <div class="tab-pane fade show active" id="ex2-tabs-1" role="tabpanel" aria-labelledby="ex2-tab-1">
+
+                    {% csrf_token %}
+
+                    <div class="row mb-4">
+
+                        <!-- First name -->
+                        <div class="form-outline mx-1 col">
+                            <input type="text" id="first_name" name="first_name" class="form-control form-control-lg" required/>
+                            <label class="form-label" for="first_name">First Name</label>
+                        </div>
+
+                        <!-- Middle name -->
+                        <div class="form-outline mx-1 col">
+                            <input type="text" id="middle_name" name="middle_name" class="form-control form-control-lg" required/>
+                            <label class="form-label" for="middle_name">Middle Name</label>
+                        </div>
+
+                        <!-- Last name -->
+                        <div class="form-outline mx-1 col">
+                            <input type="text" id="last_name" name="last_name" class="form-control form-control-lg" required/>
+                            <label class="form-label" for="last_name">Last Name</label>
+                        </div>
+
+                        <!-- Extensions -->
+                        <div class="form-outline mx-1 col-md-2">
+                          <input type="text" id="extension" name="extension" class="form-control form-control-lg"/>
+                          <label class="form-label" for="extension">Extensions</label>
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-4">
+
+                        <!-- Gender -->
+                        <div class="form-outline mx-1 col-md-2">
+                          <input type="text" class="visually-hidden" />
+                          <select name="gender" class="gender-select mdb-select md-form form-control form-control-lg" required>
+                            <option value="select" disabled selected>Gender...</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                          </select>
+                        </div>
+
+                        <!-- Birthday -->
+                        <div class="form-outline mx-1 col-md-2">
+                          <input type="text" id="birthdate" name="birthdate" class="form-control form-control-lg"/ required>
+                          <label class="form-label" for="birthdate">Birthday</label>
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div class="form-outline mx-1 col">
+                          <input type="text" id="phone_number" name="phone_number" class="form-control form-control-lg" />
+                          <label class="form-label" for="phone_number">Phone Number</label>
+                        </div>
+
+                        <!-- Mobile Number -->
+                        <div class="form-outline mx-1 col">
+                          <input type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg" />
+                          <label class="form-label" for="mobile_number">Mobile Number</label>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                      <div class="form-outline col-md-3 px-1">
+
+                        <!-- User -->
+                        <div class="file-upload">
+                          <div class="image-upload-wrap">
+                            <input class="file-upload-input" type='file' id="user_avatar" name="user_avatar" onchange="readURL(this);" accept="image/*" />
+                            <div class="drag-text">
+                              <h5 class="pt-5">Profile Avatar</h5>
+                              <p class="pb-4 px-4">Drag and drop a file or select add Image</p>
+                            </div>
+                          </div>
+                          <div class="file-upload-content">
+                            <img class="file-upload-image img-fluid z-depth-1" src="#" alt="your image" />
+                            <button type="button" onclick="removeUpload()" class="btn btn-danger btn-rounded px-3"><span aria-hidden="true"><i class="fas fa-times"></i></span></button>
+                          </div>
+                        </div>
+
+                      </div>
+                      <div class="form-outline col">
+
+                        <!-- Address -->
+                        <div class="form-outline mb-2">
+                          <input type="text" id="address" name="address" class="form-control form-control-lg" />
+                          <label class="form-label" for="address">Address</label>
+                        </div>
+
+                      </div>
+                    </div>
+
+                </div>
+
+                <!-- Login -->
+                <div class="tab-pane fade row" id="ex2-tabs-2" role="tabpanel" aria-labelledby="ex2-tab-2">
+                    <div class="row justify-content-md-center">
+                      <div class="col-md-6 col-md-auto">
+                        <div class="form-outline mb-2">
+                          <input type="text" id="email" name="email" class="form-control form-control-lg" required/>
+                          <label class="form-label" for="email">Email</label>
+                        </div>
+                        <div class="form-outline mb-2">
+                          <input type="password" id="password1" name="password1" class="form-control form-control-lg" required/>
+                          <label class="form-label" for="password1">Password</label>
+                        </div>
+                        <div class="form-outline mb-2">
+                          <input type="password" id="password2" name="password2" class="form-control form-control-lg" required/>
+                          <label class="form-label" for="password2">Re-type Password</label>
+                        </div>
+                      </div>
+                    </div>
+
+                </div>
+
+                {% if user_type == 'applicant' %}
+
+                <!-- Experience -->
+                <div class="tab-pane fade" id="ex2-tabs-3" role="tabpanel" aria-labelledby="ex2-tab-3">
+                    <div class="row mb-4">
+                      <div class="form-outline mx-1 col-8">
+                        <input type="text" id="headline" name="headline" class="form-control form-control-lg"/>
+                        <label class="form-label" for="headline">Headline: "Software Developer / Freelancer"</label>
+                      </div>
+                      <div class="form-outline mx-1 col">
+                        <input type="text" class="visually-hidden" />
+                        <select name="applicant_status" class="applicant-status-select mdb-select md-form form-control form-control-lg">
+                          <option value="select" disabled selected>Current Employment</option>
+                          <option value="employed">Employed</option>
+                          <option value="unemployed">Unemployed</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row mb-4">
+                      <div class="form-outline mx-1 col">
+                        <textarea class="form-control" id="overview" name="overview"  rows="4"></textarea>
+                        <label class="form-label" for="overview">Overview</label>
+                      </div>
+                    </div>
+                    <div class="row mb-4">
+                      <span>Resume</span>
+                      <div class="form-outline mb-2">
+                        <input type="file" id="resume" name="resume" class="form-control form-control-lg" />
+                      </div>
+                      <span>Other Attachments</span>
+                      <div class="form-outline mb-2">
+                        <input type="file" id="attachments" name="attachments" class="form-control form-control-lg" multiple/>
+                      </div>
+                    </div>
+
+                </div>
+
+                <!-- Education
+                <div class="tab-pane fade" id="ex2-tabs-4" role="tabpanel" aria-labelledby="ex2-tab-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <div id="table" class="table-editable">
+                        <span class="table-add float-right mb-3 mr-2"
+                          ><a href="#!" class="text-success"
+                            ><i class="fas fa-plus fa-2x" aria-hidden="true"></i></a
+                        ></span>
+                        <table class="table table-bordered table-responsive-md table-striped text-center">
+                          <thead>
+                            <tr>
+                              <th class="text-center">School/University</th>
+                              <th class="text-center">Degree</th>
+                              <th class="text-center">Start Month</th>
+                              <th class="text-center">Start Year</th>
+                              <th class="text-center">End Month</th>
+                              <th class="text-center">End Year</th>
+                              <th class="text-center">Overview</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td class="p-0" contenteditable="true"></td>
+                              <td class="p-0" contenteditable="true"></td>
+                              <td class="p-0" contenteditable="true">
+                                <select class="gender-select mdb-select md-form form-control form-control-lg">
+                                  <option value="0" disabled selected>Month</option>
+                                  <option value="1">Jan</option>
+                                  <option value="2">Feb</option>
+                                  <option value="3">Mar</option>
+                                  <option value="4">Apr</option>
+                                  <option value="5">May</option>
+                                  <option value="6">Jun</option>
+                                  <option value="7">Jul</option>
+                                  <option value="8">Aug</option>
+                                  <option value="9">Sep</option>
+                                  <option value="10">Oct</option>
+                                  <option value="11">Nov</option>
+                                  <option value="12">Dec</option>
+                                </select></td>
+                              <td class="p-0" contenteditable="true"></td>
+                              <td class="p-0" contenteditable="true">
+                                <select class="gender-select mdb-select md-form form-control form-control-lg">
+                                  <option value="0" disabled selected>Month</option>
+                                  <option value="1">Jan</option>
+                                  <option value="2">Feb</option>
+                                  <option value="3">Mar</option>
+                                  <option value="4">Apr</option>
+                                  <option value="5">May</option>
+                                  <option value="6">Jun</option>
+                                  <option value="7">Jul</option>
+                                  <option value="8">Aug</option>
+                                  <option value="9">Sep</option>
+                                  <option value="10">Oct</option>
+                                  <option value="11">Nov</option>
+                                  <option value="12">Dec</option>
+                                </select></td>
+                              <td class="p-0" contenteditable="true"></td>
+                              <td class="p-0"><span class="table-remove"><button type="button" class="btn btn-danger btn-rounded btn-sm my-2 px-3"><i class="fas fa-times"></i></button></span></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div> -->
+
+                {% else %}
+
+                <!-- Company Details -->
+                <div class="tab-pane fade" id="ex2-tabs-5" role="tabpanel" aria-labelledby="ex2-tab-5">
+                    <div class="row mb-4">
+
+                        <!-- First name -->
+                        <div class="form-outline mx-1 col">
+                            <input type="text" id="company_name" name="company_name" class="form-control form-control-lg" required/>
+                            <label class="form-label" for="company_name">Company Name</label>
+                        </div>
+
+                        <!-- Middle name -->
+                        <div class="form-outline mx-1 col">
+                            <input type="text" id="website" name="website" class="form-control form-control-lg" required/>
+                            <label class="form-label" for="website">Website</label>
+                        </div>
+
+                    </div>
+                    <div class="row mb-4">
+
+                        <div class="form-outline mx-1 col">
+                            <input type="text" id="founded_on" name="founded_on" class="form-control form-control-lg" required/>
+                            <label class="form-label" for="founded_on">Foundation Date</label>
+                        </div>
+
+                        <div class="form-outline mx-1 col">
+                            <input type="text" id="employee_count" name="employee_count" class="form-control form-control-lg" required/>
+                            <label class="form-label" for="employee_count">Employee Count</label>
+                        </div>
+
+                    </div>
+                    <div class="row mb-4">
+                      <div class="form-outline col-md-3 px-1">
+
+                        <div class="file-upload">
+                          <div class="image-upload-wrap">
+                            <input class="file-upload-input" type='file' id="company_avatar" name="company_avatar" onchange="readURL(this);" accept="image/*" />
+                            <div class="drag-text">
+                              <h5 class="pt-5">Company Avatar</h5>
+                              <p class="pb-4 px-4">Drag and drop a file or select add Image</p>
+                            </div>
+                          </div>
+                          <div class="file-upload-content">
+                            <img class="file-upload-image img-fluid z-depth-1" src="#" alt="your image" />
+                            <!--<button type="button" onclick="removeUpload()" class="btn btn-danger btn-rounded px-3"><span aria-hidden="true"><i class="fas fa-times"></i></span></button>-->
+                          </div>
+                        </div>
+
+                      </div>
+                      <div class="form-outline col">
+
+                        <div class="form-outline mb-2">
+                          <input type="text" id="company_address" name="company_address" class="form-control form-control-lg" required/>
+                          <label class="form-label" for="company_address">Address</label>
+                        </div>
+
+                        <div class="form-outline mb-2">
+                          <textarea class="form-control" id="company_overview" name="company_overview"  rows="4"></textarea>
+                          <label class="form-label" for="company_overview">Company Background</label>
+                        </div>
+
+                      </div>
+                    </div>
+                </div>
+                <!-- Company Details -->
+
+                {% endif %}
+
+              </div>
+
+            <hr>
+            <div class="text-center">
+              <input type="submit" value="Register" class="btn btn-primary w-50">
+            </div>
+            </form>
+            <!-- Tabs content -->
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block js %}{% endblock %}

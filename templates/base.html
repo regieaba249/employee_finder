@@ -1,0 +1,73 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"> -->
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet"/>
+
+    <!-- Font-awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet"/>
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+
+    <!-- MDB -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.1/mdb.min.css" rel="stylesheet"/>
+
+    <!-- Local -->
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/file_upload.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/fontawesome.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/brands.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/solid.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/owl.carousel.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fonts/icomoon/style.css' %}" rel="stylesheet" type="text/css">
+
+    {% block css %}{% endblock %}
+
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+
+  <body>
+    {% block navbar %}
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+          <a class="navbar-brand" href="#">Employee Finder</a>
+          <a class="text-light nounderline" href="{% url 'users:logout' %}">Sign Out</a>
+        </div>
+      </nav>
+    {% endblock %}
+    {% block messages %}
+      {% if messages %}
+      <div id="message-container">
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+      </div>
+      {% endif %}
+    {% endblock %}
+    {% block body %}{% endblock %}
+  </body>
+
+  <!-- MDB -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.1/mdb.min.js"></script>
+
+  <!-- Bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+  <!-- jquery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- Local -->
+  <script src="{% static 'js/file_upload.js' %}"></script>
+  <script src="{% static 'js/custom.js' %}"></script>
+  <script src="{% static 'js/popper.min.js' %}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block js %}{% endblock %}
+
+</html>

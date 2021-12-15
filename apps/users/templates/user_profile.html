@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load common_tags %}
+
+{% block title %} Profile {% endblock %}
+{% block user_login %} active {% endblock %}
+{% block css %}
+  <link href="{% static 'css/profile.css' %}" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block body %}
+
+  <div class="content">
+    <div class="container rounded bg-white mt-5 mb-5">
+      <div class="row">
+          <div class="col-md-3 border-right">
+              <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                <img class="rounded-circle my-5 avatar" width="150px" src="{{ object.user_avatar.url }}">
+                <span class="font-weight-bold">{{ object.full_name }}</span>
+                <span class="text-black-50">{{ object.email }}</span>
+                <span class="text-black-50">{{ object.contact_numbers }}</span>
+                <span> </span>
+              </div>
+          </div>
+          <div class="col-md-9 border-right">
+              <div class="p-3 py-5">
+                  <!-- Tabs navs -->
+                  <ul class="nav nav-tabs nav-fill mb-3" id="ex1" role="tablist">
+                    <li class="nav-item" role="presentation">
+                      <a
+                        class="nav-link active"
+                        id="ex2-tab-1"
+                        data-mdb-toggle="tab"
+                        href="#ex2-tabs-1"
+                        role="tab"
+                        aria-controls="ex2-tabs-1"
+                        aria-selected="true">
+                        Personal
+                      </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <a
+                        class="nav-link"
+                        id="ex2-tab-2"
+                        data-mdb-toggle="tab"
+                        href="#ex2-tabs-2"
+                        role="tab"
+                        aria-controls="ex2-tabs-2"
+                        aria-selected="false">
+                        Account
+                      </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <a
+                        class="nav-link"
+                        id="ex2-tab-3"
+                        data-mdb-toggle="tab"
+                        href="#ex2-tabs-3"
+                        role="tab"
+                        aria-controls="ex2-tabs-3"
+                        aria-selected="false">
+                        Experience
+                      </a>
+                    </li>
+                    <!--<li class="nav-item" role="presentation">
+                      <a
+                        class="nav-link"
+                        id="ex2-tab-4"
+                        data-mdb-toggle="tab"
+                        href="#ex2-tabs-4"
+                        role="tab"
+                        aria-controls="ex2-tabs-4"
+                        aria-selected="false">
+                        Education
+                      </a>
+                    </li>-->
+                  </ul>
+                  <!-- Tabs navs -->
+                  <!-- Tabs content -->
+                  <div class="tab-content" id="ex2-content">
+
+                    <!-- Personal -->
+                    <div class="tab-pane fade show active" id="ex2-tabs-1" role="tabpanel" aria-labelledby="ex2-tab-1">
+
+                        {% csrf_token %}
+                        <div class="row mt-2">
+                            <div class="col-md-4"><label class="form-label" for="first_name">First Name</label><input type="text" id="first_name" name="first_name" value="{{ object.first_name|blankifnull }}" class="form-control form-control-lg"></div>
+                            <div class="col-md-4"><label class="form-label" for="middle_name">Middle Name</label><input type="text" id="middle_name" name="middle_name" value="{{ object.middle_name|blankifnull }}" class="form-control form-control-lg"></div>
+                            <div class="col-md-4"><label class="form-label" for="last_name">Last Name</label><input type="text" id="last_name" name="last_name" value="{{ object.last_name|blankifnull }}" class="form-control form-control-lg"></div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-md-4"><label class="form-label" for="extension">Extensions</label><input type="text" id="extension" name="extension" value="{{ object.extension|blankifnull }}" class="form-control form-control-lg"></div>
+                            <div class="col-md-2"><label class="form-label" for="gender">Gender</label><input type="text" id="gender" name="gender" value="{{ object.gender|blankifnull }}" class="gender-input visually-hidden" />
+                              <select class="gender-select mdb-select md-form form-control form-control-lg">
+                                <option class="light-text" value="select" {% if object.gender == 'select' %}selected{% endif %} disabled>Select...</option>
+                                <option value="male" {% if object.gender == 'male' %}selected{% endif %}>Male</option>
+                                <option value="female" {% if object.gender == 'female' %}selected{% endif %}>Female</option>
+                              </select>
+                            </div>
+                            <div class="col-md-3"><label class="form-label" for="birthdate">Birthday</label><input type="text" id="birthdate" name="birthdate" value="{{ object.birthdate|blankifnull }}" class="form-control form-control-lg" /></div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-4"><label class="form-label" for="phone_number">Phone Number</label><input type="text" id="phone_number" name="phone_number" value="{{ object.phone_number|blankifnull }}" class="form-control form-control-lg" /></div>
+                            <div class="col-md-4"><label class="form-label" for="mobile_number">Mobile Number</label><input type="text" id="mobile_number" name="mobile_number" value="{{ object.mobile_number|blankifnull }}" class="form-control form-control-lg" /></div>
+                            <div class="col-md-4"><label class="form-label" for="birthdate">Avatar</label><input type="file" id="user_avatar" name="user_avatar" value="{{ object.user_avatar|blankifnull }}" class="form-control form-control-lg" /></div>
+                        </div>
+                        <div class="row mt-2">
+                          <div class="col-md-12"><label class="form-label" for="address">Address</label><textarea class="form-control" id="address" name="address" rows="4">{{ object.address|blankifnull }}</textarea></div>
+                        </div>
+
+                    </div>
+                    <!-- Personal -->
+
+                    <!-- Account -->
+                    <div class="tab-pane fade" id="ex2-tabs-2" role="tabpanel" aria-labelledby="ex2-tab-2">
+
+                        <div class="row mt-2">
+                          <div class="col-md-8"><label class="form-label" for="email">Email</label><input type="text" id="email" name="email" value="{{ object.email|blankifnull }}" class="form-control form-control-lg" /></div>
+                        </div>
+
+                        <div class="row mt-2">
+                          <div class="col-md-4"><label class="form-label" for="password1">Password</label><input type="password" id="password1" name="password1" class="form-control form-control-lg" /></div>
+                          <div class="col-md-4"><label class="form-label" for="password2">Re-type Password</label><input type="password" id="password2" name="password2" class="form-control form-control-lg" /></div>
+                        </div>
+
+                    </div>
+                    <!-- Account -->
+
+                    <!-- Experience -->
+                    <div class="tab-pane fade" id="ex2-tabs-3" role="tabpanel" aria-labelledby="ex2-tab-3">
+
+                        <div class="row mt-2">
+                          <div class="col-md-8"><label class="form-label" for="headline">Headline</label><input type="text" id="headline" name="headline" value="{{ object.headline|blankifnull }}" class="form-control form-control-lg" /></div>
+                          <div class="col-md-4"><label class="form-label" for="gender">Current Employment</label><input type="text" id="applicant-status" name="applicant_status" value="{{ object.applicant_data.applicant_status|blankifnull }}" class="applicant-status-input visually-hidden" />
+                            <select class="applicant-status-select mdb-select md-form form-control form-control-lg">
+                              <option class="light-text" value="select" {% if object.applicant_data.applicant_status == 'select' %}selected{% endif %} disabled>Select..</option>
+                              <option value="employed" {% if object.applicant_data.applicant_status == 'employed' %}selected{% endif %}>Employed</option>
+                              <option value="unemployed" {% if object.applicant_data.applicant_status == 'unemployed' %}selected{% endif %}>Unemployed</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="row mt-2">
+                          <div class="col-md-12"><label class="form-label" for="overview">Overview</label><textarea class="form-control" id="overview" name="overview" rows="4">{{ object.overview|blankifnull }}</textarea></div>
+                        </div>
+
+                        <div class="row mt-5">
+                          <div class="mb-3">
+                            <label for="resume" class="form-label">Resume: </label>{% if resume %}<a href="{{ resume.url }}" class="col-md-auto">{{ resume.name }}</a>{% endif %}
+                            <input type="file" id="resume" name="resume" class="form-control"/>
+                          </div>
+                        </div>
+                        <div class="row mt-3">
+                          <div class="col-md-12">
+                            <label class="form-label" for="overview"><h5>Other Attachments: </h5></label>
+                            <input type="file" id="attachments" name="attachments" class="form-control" multiple/>
+                          </div>
+                          <div class="row col-md-12 mt-3">
+                            {% if attachment_objs %}
+                              <ul class="list-group list-group-flush">
+                                {% for obj in attachment_objs.all %}
+                                <li class="list-group-item"><a href="{{ obj.attachment.url }}"><span class="d-inline-block text-truncate" style="max-width: 150px;">{{ obj.attachment.name }}</span></a></li>
+                                {% endfor %}
+                              </ul>
+                            {% endif %}
+                          </div>
+                        </div>
+
+                    </div>
+                    <!-- Experience -->
+
+                    <!-- Education
+                    <div class="tab-pane fade" id="ex2-tabs-4" role="tabpanel" aria-labelledby="ex2-tab-4">
+                      <div class="col-md-4">
+                          <div class="p-3 py-5">
+                              <div class="d-flex justify-content-between align-items-center experience"><span>Edit Experience</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;Experience</span></div><br>
+                              <div class="col-md-12"><label class="labels">Experience in Designing</label><input type="text" class="form-control" placeholder="experience"></div> <br>
+                              <div class="col-md-12"><label class="labels">Additional Details</label><input type="text" class="form-control" placeholder="additional details"></div>
+                          </div>
+                      </div>
+                    </div>-->
+
+                  </div>
+
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'js/profile.js' %}"></script>
+{% endblock %}
