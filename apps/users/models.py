@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
+from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -44,6 +45,7 @@ GENDER_CHOICES = (
     ('select', 'Select...'),
     ('male', 'Male'),
     ('female', 'Female'),
+    ('others', 'Others'),
 )
 
 USER_TYPE_CHOICES = (
@@ -70,15 +72,16 @@ EMPLOYMENT_TYPE_CHOICES = (
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
-    middle_name = models.CharField(max_length=50, blank=False)
+    middle_name = models.CharField(max_length=50, **optional)
     extension = models.CharField(max_length=50, **optional)
     address = models.CharField(max_length=250, **optional)
     email = models.EmailField(_('Email Address'), unique=True)
-    phone_number = models.CharField(max_length=50, **optional)
-    mobile_number = models.CharField(max_length=50, **optional)
+    phone_number = models.CharField(max_length=10, **optional)
+    mobile_regex = RegexValidator(regex=r'^(\+\d{1,3})?,?\s?\d{8,13}', message="Mobile number format must be: '+639999999999'.")
+    mobile_number = models.CharField(validators=[mobile_regex], max_length=13, **optional) # validators should be a list
     headline = models.CharField(max_length=250, **optional)
     birthdate = models.DateField(**optional)
-    user_avatar = models.ImageField(default='user_avatar.png', **optional)
+    user_avatar = models.ImageField(default='user_avatar.png', upload_to='user_avatars', **optional)
     overview = models.TextField(**optional)
     gender = models.CharField(
         max_length=10,

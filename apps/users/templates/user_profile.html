@@ -30,9 +30,9 @@
                         class="nav-link active"
                         id="ex2-tab-1"
                         data-mdb-toggle="tab"
-                        href="#ex2-tabs-1"
+                        href="#tab-personal"
                         role="tab"
-                        aria-controls="ex2-tabs-1"
+                        aria-controls="tab-personal"
                         aria-selected="true">
                         Personal
                       </a>
@@ -42,9 +42,9 @@
                         class="nav-link"
                         id="ex2-tab-2"
                         data-mdb-toggle="tab"
-                        href="#ex2-tabs-2"
+                        href="#tab-login"
                         role="tab"
-                        aria-controls="ex2-tabs-2"
+                        aria-controls="tab-login"
                         aria-selected="false">
                         Account
                       </a>
@@ -54,9 +54,9 @@
                         class="nav-link"
                         id="ex2-tab-3"
                         data-mdb-toggle="tab"
-                        href="#ex2-tabs-3"
+                        href="#tab-experience"
                         role="tab"
-                        aria-controls="ex2-tabs-3"
+                        aria-controls="tab-experience"
                         aria-selected="false">
                         Experience
                       </a>
@@ -79,7 +79,7 @@
                   <div class="tab-content" id="ex2-content">
 
                     <!-- Personal -->
-                    <div class="tab-pane fade show active" id="ex2-tabs-1" role="tabpanel" aria-labelledby="ex2-tab-1">
+                    <div class="tab-pane fade show active" id="tab-personal" role="tabpanel" aria-labelledby="ex2-tab-1">
 
                         {% csrf_token %}
                         <div class="row mt-2">
@@ -112,7 +112,7 @@
                     <!-- Personal -->
 
                     <!-- Account -->
-                    <div class="tab-pane fade" id="ex2-tabs-2" role="tabpanel" aria-labelledby="ex2-tab-2">
+                    <div class="tab-pane fade" id="tab-login" role="tabpanel" aria-labelledby="ex2-tab-2">
 
                         <div class="row mt-2">
                           <div class="col-md-8"><label class="form-label" for="email">Email</label><input type="text" id="email" name="email" value="{{ object.email|blankifnull }}" class="form-control form-control-lg" /></div>
@@ -127,7 +127,7 @@
                     <!-- Account -->
 
                     <!-- Experience -->
-                    <div class="tab-pane fade" id="ex2-tabs-3" role="tabpanel" aria-labelledby="ex2-tab-3">
+                    <div class="tab-pane fade" id="tab-experience" role="tabpanel" aria-labelledby="ex2-tab-3">
 
                         <div class="row mt-2">
                           <div class="col-md-8"><label class="form-label" for="headline">Headline</label><input type="text" id="headline" name="headline" value="{{ object.headline|blankifnull }}" class="form-control form-control-lg" /></div>

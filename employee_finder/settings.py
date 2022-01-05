@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'apps.companies',
 
     # third party
+    'ph_geography',
 ]
 
 MIDDLEWARE = [

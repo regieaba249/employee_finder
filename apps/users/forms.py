@@ -45,9 +45,6 @@ class UserForm(forms.ModelForm):
             'password2'
         ]
 
-    def clean(self):
-        return super(UserForm, self).clean()
-
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")

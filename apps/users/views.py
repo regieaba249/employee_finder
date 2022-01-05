@@ -120,8 +120,8 @@ class RegistrationView(FormView):
     success_url = reverse_lazy('login')
     template_name = 'registration.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(RegistrationView, self).get_context_data(**kwargs)
+    def get_context_data(self, *args, **kwargs):
+        context = super(RegistrationView, self).get_context_data(*args, **kwargs)
         context['user_type'] = self.kwargs.get('_type')
         return context
 
@@ -141,6 +141,8 @@ class RegistrationView(FormView):
             user_type = 'employer'
 
         form.instance.user_type = user_type
+        if form.data.get('mobile_number', None):
+            form.instance.mobile_number = f"+63{form.data.get('mobile_number')}"
 
         if form.is_valid():
             form.save()
@@ -204,10 +206,10 @@ class RegistrationView(FormView):
         for key, value in form.errors.items():
             for msg in value:
                 messages.error(self.request, f"{key}: {msg}")
-        return super(RegistrationView, self).form_invalid(form)
+        return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-        messages.success(self.request, "Successfully Created your Account")
+        messages.success(self.request, "Successfully Registered. Please validate via the email we sent to activate your account.")
         return super(RegistrationView, self).form_valid(form)
 
 
