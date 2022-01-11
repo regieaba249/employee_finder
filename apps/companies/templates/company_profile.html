@@ -146,6 +146,15 @@
                       </select>
                     </div>
 
+                    <div class="form-group mb-2">
+                        <label class="" for="founded_on">Foundation Date</label>
+                        <input value="{{ form.data.founded_on }}" type="date" id="founded_on" name="founded_on" class="form-control form-control-lg"/>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label class="" for="employee_count">Employee Count</label>
+                        <input value="{{ form.data.employee_count }}" type="text" id="employee_count" name="employee_count" class="form-control form-control-lg"/>
+                    </div>
+
                   </div>
 
 
@@ -209,49 +218,11 @@
 
                   </div>
 
-                </div>
-              </div>
-
-              <!-- Background -->
-              <div class="card border-light mb-3">
-                <div class="card-header"><h3>Background</h3></div>
-                <div class="card-body">
-                  <div class="row mb-4">
-
-                    <div class="form-group mx-1 col">
-                      <label class="" for="applicant_status">Employment Status</label>
-                      <select name="applicant_status" class="applicant-status-select mdb-select md-form form-control form-control-lg">
-                        <option value="" disabled {% if not object.applicant_status %}selected{% endif %}>------</option>
-                        <option value="unemployed" {% if object.owner.applicant_status == 'unemployed' %}selected{% endif %}>Unemployed</option>
-                        <option value="employed" {% if object.owner.applicant_status == 'employed' %}selected{% endif %}>Employed</option>
-                      </select>
-
-                    </div>
-
-                  </div>
-
-                  <div class="row mb-4">
-                    <div class="form-group mx-1 col">
-                      <label class="" for="overview">Brief Overview</label>
-                      <textarea class="form-control" id="overview" name="overview"  rows="4">{{ object.overview }}</textarea>
-
-                    </div>
-
-                  </div>
-
-                  <div class="row mb-4">
-                    <span>Resume</span>
+                  <div class="row mb-4 col-12 col-md-12">
                     <div class="form-group mb-2">
-                      <input type="file" id="resume" name="resume" class="form-control form-control-lg" />
-
+                      <label class="" for="company_overview">Company Background</label>
+                      <textarea class="form-control" id="company_overview" name="company_overview"  rows="4"></textarea>
                     </div>
-
-                    <span>Other Attachments (Certificates, Diploma, TOR, etc...)</span>
-                    <div class="form-group mb-2">
-                      <input type="file" id="attachments" name="attachments" class="form-control form-control-lg" multiple/>
-
-                    </div>
-
                   </div>
 
                 </div>
