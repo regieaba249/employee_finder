@@ -1,0 +1,154 @@
+[
+{
+    "model": "users.region",
+    "pk": 1,
+    "fields":
+    {
+        "name": "REGION I (ILOCOS REGION)",
+        "island_group": "L"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 2,
+    "fields":
+    {
+        "name": "REGION II (CAGAYAN VALLEY)",
+        "island_group": "L"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 3,
+    "fields":
+    {
+        "name": "REGION III (CENTRAL LUZON)",
+        "island_group": "L"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 4,
+    "fields":
+    {
+        "name": "REGION IV-A (CALABARZON)",
+        "island_group": "L"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 5,
+    "fields":
+    {
+        "name": "MIMAROPA REGION",
+        "island_group": "L"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 6,
+    "fields":
+    {
+        "name": "REGION V (BICOL REGION)",
+        "island_group": "L"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 7,
+    "fields":
+    {
+        "name": "REGION VI (WESTERN VISAYAS)",
+        "island_group": "V"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 8,
+    "fields":
+    {
+        "name": "REGION VII (CENTRAL VISAYAS)",
+        "island_group": "V"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 9,
+    "fields":
+    {
+        "name": "REGION VIII (EASTERN VISAYAS)",
+        "island_group": "V"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 10,
+    "fields":
+    {
+        "name": "REGION IX (ZAMBOANGA PENINSULA)",
+        "island_group": "M"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 11,
+    "fields":
+    {
+        "name": "REGION X (NORTHERN MINDANAO)",
+        "island_group": "M"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 12,
+    "fields":
+    {
+        "name": "REGION XI (DAVAO REGION)",
+        "island_group": "M"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 13,
+    "fields":
+    {
+        "name": "REGION XII (SOCCSKSARGEN)",
+        "island_group": "M"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 14,
+    "fields":
+    {
+        "name": "NATIONAL CAPITAL REGION (NCR)",
+        "island_group": "L"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 15,
+    "fields":
+    {
+        "name": "CORDILLERA ADMINISTRATIVE REGION (CAR)",
+        "island_group": "L"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 16,
+    "fields":
+    {
+        "name": "AUTONOMOUS REGION IN MUSLIM MINDANAO (ARMM)",
+        "island_group": "M"
+    }
+},
+{
+    "model": "users.region",
+    "pk": 17,
+    "fields":
+    {
+        "name": "REGION XIII (CARAGA)",
+        "island_group": "M"
+    }
+}]

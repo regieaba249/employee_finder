@@ -6,9 +6,14 @@ from apps.users.forms import UserForm
 from apps.users.models import (
     CustomUser,
     Applicant,
-    ApplicantAttachments,
-    ApplicantSkills,
-    ApplicantEducation
+    ApplicantAttachment,
+    ApplicantSkill,
+    ApplicantEducation,
+    ApplicantExperience,
+    Region,
+    Province,
+    Municipality,
+    Barangay
 )
 
 
@@ -24,6 +29,10 @@ class MyUserAdmin(AuthUserAdmin):
             'last_name',
             'middle_name',
             'address',
+            'region',
+            'province',
+            'municipality',
+            'barangay',
             'phone_number',
             'mobile_number',
             'extension',
@@ -62,21 +71,41 @@ class Applicant(admin.ModelAdmin):
     search_fields = ('__all__',)
 
 
-@admin.register(ApplicantAttachments)
-class ApplicantAttachments(admin.ModelAdmin):
-    search_fields = ('__all_',)
+@admin.register(ApplicantAttachment)
+class ApplicantAttachment(admin.ModelAdmin):
+    search_fields = ('__all__',)
 
 
-@admin.register(ApplicantSkills)
-class ApplicantSkills(admin.ModelAdmin):
-    search_fields = ('__all_',)
+@admin.register(ApplicantSkill)
+class ApplicantSkill(admin.ModelAdmin):
+    search_fields = ('__all__',)
 
 
-# @admin.register(ApplicantSkills)
-# class ApplicantSkills(admin.ModelAdmin):
-#     search_fields = ('__all_',)
+@admin.register(ApplicantExperience)
+class ApplicantExperience(admin.ModelAdmin):
+    search_fields = ('__all__',)
 
 
-# @admin.register(ApplicantEducation)
-# class ApplicantEducation(admin.ModelAdmin):
-#     search_fields = ('__all_',)
+@admin.register(ApplicantEducation)
+class ApplicantEducation(admin.ModelAdmin):
+    search_fields = ('__all__',)
+
+
+@admin.register(Region)
+class Region(admin.ModelAdmin):
+    search_fields = ['name']
+
+
+@admin.register(Province)
+class Province(admin.ModelAdmin):
+    search_fields = ['name']
+
+
+@admin.register(Municipality)
+class Municipality(admin.ModelAdmin):
+    search_fields = ['name']
+
+
+@admin.register(Barangay)
+class Barangay(admin.ModelAdmin):
+    search_fields = ['name']

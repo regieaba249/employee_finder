@@ -9,6 +9,13 @@ from django.template.loader import render_to_string
 
 from .tokens import account_activation_token
 
+from .models import (
+    Region,
+    Province,
+    Municipality,
+    Barangay
+)
+
 
 class UserForm(forms.ModelForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
@@ -34,9 +41,14 @@ class UserForm(forms.ModelForm):
             'gender',
             'birthdate',
             'user_avatar',
+            'area_code',
             'phone_number',
             'mobile_number',
             'address',
+            'region',
+            'province',
+            'municipality',
+            'barangay',
             'email',
             'headline',
             'overview',
@@ -48,8 +60,20 @@ class UserForm(forms.ModelForm):
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
+        MIN_LENGTH = 8
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("Passwords don't match")
+
+        # At least MIN_LENGTH long
+        if len(password1) < MIN_LENGTH:
+            raise forms.ValidationError(f"The new password must be at least {MIN_LENGTH} characters long.")
+
+        # At least one letter and one non-letter
+        first_isalpha = password1[0].isalpha()
+        if all(c.isalpha() == first_isalpha for c in password1):
+            raise forms.ValidationError("The new password must contain at least one letter and at least one digit or" \
+                                        " punctuation character.")
+
         return password2
 
     def save(self, commit=True):

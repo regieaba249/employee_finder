@@ -11,179 +11,389 @@
 
   <div class="content">
     <div class="container rounded bg-white mt-5 mb-5">
-      <div class="row">
-          <div class="col-md-3 border-right">
-              <div class="d-flex flex-column align-items-center text-center p-3 py-5">
-                <img class="rounded-circle my-5 avatar" width="150px" src="{{ object.user_avatar.url }}">
-                <span class="font-weight-bold">{{ object.full_name }}</span>
-                <span class="text-black-50">{{ object.email }}</span>
-                <span class="text-black-50">{{ object.contact_numbers }}</span>
-                <span> </span>
+      <form id="profileForm" action="#" method="post" enctype="multipart/form-data">
+        <hr>
+        <!-- Tabs content -->
+
+          {% csrf_token %}
+          <div class="row mb-4">
+
+            <!-- LEFT DIV -->
+            <div class="col-md-3 px-1">
+
+              <!-- User Avatar -->
+              <div class="d-flex flex-column align-items-center p-2 py-3">
+                <img class="rounded-circle avatar" width="200px" src="{{ object.user_avatar.url }}">
               </div>
-          </div>
-          <div class="col-md-9 border-right">
-              <div class="p-3 py-5">
-                  <!-- Tabs navs -->
-                  <ul class="nav nav-tabs nav-fill mb-3" id="ex1" role="tablist">
-                    <li class="nav-item" role="presentation">
-                      <a
-                        class="nav-link active"
-                        id="ex2-tab-1"
-                        data-mdb-toggle="tab"
-                        href="#tab-personal"
-                        role="tab"
-                        aria-controls="tab-personal"
-                        aria-selected="true">
-                        Personal
-                      </a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                      <a
-                        class="nav-link"
-                        id="ex2-tab-2"
-                        data-mdb-toggle="tab"
-                        href="#tab-login"
-                        role="tab"
-                        aria-controls="tab-login"
-                        aria-selected="false">
-                        Account
-                      </a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                      <a
-                        class="nav-link"
-                        id="ex2-tab-3"
-                        data-mdb-toggle="tab"
-                        href="#tab-experience"
-                        role="tab"
-                        aria-controls="tab-experience"
-                        aria-selected="false">
-                        Experience
-                      </a>
-                    </li>
-                    <!--<li class="nav-item" role="presentation">
-                      <a
-                        class="nav-link"
-                        id="ex2-tab-4"
-                        data-mdb-toggle="tab"
-                        href="#ex2-tabs-4"
-                        role="tab"
-                        aria-controls="ex2-tabs-4"
-                        aria-selected="false">
-                        Education
-                      </a>
-                    </li>-->
-                  </ul>
-                  <!-- Tabs navs -->
-                  <!-- Tabs content -->
-                  <div class="tab-content" id="ex2-content">
 
-                    <!-- Personal -->
-                    <div class="tab-pane fade show active" id="tab-personal" role="tabpanel" aria-labelledby="ex2-tab-1">
+              <!-- Phone Number -->
+              <div class="form-group px-4 mb-2">
+                <label class="" for="phone_number">Telephone Number</label>
+                <div class="input-group input-group-lg">
+                  <div class="input-group-prepend">
+                    <select name="area_code" class="input-group-text md-form form-control form-control-lg p-0 required" dir="rtl" required>
+                      {% for code in area_codes %}
+                      <option value="{{ code }}" {% if object.area_code == code %}selected{% endif %}>({{ code }})</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <input value="{{ object.phone_number|default_if_none:'' }}" type="text" id="phone_number" name="phone_number" class="phone_number form-control form-control-lg number_only" maxlength="8"/>
+                  <small id="emailHelp" class="form-text text-muted">You can select a different area code from the dropdown.</small>
+                </div>
+              </div>
 
-                        {% csrf_token %}
-                        <div class="row mt-2">
-                            <div class="col-md-4"><label class="form-label" for="first_name">First Name</label><input type="text" id="first_name" name="first_name" value="{{ object.first_name|blankifnull }}" class="form-control form-control-lg"></div>
-                            <div class="col-md-4"><label class="form-label" for="middle_name">Middle Name</label><input type="text" id="middle_name" name="middle_name" value="{{ object.middle_name|blankifnull }}" class="form-control form-control-lg"></div>
-                            <div class="col-md-4"><label class="form-label" for="last_name">Last Name</label><input type="text" id="last_name" name="last_name" value="{{ object.last_name|blankifnull }}" class="form-control form-control-lg"></div>
-                        </div>
+              <!-- Mobile Number -->
+              <div class="form-group px-4 mb-2">
+                <label class="" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
+                <div class="input-group input-group-lg">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroupPrepend2">+63</span>
+                  </div>
+                  <input value="{{ object.mobile_number|default_if_none:'' }}" type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only" maxlength="10"/>
+                </div>
+              </div>
 
-                        <div class="row mt-2">
-                            <div class="col-md-4"><label class="form-label" for="extension">Extensions</label><input type="text" id="extension" name="extension" value="{{ object.extension|blankifnull }}" class="form-control form-control-lg"></div>
-                            <div class="col-md-2"><label class="form-label" for="gender">Gender</label><input type="text" id="gender" name="gender" value="{{ object.gender|blankifnull }}" class="gender-input visually-hidden" />
-                              <select class="gender-select mdb-select md-form form-control form-control-lg">
-                                <option class="light-text" value="select" {% if object.gender == 'select' %}selected{% endif %} disabled>Select...</option>
-                                <option value="male" {% if object.gender == 'male' %}selected{% endif %}>Male</option>
-                                <option value="female" {% if object.gender == 'female' %}selected{% endif %}>Female</option>
-                              </select>
-                            </div>
-                            <div class="col-md-3"><label class="form-label" for="birthdate">Birthday</label><input type="text" id="birthdate" name="birthdate" value="{{ object.birthdate|blankifnull }}" class="form-control form-control-lg" /></div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col-md-4"><label class="form-label" for="phone_number">Phone Number</label><input type="text" id="phone_number" name="phone_number" value="{{ object.phone_number|blankifnull }}" class="form-control form-control-lg" /></div>
-                            <div class="col-md-4"><label class="form-label" for="mobile_number">Mobile Number</label><input type="text" id="mobile_number" name="mobile_number" value="{{ object.mobile_number|blankifnull }}" class="form-control form-control-lg" /></div>
-                            <div class="col-md-4"><label class="form-label" for="birthdate">Avatar</label><input type="file" id="user_avatar" name="user_avatar" value="{{ object.user_avatar|blankifnull }}" class="form-control form-control-lg" /></div>
-                        </div>
-                        <div class="row mt-2">
-                          <div class="col-md-12"><label class="form-label" for="address">Address</label><textarea class="form-control" id="address" name="address" rows="4">{{ object.address|blankifnull }}</textarea></div>
-                        </div>
+              <!-- Gender -->
+              <div class="form-group px-4 mb-2">
+                <label class="required-field-label" for="gender">Gender</label>
+                <select name="gender" class="gender-select mdb-select md-form form-control form-control-lg required" required>
+                  <option value="" disabled {% if not object.gender %}selected{% endif %}>------</option>
+                  <option value="male" {% if object.gender == 'male' %}selected{% endif %}>Male</option>
+                  <option value="female" {% if object.gender == 'female' %}selected{% endif %}>Female</option>
+                  <option value="others" {% if object.gender == 'others' %}selected{% endif %}>Others</option>
+                </select>
+              </div>
 
+              <!-- Birthday -->
+              <div class="form-group px-4 mb-2">
+                  <label class="required-field-label" for="birthdate">Birthday</label>
+                  <input value="{{ object.birthdate|date:"Y-m-d" }}" type="date" id="birthdate" name="birthdate" class="form-control form-control-lg required"/ max="2999-12-31" required>
+              </div>
+
+            </div>
+
+            <!-- RIGHT DIV -->
+            <div class="form-group col-md-9">
+
+              <!-- Personal -->
+              <div class="card border-light my-3">
+                <div class="card-header"><h3>Personal Details</h3></div>
+                <div class="card-body row">
+
+                  <!-- Name Fields -->
+                  <div class="row mb-4 col-6 col-md-6">
+
+                    <div class="form-group mb-2">
+                      <label class="required-field-label" for="first_name">First Name</label>
+                      <input value="{{ object.first_name|default_if_none:'' }}" type="text" id="first_name" name="first_name" class="form-control form-control-lg required" maxlength="25" required/>
                     </div>
-                    <!-- Personal -->
 
-                    <!-- Account -->
-                    <div class="tab-pane fade" id="tab-login" role="tabpanel" aria-labelledby="ex2-tab-2">
-
-                        <div class="row mt-2">
-                          <div class="col-md-8"><label class="form-label" for="email">Email</label><input type="text" id="email" name="email" value="{{ object.email|blankifnull }}" class="form-control form-control-lg" /></div>
-                        </div>
-
-                        <div class="row mt-2">
-                          <div class="col-md-4"><label class="form-label" for="password1">Password</label><input type="password" id="password1" name="password1" class="form-control form-control-lg" /></div>
-                          <div class="col-md-4"><label class="form-label" for="password2">Re-type Password</label><input type="password" id="password2" name="password2" class="form-control form-control-lg" /></div>
-                        </div>
-
+                    <div class="form-group mb-2">
+                      <label class="" for="middle_name">Middle Name</label>
+                      <input value="{{ object.middle_name|default_if_none:'' }}" type="text" id="middle_name" name="middle_name" class="form-control form-control-lg" maxlength="25"/>
                     </div>
-                    <!-- Account -->
 
-                    <!-- Experience -->
-                    <div class="tab-pane fade" id="tab-experience" role="tabpanel" aria-labelledby="ex2-tab-3">
-
-                        <div class="row mt-2">
-                          <div class="col-md-8"><label class="form-label" for="headline">Headline</label><input type="text" id="headline" name="headline" value="{{ object.headline|blankifnull }}" class="form-control form-control-lg" /></div>
-                          <div class="col-md-4"><label class="form-label" for="gender">Current Employment</label><input type="text" id="applicant-status" name="applicant_status" value="{{ object.applicant_data.applicant_status|blankifnull }}" class="applicant-status-input visually-hidden" />
-                            <select class="applicant-status-select mdb-select md-form form-control form-control-lg">
-                              <option class="light-text" value="select" {% if object.applicant_data.applicant_status == 'select' %}selected{% endif %} disabled>Select..</option>
-                              <option value="employed" {% if object.applicant_data.applicant_status == 'employed' %}selected{% endif %}>Employed</option>
-                              <option value="unemployed" {% if object.applicant_data.applicant_status == 'unemployed' %}selected{% endif %}>Unemployed</option>
-                            </select>
-                          </div>
-                        </div>
-
-                        <div class="row mt-2">
-                          <div class="col-md-12"><label class="form-label" for="overview">Overview</label><textarea class="form-control" id="overview" name="overview" rows="4">{{ object.overview|blankifnull }}</textarea></div>
-                        </div>
-
-                        <div class="row mt-5">
-                          <div class="mb-3">
-                            <label for="resume" class="form-label">Resume: </label>{% if resume %}<a href="{{ resume.url }}" class="col-md-auto">{{ resume.name }}</a>{% endif %}
-                            <input type="file" id="resume" name="resume" class="form-control"/>
-                          </div>
-                        </div>
-                        <div class="row mt-3">
-                          <div class="col-md-12">
-                            <label class="form-label" for="overview"><h5>Other Attachments: </h5></label>
-                            <input type="file" id="attachments" name="attachments" class="form-control" multiple/>
-                          </div>
-                          <div class="row col-md-12 mt-3">
-                            {% if attachment_objs %}
-                              <ul class="list-group list-group-flush">
-                                {% for obj in attachment_objs.all %}
-                                <li class="list-group-item"><a href="{{ obj.attachment.url }}"><span class="d-inline-block text-truncate" style="max-width: 150px;">{{ obj.attachment.name }}</span></a></li>
-                                {% endfor %}
-                              </ul>
-                            {% endif %}
-                          </div>
-                        </div>
-
+                    <div class="form-group mb-2">
+                      <label class="required-field-label" for="last_name">Last Name</label>
+                        <input value="{{ object.last_name|default_if_none:'' }}" type="text" id="last_name" name="last_name" class="form-control form-control-lg required" maxlength="25" required/>
                     </div>
-                    <!-- Experience -->
 
-                    <!-- Education
-                    <div class="tab-pane fade" id="ex2-tabs-4" role="tabpanel" aria-labelledby="ex2-tab-4">
-                      <div class="col-md-4">
-                          <div class="p-3 py-5">
-                              <div class="d-flex justify-content-between align-items-center experience"><span>Edit Experience</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;Experience</span></div><br>
-                              <div class="col-md-12"><label class="labels">Experience in Designing</label><input type="text" class="form-control" placeholder="experience"></div> <br>
-                              <div class="col-md-12"><label class="labels">Additional Details</label><input type="text" class="form-control" placeholder="additional details"></div>
-                          </div>
-                      </div>
-                    </div>-->
+                    <div class="form-group mb-2">
+                      <label class="" for="extension">Extensions</label>
+                      <input value="{{ object.extension|default_if_none:'' }}" type="text" id="extension" name="extension" class="form-control form-control-lg" maxlength="25"/>
+                    </div>
+
+                    <div class="form-group mb-2">
+                      <label class="" for="headline">Headline:</label>
+                      <input value="{{ object.headline|default_if_none:'' }}" type="text" id="headline" placeholder="'Software Developer / Freelancer'" name="headline" class="form-control form-control-lg"/>
+                    </div>
 
                   </div>
 
+
+                  <!-- Address Fields -->
+
+                  <div class="row mb-4 col-6 col-md-6">
+
+                    <h5>Address</h5>
+                    <small id="emailHelp" class="form-text text-muted">Employers might filter by area. It is benificial to fill in your address details accurately.</small>
+
+                    <div class="form-group my-2">
+                      <label class="required-field-label" for="region">Region</label>
+                      <select name="region" id="user_region" class="address-select mdb-select md-form form-control form-control-lg required" data-ajax-url="{% url 'users:ajax_load_address_dropdown' %}" data-value="{{ object.region }}" data-target="user_province" required>
+                        <option value="">------</option>
+                        {% for region in regions.all %}
+                          <option value="{{ region.id }}" {% if object.region.id == region.id %} selected {% endif %}>{{ region.name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    <div class="form-group mb-2">
+                      <label class="required-field-label" for="province">Province</label>
+                      <select name="province" id="user_province" class="address-select mdb-select md-form form-control form-control-lg required" data-ajax-url="{% url 'users:ajax_load_address_dropdown' %}" data-value="{{ object.province }}" data-target="user_municipality" required>
+                        <option value="">------</option>
+                        {% if object.province %}
+                          {% for province in provinces.all %}
+                            <option value="{{ province.id }}" {% if object.province.id == province.id %}selected{% endif %}>{{ province.name }}</option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+
+                    <div class="form-group mb-2">
+                      <label class="required-field-label" for="municipality">Municipality</label>
+                      <select name="municipality" id="user_municipality" class="address-select mdb-select md-form form-control form-control-lg required" data-ajax-url="{% url 'users:ajax_load_address_dropdown' %}" data-value="{{ object.municipality }}" data-target="user_barangay" required>
+                        <option value="">------</option>
+                        {% if object.municipality %}
+                          {% for municipality in municipalities.all %}
+                            <option value="{{ municipality.id }}" {% if object.municipality.id == municipality.id %}selected{% endif %}>{{ municipality.name }}</option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+
+                    <div class="form-group mb-2">
+                      <label class="required-field-label" for="barangay">Barangay</label>
+                      <select name="barangay" id="user_barangay" class="mdb-select md-form form-control form-control-lg required" required>
+                        <option value="">------</option>
+                        {% if object.barangay %}
+                          {% for barangay in barangays.all %}
+                            <option value="{{ barangay.id }}" {% if object.barangay.id == barangay.id %}selected{% endif %}>{{ barangay.name }}</option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+
+                    <div class="form-group mb-2">
+                      <label class="" for="address">Full Address</label>
+                      <input value="{{ object.address|default_if_none:'' }}" type="text" id="address" name="address" class="form-control form-control-lg" />
+                    </div>
+
+                  </div>
+
+                </div>
               </div>
+
+              <!-- Background -->
+              <div class="card border-light mb-3">
+                <div class="card-header"><h3>Background</h3></div>
+                <div class="card-body">
+                  <div class="row mb-4">
+
+                    <div class="form-group mx-1 col">
+                      <label class="" for="applicant_status">Employment Status</label>
+                      <select name="applicant_status" class="applicant-status-select mdb-select md-form form-control form-control-lg">
+                        <option value="" disabled {% if not object.applicant_status %}selected{% endif %}>------</option>
+                        <option value="unemployed" {% if object.applicant_status == 'unemployed' %}selected{% endif %}>Unemployed</option>
+                        <option value="employed" {% if object.applicant_status == 'employed' %}selected{% endif %}>Employed</option>
+                      </select>
+
+                    </div>
+
+                  </div>
+
+                  <div class="row mb-4">
+                    <div class="form-group mx-1 col">
+                      <label class="" for="overview">Brief Overview</label>
+                      <textarea class="form-control" id="overview" name="overview"  rows="4">{{ object.overview }}</textarea>
+
+                    </div>
+
+                  </div>
+
+                  <div class="row mb-4">
+                    <span>Resume</span>
+                    <div class="form-group mb-2">
+                      <input type="file" id="resume" name="resume" class="form-control form-control-lg" />
+
+                    </div>
+
+                    <span>Other Attachments (Certificates, Diploma, TOR, etc...)</span>
+                    <div class="form-group mb-2">
+                      <input type="file" id="attachments" name="attachments" class="form-control form-control-lg" multiple/>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- Employment History -->
+              <div class="card border-light mb-3">
+                <div class="card-header">
+                  <h3>Employment History</h3>
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmploymentHistoryModal">
+                    Add
+                  </button>
+                </div>
+                <div class="card-body">
+                  <table id="addEmploymentHistoryTable" class="table table-bordered table-responsive-md table-striped text-center">
+                    <thead>
+                      <tr>
+                        <th class="text-center">Company</th>
+                        <th class="text-center">Position</th>
+                        <th class="text-center">Type</th>
+                        <th class="text-center">Start</th>
+                        <th class="text-center">End</th>
+                        <th class="text-center">Current</th>
+                        <th class="text-center">Reference Person</th>
+                        <th class="text-center"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% if employment_history.all %}
+                        {% for data in employment_history.all %}
+                        <tr>
+                          <td>{{ data.company_name }}</td>
+                          <td>{{ data.job_position }}</td>
+                          <td>{{ data.employment_type }}</td>
+                          <td>{{ data.start }}</td>
+                          <td>{{ data.end }}</td>
+                          {% if data.current %}
+                            <td><i class="far fa-check-circle"></i></td>
+                          {% else %}
+                            <td></td>
+                          {% endif %}
+                          <td>{{ data.reference_person }} ({{ data.mobile_number }})</td>
+                          <td>
+                            <span class="table-remove">
+                              <button type="button" data-id="{{ data.id }}" class="remove-row btn btn-danger btn-rounded btn-sm my-0">
+                                <i class="fas fa-times"></i>
+                              </button>
+                            </span>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      {% else %}
+                        <tr class="nodata">
+                          <td colspan="100%">No Data</td>
+                        </tr>
+                      {% endif %}
+                    </tbody>
+                  </table>
+
+                </div>
+
+              </div>
+
+            </div>
+
           </div>
+
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="addEmploymentHistoryModal" data-ajax-url="{% url 'users:ajax_add_employment_history' %}" tabindex="-1" role="dialog" aria-labelledby="addEmploymentHistoryTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Employment History Details</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row col">
+
+            <div class="form-group mt-0 mb-2">
+              <label class="required-field-label" for="company">Company Name</label>
+              <input type="text" id="company" name="company" class="form-control form-control-lg required" required/>
+            </div>
+
+            <div class="form-group mb-2">
+              <label class="required-field-label" for="position">Position</label>
+              <input type="text" id="position" name="position" class="form-control form-control-lg required" required/>
+            </div>
+
+            <div class="form-group mb-2">
+              <label class="required-field-label" for="employment_type">Employment Type</label>
+              <select name="employment_type" id="employment_type" class="mdb-select md-form form-control form-control-lg required" required>
+                {% for key, values in employment_type_choices.items %}
+                <option value="{{ key }}">{{ values }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group mb-2 col-6 row">
+              <label class="required-field-label">Date Start</label>
+              <div class="col-md-7 col-7 pe-0">
+                <select name="start_month" id="start_month" class="mdb-select md-form form-control form-control-lg required" required>
+                  {% for key, values in months.items %}
+                  <option value="{{ key }}">{{ values }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col pe-0">
+                <select name="start_year" id="start_year" class="mdb-select md-form form-control form-control-lg required" required>
+                  {% for year in years %}
+                  <option value="{{ year }}">{{ year }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group mb-2 col-6 row">
+              <label class="required-field-label">Date End</label>
+              <div class="col-md-7 col-7 ps-3 pe-0">
+                <select name="end_month" id="end_month" class="mdb-select md-form form-control form-control-lg required" required>
+                  <option value="">------</option>
+                  {% for key, values in months.items %}
+                  <option value="{{ key }}">{{ values }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col pe-0">
+                <select name="end_year" id="end_year" class="mdb-select md-form form-control form-control-lg required" required>
+                  <option value="">----</option>
+                  {% for year in years %}
+                  <option value="{{ year }}">{{ year }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group my-2">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="current" id="current">
+                <label class="form-check-label" for="flexCheckDefault">
+                  Currently Employed
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group mb-2">
+              <label class="" for="overview">Brief Overview</label>
+              <textarea class="form-control" id="overview" name="overview" rows="4"></textarea>
+            </div>
+
+            <div class="form-group mb-2">
+              <label class="required-field-label" for="reference_person">Reference Person</label>
+              <input type="text" id="reference_person" name="reference_person" class="form-control form-control-lg required" placeholder="Name" required/>
+            </div>
+
+            <div class="form-group mb-2">
+              <label class="" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
+              <div class="input-group input-group-lg">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroupPrepend2">+63</span>
+                </div>
+                <input type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only" maxlength="10"/>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="addEmploymentHistorySubmit" class="btn btn-primary">Add</button>
+        </div>
       </div>
     </div>
   </div>

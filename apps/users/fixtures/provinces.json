@@ -1,0 +1,739 @@
+[
+{
+    "model": "users.province",
+    "pk": 1,
+    "fields":
+    {
+        "name": "ILOCOS NORTE",
+        "region": 1
+    }
+},
+{
+    "model": "users.province",
+    "pk": 2,
+    "fields":
+    {
+        "name": "ILOCOS SUR",
+        "region": 1
+    }
+},
+{
+    "model": "users.province",
+    "pk": 3,
+    "fields":
+    {
+        "name": "LA UNION",
+        "region": 1
+    }
+},
+{
+    "model": "users.province",
+    "pk": 4,
+    "fields":
+    {
+        "name": "PANGASINAN",
+        "region": 1
+    }
+},
+{
+    "model": "users.province",
+    "pk": 5,
+    "fields":
+    {
+        "name": "BATANES",
+        "region": 2
+    }
+},
+{
+    "model": "users.province",
+    "pk": 6,
+    "fields":
+    {
+        "name": "CAGAYAN",
+        "region": 2
+    }
+},
+{
+    "model": "users.province",
+    "pk": 7,
+    "fields":
+    {
+        "name": "ISABELA",
+        "region": 2
+    }
+},
+{
+    "model": "users.province",
+    "pk": 8,
+    "fields":
+    {
+        "name": "NUEVA VIZCAYA",
+        "region": 2
+    }
+},
+{
+    "model": "users.province",
+    "pk": 9,
+    "fields":
+    {
+        "name": "QUIRINO",
+        "region": 2
+    }
+},
+{
+    "model": "users.province",
+    "pk": 10,
+    "fields":
+    {
+        "name": "BATAAN",
+        "region": 3
+    }
+},
+{
+    "model": "users.province",
+    "pk": 11,
+    "fields":
+    {
+        "name": "BULACAN",
+        "region": 3
+    }
+},
+{
+    "model": "users.province",
+    "pk": 12,
+    "fields":
+    {
+        "name": "NUEVA ECIJA",
+        "region": 3
+    }
+},
+{
+    "model": "users.province",
+    "pk": 13,
+    "fields":
+    {
+        "name": "PAMPANGA",
+        "region": 3
+    }
+},
+{
+    "model": "users.province",
+    "pk": 14,
+    "fields":
+    {
+        "name": "TARLAC",
+        "region": 3
+    }
+},
+{
+    "model": "users.province",
+    "pk": 15,
+    "fields":
+    {
+        "name": "ZAMBALES",
+        "region": 3
+    }
+},
+{
+    "model": "users.province",
+    "pk": 16,
+    "fields":
+    {
+        "name": "AURORA",
+        "region": 3
+    }
+},
+{
+    "model": "users.province",
+    "pk": 17,
+    "fields":
+    {
+        "name": "BATANGAS",
+        "region": 4
+    }
+},
+{
+    "model": "users.province",
+    "pk": 18,
+    "fields":
+    {
+        "name": "CAVITE",
+        "region": 4
+    }
+},
+{
+    "model": "users.province",
+    "pk": 19,
+    "fields":
+    {
+        "name": "LAGUNA",
+        "region": 4
+    }
+},
+{
+    "model": "users.province",
+    "pk": 20,
+    "fields":
+    {
+        "name": "QUEZON",
+        "region": 4
+    }
+},
+{
+    "model": "users.province",
+    "pk": 21,
+    "fields":
+    {
+        "name": "RIZAL",
+        "region": 4
+    }
+},
+{
+    "model": "users.province",
+    "pk": 22,
+    "fields":
+    {
+        "name": "MARINDUQUE",
+        "region": 5
+    }
+},
+{
+    "model": "users.province",
+    "pk": 23,
+    "fields":
+    {
+        "name": "OCCIDENTAL MINDORO",
+        "region": 5
+    }
+},
+{
+    "model": "users.province",
+    "pk": 24,
+    "fields":
+    {
+        "name": "ORIENTAL MINDORO",
+        "region": 5
+    }
+},
+{
+    "model": "users.province",
+    "pk": 25,
+    "fields":
+    {
+        "name": "PALAWAN",
+        "region": 5
+    }
+},
+{
+    "model": "users.province",
+    "pk": 26,
+    "fields":
+    {
+        "name": "ROMBLON",
+        "region": 5
+    }
+},
+{
+    "model": "users.province",
+    "pk": 27,
+    "fields":
+    {
+        "name": "ALBAY",
+        "region": 6
+    }
+},
+{
+    "model": "users.province",
+    "pk": 28,
+    "fields":
+    {
+        "name": "CAMARINES NORTE",
+        "region": 6
+    }
+},
+{
+    "model": "users.province",
+    "pk": 29,
+    "fields":
+    {
+        "name": "CAMARINES SUR",
+        "region": 6
+    }
+},
+{
+    "model": "users.province",
+    "pk": 30,
+    "fields":
+    {
+        "name": "CATANDUANES",
+        "region": 6
+    }
+},
+{
+    "model": "users.province",
+    "pk": 31,
+    "fields":
+    {
+        "name": "MASBATE",
+        "region": 6
+    }
+},
+{
+    "model": "users.province",
+    "pk": 32,
+    "fields":
+    {
+        "name": "SORSOGON",
+        "region": 6
+    }
+},
+{
+    "model": "users.province",
+    "pk": 33,
+    "fields":
+    {
+        "name": "AKLAN",
+        "region": 7
+    }
+},
+{
+    "model": "users.province",
+    "pk": 34,
+    "fields":
+    {
+        "name": "ANTIQUE",
+        "region": 7
+    }
+},
+{
+    "model": "users.province",
+    "pk": 35,
+    "fields":
+    {
+        "name": "CAPIZ",
+        "region": 7
+    }
+},
+{
+    "model": "users.province",
+    "pk": 36,
+    "fields":
+    {
+        "name": "ILOILO",
+        "region": 7
+    }
+},
+{
+    "model": "users.province",
+    "pk": 37,
+    "fields":
+    {
+        "name": "NEGROS OCCIDENTAL",
+        "region": 7
+    }
+},
+{
+    "model": "users.province",
+    "pk": 38,
+    "fields":
+    {
+        "name": "GUIMARAS",
+        "region": 7
+    }
+},
+{
+    "model": "users.province",
+    "pk": 39,
+    "fields":
+    {
+        "name": "BOHOL",
+        "region": 8
+    }
+},
+{
+    "model": "users.province",
+    "pk": 40,
+    "fields":
+    {
+        "name": "CEBU",
+        "region": 8
+    }
+},
+{
+    "model": "users.province",
+    "pk": 41,
+    "fields":
+    {
+        "name": "NEGROS ORIENTAL",
+        "region": 8
+    }
+},
+{
+    "model": "users.province",
+    "pk": 42,
+    "fields":
+    {
+        "name": "SIQUIJOR",
+        "region": 8
+    }
+},
+{
+    "model": "users.province",
+    "pk": 43,
+    "fields":
+    {
+        "name": "EASTERN SAMAR",
+        "region": 9
+    }
+},
+{
+    "model": "users.province",
+    "pk": 44,
+    "fields":
+    {
+        "name": "LEYTE",
+        "region": 9
+    }
+},
+{
+    "model": "users.province",
+    "pk": 45,
+    "fields":
+    {
+        "name": "NORTHERN SAMAR",
+        "region": 9
+    }
+},
+{
+    "model": "users.province",
+    "pk": 46,
+    "fields":
+    {
+        "name": "SAMAR (WESTERN SAMAR)",
+        "region": 9
+    }
+},
+{
+    "model": "users.province",
+    "pk": 47,
+    "fields":
+    {
+        "name": "SOUTHERN LEYTE",
+        "region": 9
+    }
+},
+{
+    "model": "users.province",
+    "pk": 48,
+    "fields":
+    {
+        "name": "BILIRAN",
+        "region": 9
+    }
+},
+{
+    "model": "users.province",
+    "pk": 49,
+    "fields":
+    {
+        "name": "ZAMBOANGA DEL NORTE",
+        "region": 10
+    }
+},
+{
+    "model": "users.province",
+    "pk": 50,
+    "fields":
+    {
+        "name": "ZAMBOANGA DEL SUR",
+        "region": 10
+    }
+},
+{
+    "model": "users.province",
+    "pk": 51,
+    "fields":
+    {
+        "name": "ZAMBOANGA SIBUGAY",
+        "region": 10
+    }
+},
+{
+    "model": "users.province",
+    "pk": 52,
+    "fields":
+    {
+        "name": "BUKIDNON",
+        "region": 11
+    }
+},
+{
+    "model": "users.province",
+    "pk": 53,
+    "fields":
+    {
+        "name": "CAMIGUIN",
+        "region": 11
+    }
+},
+{
+    "model": "users.province",
+    "pk": 54,
+    "fields":
+    {
+        "name": "LANAO DEL NORTE",
+        "region": 11
+    }
+},
+{
+    "model": "users.province",
+    "pk": 55,
+    "fields":
+    {
+        "name": "MISAMIS OCCIDENTAL",
+        "region": 11
+    }
+},
+{
+    "model": "users.province",
+    "pk": 56,
+    "fields":
+    {
+        "name": "MISAMIS ORIENTAL",
+        "region": 11
+    }
+},
+{
+    "model": "users.province",
+    "pk": 57,
+    "fields":
+    {
+        "name": "DAVAO DEL NORTE",
+        "region": 12
+    }
+},
+{
+    "model": "users.province",
+    "pk": 58,
+    "fields":
+    {
+        "name": "DAVAO DEL SUR",
+        "region": 12
+    }
+},
+{
+    "model": "users.province",
+    "pk": 59,
+    "fields":
+    {
+        "name": "DAVAO ORIENTAL",
+        "region": 12
+    }
+},
+{
+    "model": "users.province",
+    "pk": 60,
+    "fields":
+    {
+        "name": "DAVAO DE ORO (COMPOSTELA VALLEY)",
+        "region": 12
+    }
+},
+{
+    "model": "users.province",
+    "pk": 61,
+    "fields":
+    {
+        "name": "DAVAO OCCIDENTAL",
+        "region": 12
+    }
+},
+{
+    "model": "users.province",
+    "pk": 62,
+    "fields":
+    {
+        "name": "COTABATO (NORTH COTABATO)",
+        "region": 13
+    }
+},
+{
+    "model": "users.province",
+    "pk": 63,
+    "fields":
+    {
+        "name": "SOUTH COTABATO",
+        "region": 13
+    }
+},
+{
+    "model": "users.province",
+    "pk": 64,
+    "fields":
+    {
+        "name": "SULTAN KUDARAT",
+        "region": 13
+    }
+},
+{
+    "model": "users.province",
+    "pk": 65,
+    "fields":
+    {
+        "name": "SARANGANI",
+        "region": 13
+    }
+},
+{
+    "model": "users.province",
+    "pk": 66,
+    "fields":
+    {
+        "name": "METRO MANILA",
+        "region": 14
+    }
+},
+{
+    "model": "users.province",
+    "pk": 67,
+    "fields":
+    {
+        "name": "ABRA",
+        "region": 15
+    }
+},
+{
+    "model": "users.province",
+    "pk": 68,
+    "fields":
+    {
+        "name": "BENGUET",
+        "region": 15
+    }
+},
+{
+    "model": "users.province",
+    "pk": 69,
+    "fields":
+    {
+        "name": "IFUGAO",
+        "region": 15
+    }
+},
+{
+    "model": "users.province",
+    "pk": 70,
+    "fields":
+    {
+        "name": "KALINGA",
+        "region": 15
+    }
+},
+{
+    "model": "users.province",
+    "pk": 71,
+    "fields":
+    {
+        "name": "MOUNTAIN PROVINCE",
+        "region": 15
+    }
+},
+{
+    "model": "users.province",
+    "pk": 72,
+    "fields":
+    {
+        "name": "APAYAO",
+        "region": 15
+    }
+},
+{
+    "model": "users.province",
+    "pk": 73,
+    "fields":
+    {
+        "name": "BASILAN",
+        "region": 16
+    }
+},
+{
+    "model": "users.province",
+    "pk": 74,
+    "fields":
+    {
+        "name": "LANAO DEL SUR",
+        "region": 16
+    }
+},
+{
+    "model": "users.province",
+    "pk": 75,
+    "fields":
+    {
+        "name": "MAGUINDANAO",
+        "region": 16
+    }
+},
+{
+    "model": "users.province",
+    "pk": 76,
+    "fields":
+    {
+        "name": "SULU",
+        "region": 16
+    }
+},
+{
+    "model": "users.province",
+    "pk": 77,
+    "fields":
+    {
+        "name": "TAWI-TAWI",
+        "region": 16
+    }
+},
+{
+    "model": "users.province",
+    "pk": 78,
+    "fields":
+    {
+        "name": "AGUSAN DEL NORTE",
+        "region": 17
+    }
+},
+{
+    "model": "users.province",
+    "pk": 79,
+    "fields":
+    {
+        "name": "AGUSAN DEL SUR",
+        "region": 17
+    }
+},
+{
+    "model": "users.province",
+    "pk": 80,
+    "fields":
+    {
+        "name": "SURIGAO DEL NORTE",
+        "region": 17
+    }
+},
+{
+    "model": "users.province",
+    "pk": 81,
+    "fields":
+    {
+        "name": "SURIGAO DEL SUR",
+        "region": 17
+    }
+},
+{
+    "model": "users.province",
+    "pk": 82,
+    "fields":
+    {
+        "name": "DINAGAT ISLANDS",
+        "region": 17
+    }
+}]

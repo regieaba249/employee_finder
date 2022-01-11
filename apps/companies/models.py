@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.validators import RegexValidator
+from django.utils.translation import gettext_lazy as _
 
 from apps.users.models import CustomUser, Applicant
 
@@ -27,12 +29,14 @@ class Company(models.Model):
         **optional
     )
     name = models.CharField(max_length=250, **optional)
-    address = models.CharField(max_length=250, **optional)
     founded_on = models.DateField(**optional)
     website = models.CharField(max_length=100, **optional)
     overview = models.TextField(**optional)
     employee_count = models.IntegerField(**optional)
-    company_avatar = models.ImageField(default='company_avatar.png', **optional)
+    email = models.EmailField(_('Email Address'), unique=True)
+    phone_number = models.CharField(max_length=10, **optional)
+    mobile_regex = RegexValidator(regex=r'^(\+\d{1,3})?,?\s?\d{8,13}', message="Mobile number format must be: '+639999999999'.")
+    mobile_number = models.CharField(validators=[mobile_regex], max_length=13, **optional) # validators should be a list
 
     def __str__(self):
         return f"{self.owner.full_name} {self.owner.email}"

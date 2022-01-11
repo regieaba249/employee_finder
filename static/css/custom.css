@@ -113,3 +113,15 @@ label.error {
 .is-invalid {
 	margin-bottom: 0 !important;
 }
+
+.input-group-prepend select, .input-group-prepend span {
+  border-radius: 0.25rem 0 0 0.25rem !important;
+}
+
+td {
+  vertical-align: middle;
+}
+
+.fa-check-circle {
+  color: green;
+}

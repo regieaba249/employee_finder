@@ -1,0 +1,716 @@
+[
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "074",
+            "name": "Abra"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "085",
+            "name": "Agusan del Norte"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "085",
+            "name": "Agusan del Sur"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "036",
+            "name": "Aklan"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "052",
+            "name": "Albay"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "036",
+            "name": "Antique"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "078",
+            "name": "Apayao"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "042",
+            "name": "Aurora"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "062",
+            "name": "Basilan"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "047",
+            "name": "Bataan"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "078",
+            "name": "Batanes"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "043",
+            "name": "Batangas"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "074",
+            "name": "Benguet"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "053",
+            "name": "Biliran"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "038",
+            "name": "Bohol"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "088",
+            "name": "Bukidnon"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "044",
+            "name": "Bulacan"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "078",
+            "name": "Cagayan"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "054",
+            "name": "Camarines Norte"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "054",
+            "name": "Camarines Sur"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "088",
+            "name": "Camiguin"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "036",
+            "name": "Capiz"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "052",
+            "name": "Catanduanes"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "046",
+            "name": "Cavite (except Bacoor)"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "032",
+            "name": "Cebu"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "084",
+            "name": "Compostela Valley"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "084",
+            "name": "Davao del Norte"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "082",
+            "name": "Davao del Sur"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "082",
+            "name": "Davao Occidental"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "087",
+            "name": "Davao Oriental"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "086",
+            "name": "Dinagat Islands"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "055",
+            "name": "Eastern Samar"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "033",
+            "name": "Guimaras"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "074",
+            "name": "Ifugao"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "077",
+            "name": "Ilocos Norte"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "077",
+            "name": "Ilocos Sur"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "034",
+            "name": "Iloilo"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "078",
+            "name": "Isabela"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "074",
+            "name": "Kalinga"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "072",
+            "name": "La Union"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "049",
+            "name": "Laguna (except San Pedro)"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "063",
+            "name": "Lanao del Norte"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "064",
+            "name": "Lanao del Sur"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "053",
+            "name": "Leyte"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "064",
+            "name": "Maguindanao"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "042",
+            "name": "Marinduque"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "056",
+            "name": "Masbate"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "088",
+            "name": "Misamis Occidental"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "088",
+            "name": "Misamis Oriental"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "074",
+            "name": "Mountain Province"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "034",
+            "name": "Negros Occidental"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "035",
+            "name": "Negros Oriental"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "064",
+            "name": "North Cotabato"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "055",
+            "name": "Northern Samar"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "044",
+            "name": "Nueva Ecija"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "078",
+            "name": "Nueva Vizcaya"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "043",
+            "name": "Occidental Mindoro"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "043",
+            "name": "Oriental Mindoro"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "048",
+            "name": "Palawan"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "045",
+            "name": "Pampanga"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "075",
+            "name": "Pangasinan"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "042",
+            "name": "Quezon"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "078",
+            "name": "Quirino"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Rizal"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "054",
+            "name": "Romblon"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "055",
+            "name": "Samar"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "083",
+            "name": "Sarangani"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "035",
+            "name": "Siquijor"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "056",
+            "name": "Sorsogon"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "083",
+            "name": "South Cotabato"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "053",
+            "name": "Southern Leyte"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "064",
+            "name": "Sultan Kudarat"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "085",
+            "name": "Sulu"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "086",
+            "name": "Surigao del Norte"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "086",
+            "name": "Surigao del Sur"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "045",
+            "name": "Tarlac"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "068",
+            "name": "Tawi-Tawi"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "047",
+            "name": "Zambales"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "065",
+            "name": "Zamboanga del Norte"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "062",
+            "name": "Zamboanga del Sur"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "062",
+            "name": "Zamboanga Sibugay"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Caloocan City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Las Piñas City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Makati City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Malabon City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Mandaluyong City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Manila"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Marikina City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Muntinlupa City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Navotas City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Parañaque City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Pasay City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Pasig City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Pateros City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Quezon City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "San Juan City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Taguig City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Valenzuela City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "Bacoor City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "08822",
+            "name": "Cagayan de Oro City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "08842",
+            "name": "Gingoog City"
+        }
+    },
+    {
+        "model": "users.areacode",
+        "fields": {
+            "code": "02",
+            "name": "San Pedro, Laguna"
+        }
+    }
+]

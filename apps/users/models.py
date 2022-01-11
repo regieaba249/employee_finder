@@ -26,7 +26,7 @@ EFFICIENCY_CHOICES = (
 )
 
 MONTH_CHOICES = (
-    ('select', 'Select...'),
+    ('', '------'),
     ('jan', 'January'),
     ('feb', 'February'),
     ('mar', 'March'),
@@ -69,13 +69,83 @@ EMPLOYMENT_TYPE_CHOICES = (
 )
 
 
+class AreaCode(models.Model):
+    code = models.CharField(max_length=5, blank=False)
+    name = models.CharField(max_length=50, blank=False)
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+
+class Region(models.Model):
+    ISLAND_GROUP_LUZON = 'L'
+    ISLAND_GROUP_VISAYAS = 'V'
+    ISLAND_GROUP_MINDANAO = 'M'
+    ISLAND_GROUP_CHOICES = (
+        (ISLAND_GROUP_LUZON, 'LUZON'),
+        (ISLAND_GROUP_VISAYAS, 'VISAYAS'),
+        (ISLAND_GROUP_MINDANAO, 'MINDANAO'),
+    )
+    name = models.CharField(max_length=100, null=False, verbose_name='Name')
+    island_group = models.CharField(max_length=1, choices=ISLAND_GROUP_CHOICES,
+                                    null=False, verbose_name='Island Group')
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Province(models.Model):
+    name = models.CharField(max_length=100, null=False, verbose_name='Name')
+    region = models.ForeignKey(
+        Region,
+        related_name='provinces',
+        related_query_name='province',
+        null=False,
+        on_delete=models.CASCADE,
+        verbose_name='Region'
+    )
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Municipality(models.Model):
+    name = models.CharField(max_length=100, null=False, verbose_name='Name')
+    province = models.ForeignKey(
+        Province,
+        related_name='municipalities',
+        related_query_name='municipality',
+        null=False,
+        on_delete=models.CASCADE,
+        verbose_name='Province'
+    )
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Barangay(models.Model):
+    name = models.CharField(max_length=100, null=False, verbose_name='Name')
+    municipality = models.ForeignKey(
+        Municipality,
+        related_name='barangays',
+        related_query_name='barangays',
+        null=False,
+        on_delete=models.CASCADE,
+        verbose_name='Barangay'
+    )
+
+    def __str__(self):
+        return f"{self.name}"
+
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=50, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
     middle_name = models.CharField(max_length=50, **optional)
     extension = models.CharField(max_length=50, **optional)
-    address = models.CharField(max_length=250, **optional)
     email = models.EmailField(_('Email Address'), unique=True)
+    area_code = models.CharField(max_length=5, **optional)
     phone_number = models.CharField(max_length=10, **optional)
     mobile_regex = RegexValidator(regex=r'^(\+\d{1,3})?,?\s?\d{8,13}', message="Mobile number format must be: '+639999999999'.")
     mobile_number = models.CharField(validators=[mobile_regex], max_length=13, **optional) # validators should be a list
@@ -98,6 +168,31 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_superadmin = models.BooleanField(_('is_superadmin'), default=False)
     is_active = models.BooleanField(_('is_active'), default=False)
     is_staff = models.BooleanField(default=True)
+    address = models.CharField(max_length=250, **optional)
+    region = models.ForeignKey(
+        Region,
+        related_name='region_users',
+        on_delete=models.CASCADE,
+        null=True
+    )
+    province = models.ForeignKey(
+        Province,
+        related_name='province_users',
+        on_delete=models.CASCADE,
+        null=True
+    )
+    municipality = models.ForeignKey(
+        Municipality,
+        related_name='municipality_users',
+        on_delete=models.CASCADE,
+        null=True
+    )
+    barangay = models.ForeignKey(
+        Barangay,
+        related_name='barangay_users',
+        on_delete=models.CASCADE,
+        null=True
+    )
     # followers
     # following
 
@@ -121,8 +216,24 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     @property
+    def get_first_name(self):
+        return self.first_name if self.first_name else ''
+
+    @property
+    def get_last_name(self):
+        return self.last_name if self.last_name else ''
+
+    @property
+    def get_middle_name(self):
+        return self.middle_name if self.middle_name else ''
+
+    @property
+    def get_extension(self):
+        return self.extension if self.extension else ''
+
+    @property
     def full_name(self):
-        return f"{self.first_name} {self.last_name} {self.middle_name} {self.extension if self.extension else ''}"
+        return f"{self.get_first_name} {self.get_last_name} {self.get_middle_name} {self.get_extension}"
 
     @property
     def contact_numbers(self):
@@ -157,7 +268,7 @@ class Applicant(models.Model):
         return f"{self.user.email}"
 
 
-class ApplicantAttachments(models.Model):
+class ApplicantAttachment(models.Model):
     applicant = models.ForeignKey(
         Applicant,
         related_name='applicant_attachments',
@@ -185,9 +296,10 @@ class ApplicantExperience(models.Model):
     end_month = models.CharField(
         max_length=15,
         choices=MONTH_CHOICES,
-        default='select'
+        default='select',
+        **optional
     )
-    end_year = models.CharField(max_length=50, blank=False)
+    end_year = models.CharField(max_length=50, **optional)
     job_position = models.CharField(max_length=100, blank=False)
     employment_type = models.CharField(
         max_length=15,
@@ -196,9 +308,24 @@ class ApplicantExperience(models.Model):
     )
     current = models.BooleanField(default=False)
     description = models.TextField(**optional)
+    reference_person = models.CharField(max_length=250, **optional)
+    mobile_regex = RegexValidator(regex=r'^(\+\d{1,3})?,?\s?\d{8,13}', message="Mobile number format must be: '+639999999999'.")
+    mobile_number = models.CharField(validators=[mobile_regex], max_length=13, **optional) # validators should be a list
 
     def __str__(self):
         return f"{self.applicant.user.email}"
+
+    @property
+    def start(self):
+        if self.start_month and self.start_year:
+            return f'{self.start_month} / {self.start_year}'
+        return ''
+
+    @property
+    def end(self):
+        if self.end_month and self.end_year:
+            return f'{self.end_month} / {self.end_year}'
+        return ''
 
 
 class ApplicantEducation(models.Model):
@@ -227,7 +354,7 @@ class ApplicantEducation(models.Model):
         return f"{self.applicant.user.email}"
 
 
-class ApplicantSkills(models.Model):
+class ApplicantSkill(models.Model):
     applicant = models.ForeignKey(
         Applicant,
         related_name='applicant_skills',
@@ -244,7 +371,7 @@ class ApplicantSkills(models.Model):
         return f"{self.applicant.user.email}"
 
 
-class ApplicantSeminars(models.Model):
+class ApplicantSeminar(models.Model):
     applicant = models.ForeignKey(
         Applicant,
         related_name='applicant_seminars',
@@ -258,9 +385,9 @@ class ApplicantSeminars(models.Model):
         return f"{self.applicant.user.email}"
 
 
-class ApplicantSeminarsAttachments(models.Model):
+class ApplicantSeminarAttachment(models.Model):
     seminar = models.ForeignKey(
-        ApplicantSeminars,
+        ApplicantSeminar,
         related_name='seminar_attachments',
         on_delete=models.CASCADE
     )

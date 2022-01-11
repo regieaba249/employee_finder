@@ -22,6 +22,7 @@ from apps.users import views
 urlpatterns = [
     path('', views.LoginView.as_view(), name='login'),
     path('users/', include('apps.users.urls', namespace='users')),
+    path('companies/', include('apps.companies.urls', namespace='companies')),
     path('jobs/', include('apps.jobs.urls', namespace='jobs')),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

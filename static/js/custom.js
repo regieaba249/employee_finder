@@ -1,4 +1,37 @@
-// Material Select Initialization
+function password_match() {
+  if ($("#password1").val() != $("#password2").val()) {
+    $("#password1").addClass("is-invalid").removeClass("is-valid");
+    $("#password2").addClass("is-invalid").removeClass("is-valid");
+    $('<label class="error">Passwords do not match.</label>').insertAfter($("#password2"));
+    return false
+  } else {
+    $("#password1").removeClass("is-invalid").addClass("is-valid");
+    $("#password2").removeClass("is-invalid").addClass("is-valid");
+    $("#password2").parent().children(".error").remove()
+    return true
+  }
+};
+
+function number_only(element, e) {
+  //if the letter is not digit then display error and don't type anything
+  if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+    //display error message
+    element.addClass("is-invalid");
+    if (element.closest(".form-group").children("label.error").length == 0) {
+      if (element.closest(".form-group").children("div.input-group").length) {
+        var afterThis = element.closest(".form-group").children("div.input-group")
+      } else {
+        var afterThis = element.closest(".form-group").children("input")
+      }
+      $('<label class="error">Numeric Only.</label>').insertAfter(afterThis);
+    }
+    return false;
+  } else {
+    element.removeClass("is-invalid");
+    element.closest(".form-group").children("label.error").remove();
+  }
+}
+
 $(document).ready(function() {
     $('.gender-select').change(function(){
       $('.gender-input').val($('.gender-select').val())
@@ -163,8 +196,9 @@ $(document).ready(function() {
     })
 
     $("#registrationForm").submit(function(e){
-        var valid = visible_form_valid()
-        if (valid == true) {
+      if ($('.required:visible').length) {
+        var valid = $('.required:visible').valid()
+        if (valid) {
           if ($(".submit").is(":visible")) {
             $("#overlay").css('display', 'flex');
           } else {
@@ -174,51 +208,71 @@ $(document).ready(function() {
         } else {
           e.preventDefault();
         }
-    });
-
-    //called when key is pressed in textbox
-    $(".number_only").keypress(function (e) {
-      //if the letter is not digit then display error and don't type anything
-      if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-        //display error message
-        $(this).addClass("is-invalid");
-        if ($(this).closest(".form-group").children("label.error").length == 0) {
-          if ($(this).closest(".form-group").children("div.input-group").length) {
-            var afterThis = $(this).closest(".form-group").children("div.input-group")
-          } else {
-            var afterThis = $(this).closest(".form-group").children("input")
-          }
-          $('<label class="error">Numeric Only.</label>').insertAfter(afterThis);
-        }
-        return false;
       } else {
-        $(this).removeClass("is-invalid");
-        $(this).closest(".form-group").children("label.error").remove();
+        if ($(".submit").is(":visible")) {
+          $("#overlay").css('display', 'flex');
+        } else {
+          e.preventDefault();
+          $(".next:visible").trigger("click");
+        }
       }
     });
 
-    $('#password2').on('focusout', function (e) {
+    $(".number_only").keypress(function (e) {
+      //if the letter is not digit then display error and don't type anything
+      return number_only($(this), e)
+    });
+
+    $(".number_only").focusout(function (e) {
+      //if the letter is not digit then display error and don't type anything
+      return number_only($(this), e)
+    });
+
+    $('#password2').focusout(function (e) {
       password_match()
     })
+
+    $(".address-select").change(function (e) {
+      var _id = $(this).val();
+      var url = $(this).attr("data-ajax-url");
+      var value = $(this).attr("data-value");
+      var target_name = $(this).attr("data-target").replace('user_','');
+      var current_name = $(this).attr('name');
+      var heirarchy = {
+          "region": [$("#user_province"), $("#user_municipality"), $("#user_barangay")],
+          "province": [$("#user_municipality"), $("#user_barangay")],
+          "municipality": [$("#user_barangay")],
+          "barangay": [],
+      }
+      $.ajax({
+        url: url,
+        data: {
+          '_id': _id,
+          'value': value,
+          'target_name': target_name,
+          'current_name': current_name,
+        },
+        success: function (data) {
+          heirarchy = heirarchy[current_name]
+          var target = heirarchy.shift();
+          target.html(data);
+          $.each( heirarchy, function( index, element ){
+              element.html('<option value="">Select...</option>');
+          });
+        },
+        error: function(xhr, textStatus, error){
+            console.log(xhr.statusText);
+            console.log(textStatus);
+            console.log(error);
+        }
+      });
+    });
+
+    $('.phone_number').keyup(function (e) {
+      var value = $(this).val()
+      if (value.length == 3) {
+        $(this).val(value + '-')
+      }
+    })
+
 });
-
-function visible_form_valid() {
-  var valid = $(':input[required]:visible').each(function() {
-    $(this).valid()
-  })
-  return $(':input[required]:visible').valid()
-};
-
-function password_match() {
-  if ($("#password1").val() != $("#password2").val()) {
-    $("#password1").addClass("is-invalid");
-    $("#password2").addClass("is-invalid");
-    $('<label class="error">Passwords do not match.</label>').insertAfter($("#password2"));
-    return false
-  } else {
-    $("#password1").removeClass("is-invalid").addClass("is-valid");
-    $("#password2").removeClass("is-invalid").addClass("is-valid");
-    $("#password2").parent().children(".error").remove()
-    return true
-  }
-};

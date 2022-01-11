@@ -1,10 +1,13 @@
+from datetime import datetime
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
-from django.http import HttpResponseRedirect
+from django.http import (HttpResponseRedirect, JsonResponse)
+from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -14,17 +17,40 @@ from django.views.generic.edit import (
     CreateView,
     UpdateView
 )
-
-from .forms import LoginForm, UserForm
-from .models import (
-    CustomUser,
-    Applicant,
-    ApplicantAttachments
-)
 from .tokens import account_activation_token
 from apps.companies.models import Company
 
+from .forms import (
+    LoginForm,
+    UserForm
+)
+from .models import (
+    CustomUser,
+    Applicant,
+    ApplicantAttachment,
+    ApplicantExperience,
+    Region,
+    Province,
+    Municipality,
+    Barangay,
+
+    # choices
+    EMPLOYMENT_TYPE_CHOICES
+)
+
+
 User = get_user_model()
+
+Tables = {
+    'CustomUser': CustomUser,
+    'Applicant': Applicant,
+    'ApplicantAttachment': ApplicantAttachment,
+    'ApplicantExperience': ApplicantExperience,
+    'Region': Region,
+    'Province': Province,
+    'Municipality': Municipality,
+    'Barangay': Barangay,
+}
 
 
 def test(request):
@@ -55,7 +81,7 @@ def activate(request, uidb64, token):
         user.save()
         messages.success(
             request,
-            "Thank you for your email confirmation. Now you can login to your account."
+            "Thank you for your email confirmation. You can now login to your account."
         )
     else:
         messages.error(
@@ -64,6 +90,75 @@ def activate(request, uidb64, token):
         )
 
     return HttpResponseRedirect(reverse_lazy('login'))
+
+
+def ajax_load_address_dropdown(request):
+
+    select_id = request.GET.get('_id')
+    value = request.GET.get('value')
+    target_name = request.GET.get('target_name')
+
+    data = {
+        "province": Province.objects.filter(
+            region__id=select_id).order_by('name'),
+        "municipality": Municipality.objects.filter(
+            province__id=select_id).order_by('name'),
+        "barangay": Barangay.objects.filter(
+            municipality__id=select_id).order_by('name'),
+    }
+
+    return render(
+        request,
+        'dropdown_list_options.html',
+        {
+            'items': data[target_name],
+            'value': value
+        }
+    )
+
+
+def ajax_add_employment_history(request):
+
+    company = request.GET.get('company')
+    position = request.GET.get('position')
+    employment_type = request.GET.get('employment_type')
+    start_month = request.GET.get('start_month')
+    start_year = request.GET.get('start_year')
+    end_month = request.GET.get('end_month')
+    end_year = request.GET.get('end_year')
+    current = bool(request.GET.get('current'))
+    overview = request.GET.get('overview')
+    reference_person = request.GET.get('reference_person')
+    mobile_number = request.GET.get('mobile_number')
+
+    data = {
+        'applicant': request.user.applicant_data,
+        'company_name': company,
+        'job_position': position,
+        'employment_type': employment_type,
+        'start_month': start_month,
+        'start_year': start_year,
+        'end_month': end_month,
+        'end_year': end_year,
+        'current': current,
+        'description': overview,
+        'reference_person': reference_person,
+        'mobile_number': mobile_number,
+    }
+    experience = ApplicantExperience.objects.create(**data)
+
+    return JsonResponse({'success': True})
+
+
+def ajax_delete_data(request):
+
+    _id = request.GET.get('id')
+    table = Tables[request.GET.get('table')]
+
+    record = table.objects.get(id=_id)
+    record.delete()
+
+    return JsonResponse({'success': True})
 
 
 class LoginView(FormView):
@@ -80,8 +175,14 @@ class LoginView(FormView):
 
 
     def get_success_url(self):
+
+        urls = {
+            'employer': 'companies:profile',
+            'applicant': 'users:profile',
+        }
+
         return reverse_lazy(
-            'users:profile',
+            urls[self.request.user.user_type],
             kwargs={'pk': self.request.user.pk}
         )
 
@@ -123,6 +224,34 @@ class RegistrationView(FormView):
     def get_context_data(self, *args, **kwargs):
         context = super(RegistrationView, self).get_context_data(*args, **kwargs)
         context['user_type'] = self.kwargs.get('_type')
+        context['area_codes'] = ['02', '032', '033', '034', '035', '036',
+                                 '038', '042', '043', '044', '045', '046',
+                                 '047', '048', '049', '052', '053', '054',
+                                 '055', '056', '062', '063', '064', '065',
+                                 '068', '072', '074', '075', '077', '078',
+                                 '082', '083', '084', '085', '086', '087',
+                                 '088', '08822', '08842']
+        _region = context['form'].instance.region
+        _province = context['form'].instance.province
+        _municipality = context['form'].instance.municipality
+        _barangay = context['form'].instance.barangay
+
+        context['regions'] = Region.objects.all()
+        if _region:
+            context['provinces'] = Province.objects.filter(region=_region)
+        else:
+            context['provinces'] = Province.objects.all()
+
+        if _province:
+            context['municipalities'] = Municipality.objects.filter(province=_province)
+        else:
+            context['municipalities'] = Municipality.objects.all()
+
+        if _municipality:
+            context['barangays'] = Barangay.objects.filter(municipality=_municipality)
+        else:
+            context['barangays'] = Barangay.objects.all()
+
         return context
 
     def post(self, request, *args, **kwargs):
@@ -145,6 +274,19 @@ class RegistrationView(FormView):
             form.instance.mobile_number = f"+63{form.data.get('mobile_number')}"
 
         if form.is_valid():
+
+            # if form.data.get('region', None):
+            #     form.instance.region = Region.objects.get(id=form.data.get('region'))
+
+            # if form.data.get('province', None):
+            #     form.instance.province = Province.objects.get(id=form.data.get('province'))
+
+            # if form.data.get('municipality', None):
+            #     form.instance.municipality = Municipality.objects.get(id=form.data.get('municipality'))
+
+            # if form.data.get('barangay', None):
+            #     form.instance.barangay = Barangay.objects.get(id=form.data.get('barangay'))
+
             form.save()
             if user_type == 'applicant':
                 applicant_data = {
@@ -159,20 +301,26 @@ class RegistrationView(FormView):
                         'applicant': applicant,
                         'attachment': f,
                     }
-                    ApplicantAttachments.objects.create(**applicant_data)
+                    ApplicantAttachment.objects.create(**applicant_data)
             else:
 
                 company_data = {
                     'owner': user,
                     'name': form.data.get('company_name', ''),
-                    'address': form.data.get('company_name', ''),
-                    'founded_on': form.data.get('founded_on', ''),
                     'website': form.data.get('website', ''),
                     'overview': form.data.get('company_overview', ''),
-                    'employee_count': form.data.get('employee_count', ''),
-                    'company_avatar': company_avatar,
+                    'email': form.data.get('company_email', ''),
+                    'phone_number': form.data.get('company_phone_number', ''),
+                    'mobile_number': form.data.get('company_mobile_number', '')
                 }
-                company = Company.objects.create(**company_data)
+
+                if form.data.get('founded_on', None):
+                    company_data['founded_on'] = form.data.get('founded_on')
+
+                if form.data.get('employee_count', None):
+                    company_data['employee_count'] = form.data.get('employee_count')
+
+                Company.objects.create(**company_data)
 
             res = self.form_valid(form)
 
@@ -229,7 +377,56 @@ class CustomUserUpdateView(UpdateView):
         context = super(CustomUserUpdateView, self).get_context_data(**kwargs)
         obj = self.model.objects.get(pk=self.kwargs.get('pk'))
         context['resume'] = obj.applicant_data.resume
-        context['attachment_objs'] = ApplicantAttachments.objects.filter(applicant=obj.applicant_data)
+        context['attachment_objs'] = ApplicantAttachment.objects.filter(applicant=obj.applicant_data)
+        context['area_codes'] = ['02', '032', '033', '034', '035', '036',
+                                 '038', '042', '043', '044', '045', '046',
+                                 '047', '048', '049', '052', '053', '054',
+                                 '055', '056', '062', '063', '064', '065',
+                                 '068', '072', '074', '075', '077', '078',
+                                 '082', '083', '084', '085', '086', '087',
+                                 '088', '08822', '08842']
+        context['months'] = {
+            'jan': 'January',
+            'feb': 'February',
+            'mar': 'March',
+            'apr': 'April',
+            'may': 'May',
+            'jun': 'June',
+            'jul': 'July',
+            'aug': 'August',
+            'sep': 'September',
+            'oct': 'October',
+            'nov': 'November',
+            'dec': 'December',
+        }
+        year = datetime.today().year
+        context['years'] = list(range(year, year - 50, -1))
+
+        context['employment_type_choices'] = dict(EMPLOYMENT_TYPE_CHOICES)
+
+        _region = context['form'].instance.region
+        _province = context['form'].instance.province
+        _municipality = context['form'].instance.municipality
+        _barangay = context['form'].instance.barangay
+
+        context['regions'] = Region.objects.all()
+        if _region:
+            context['provinces'] = Province.objects.filter(region=_region)
+        else:
+            context['provinces'] = Province.objects.all()
+
+        if _province:
+            context['municipalities'] = Municipality.objects.filter(province=_province)
+        else:
+            context['municipalities'] = Municipality.objects.all()
+
+        if _municipality:
+            context['barangays'] = Barangay.objects.filter(municipality=_municipality)
+        else:
+            context['barangays'] = Barangay.objects.all()
+
+        context['employment_history'] = ApplicantExperience.objects.filter(applicant=obj.applicant_data)
+
         return context
 
     # def post(self, request, *args, **kwargs):
@@ -257,7 +454,7 @@ class CustomUserUpdateView(UpdateView):
     #                     'applicant': applicant,
     #                     'attachment': f,
     #                 }
-    #                 ApplicantAttachments.objects.create(**applicant_data)
+    #                 ApplicantAttachment.objects.create(**applicant_data)
     #         else:
     #             pass
 
