@@ -1,0 +1,13 @@
+{% autoescape off %}
+Hi {{ user.full_name }},
+
+I am {{ hiring_agent.full_name }}, the hiring officer for {{ hiring_agent.company_data.name }}.
+
+We are glad to say that you have been hired for the job position: {{ job_posting.job_title }}.
+
+You can review the job description here: {{ job_posting_link }}
+
+If you have questions, you can reach at me via email through {{ hiring_agent.email }}
+
+Have a nice day!
+{% endautoescape %}

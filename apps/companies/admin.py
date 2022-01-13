@@ -1,8 +1,11 @@
 from django.contrib import admin
 from apps.companies.models import (
     Company,
-    CompanyJob,
-    CompanyEmployee,
+    CompanyEmployee
+)
+from apps.jobs.models import (
+    CompanyJobPosting,
+    JobPostingAttachment
 )
 
 
@@ -11,8 +14,13 @@ class Company(admin.ModelAdmin):
     search_fields = ('__all__',)
 
 
-@admin.register(CompanyJob)
-class CompanyJob(admin.ModelAdmin):
+@admin.register(CompanyJobPosting)
+class CompanyJobPosting(admin.ModelAdmin):
+    search_fields = ('__all__',)
+
+
+@admin.register(JobPostingAttachment)
+class JobPostingAttachment(admin.ModelAdmin):
     search_fields = ('__all__',)
 
 

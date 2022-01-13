@@ -20,13 +20,6 @@ EMPLOYMENT_STATUS_CHOICES = (
     ('terminated', 'Terminated'),
 )
 
-JOB_APPLICANT_STATUS_CHOICES = (
-    ('pending', 'Pending'),
-    ('interview', 'For Interview'),
-    ('hired', 'Hired'),
-    ('declined', 'Declined'),
-)
-
 
 # Create your models here.
 class Company(BaseModel):
@@ -49,41 +42,6 @@ class Company(BaseModel):
 
     def __str__(self):
         return f"{self.owner.full_name} {self.owner.email}"
-
-
-class CompanyJob(BaseModel):
-    company = models.ForeignKey(
-        Company,
-        related_name='company_jobs',
-        on_delete=models.CASCADE,
-        null=True
-    )
-    job_title = models.CharField(max_length=250, **optional)
-    description = models.TextField(**optional)
-    vacancy = models.IntegerField(**optional)
-    salary_range_end = models.DecimalField(max_digits=6, decimal_places=2)
-    salary_range_start = models.DecimalField(max_digits=6, decimal_places=2)
-
-
-class CompanyJobApplicant(BaseModel):
-    company_job = models.ForeignKey(
-        CompanyJob,
-        related_name='company_jobs',
-        on_delete=models.CASCADE,
-        null=True
-    )
-    applicant = models.ForeignKey(
-        Applicant,
-        related_name='company_jobs',
-        on_delete=models.CASCADE,
-        null=True
-    )
-    status = models.CharField(
-        max_length=10,
-        choices=JOB_APPLICANT_STATUS_CHOICES,
-        default='pending'
-    )
-
 
 class CompanyEmployee(BaseModel):
     applicant = models.ForeignKey(

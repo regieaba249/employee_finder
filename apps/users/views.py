@@ -1,9 +1,9 @@
 from datetime import datetime
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.http import (HttpResponseRedirect, JsonResponse)
@@ -12,17 +12,21 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import (
     FormView,
     CreateView,
     UpdateView
 )
 from .tokens import account_activation_token
-from apps.companies.models import Company
-
 from .forms import (
     LoginForm,
     UserForm
+)
+from apps.companies.models import Company
+from apps.jobs.models import (
+    JobPostingApplicant,
+    CompanyJobPosting
 )
 from .models import (
     CustomUser,
@@ -49,6 +53,8 @@ Tables = {
     'ApplicantAttachment': ApplicantAttachment,
     'ApplicantExperience': ApplicantExperience,
     'ApplicantEducation': ApplicantEducation,
+    'JobPostingApplicant': JobPostingApplicant,
+    'CompanyJobPosting': CompanyJobPosting,
     'Region': Region,
     'Province': Province,
     'Municipality': Municipality,
@@ -61,7 +67,7 @@ def test(request):
         'test',
         'test',
         settings.EMAIL_HOST_USER,
-        ['regieaba249@gmail.com'],
+        ['test@test.com'],
         fail_silently=False,
     )
 
@@ -364,11 +370,11 @@ class RegistrationView(FormView):
                 applicant = Applicant.objects.create(**applicant_data)
 
                 for f in files:
-                    applicant_data = {
+                    attachment_data = {
                         'applicant': applicant,
                         'attachment': f,
                     }
-                    ApplicantAttachment.objects.create(**applicant_data)
+                    ApplicantAttachment.objects.create(**attachment_data)
             else:
 
                 company_data = {
@@ -405,7 +411,7 @@ class RegistrationView(FormView):
                 message,
                 settings.EMAIL_HOST_USER,
                 [to_email],
-                fail_silently=False,
+                fail_silently=True,
             )
 
             return res
@@ -432,7 +438,7 @@ class CustomUserUpdateView(UpdateView):
 
     model = CustomUser
     fields = '__all__'
-    template_name = 'user_profile.html'
+    template_name = 'user_profile_update.html'
 
     def get_success_url(self):
         return reverse_lazy(
@@ -564,4 +570,15 @@ class CustomUserUpdateView(UpdateView):
     def form_valid(self, form):
         """ process user login"""
         context = super(CustomUserUpdateView, self).form_valid(form)
+        return context
+
+
+class ApplicantBoardView(LoginRequiredMixin, TemplateView):
+    template_name = 'applicants_board.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['latest_applicants'] = Applicant.objects.all().order_by('-created_at')
+        context['postings'] = CompanyJobPosting.objects.filter(
+            company=self.request.user.company_data).order_by('-created_at')
         return context

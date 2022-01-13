@@ -137,3 +137,11 @@ td {
 .badge .fas.fa-times, .fas.fa-times-circle {
   color: #f75252;
 }
+
+.table {
+    table-layout: fixed;
+}
+
+td, th {
+  padding: 0.25rem !important;
+}

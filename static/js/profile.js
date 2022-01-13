@@ -212,13 +212,94 @@ $(document).ready(function() {
           console.log(error);
       }
     });
-  });
+  });  // addEducationSubmit
+
+  $('#addJobPostingSubmit').click(function (e) {
+    var url = $("#addJobPostingModal").attr("data-ajax-url");
+    var csrf_token = $("#addJobPostingModal").attr("data-csrf-token");
+    var job_title = $("#addJobPostingModal #job_title").val()
+    var description = $("#addJobPostingModal #description").val()
+    var vacancy = $("#addJobPostingModal #vacancy").val()
+    var salary_range_end = $("#addJobPostingModal #salary_range_end").val()
+    var salary_range_start = $("#addJobPostingModal #salary_range_start").val()
+
+    var formData = new FormData()
+    formData.append('job_title', job_title)
+    formData.append('description', description)
+    formData.append('vacancy', vacancy)
+    formData.append('salary_range_end', salary_range_end)
+    formData.append('salary_range_start', salary_range_start)
+    formData.append('csrfmiddlewaretoken', csrf_token)
+    $.each($("#addJobPostingModal #attachments")[0].files, function(i, file) {
+      formData.append("files", file);
+    });
+
+    $.ajax({
+      url: url,
+      data: formData,
+      method: 'post',
+      processData: false,
+      contentType: false,
+      cache: false,
+      enctype: 'multipart/form-data',
+      success: function (data) {
+        var newTbody = ""
+        var attachmets = ""
+        data.items.forEach(function(row) {
+          // row.job_posting_attachments.forEach(function(file) {
+          //   attachmets += `
+          //     ${file}
+          //   `
+          // });
+
+          newTbody += `
+            <tr>
+              <td>${row.job_title}</td>
+              <td class="text-truncate">${row.description}</td>
+              <td>${row.vacancy}</td>
+              <td>${row.salary_range_end} - ${salary_range_start}</td>
+              <td>${attachmets}</td>
+              <td class="p-0">
+                <span class="table-remove">
+                  <span class="remove-row" data-id="${row.id}" data-table="CompanyJobPosting">
+                    <i class="fas fa-times-circle"></i>
+                  </span>
+                </span>
+              </td>
+            </tr>
+          `;
+        });
+
+        $("#JobPostingTable tbody").html(newTbody);
+
+        var nodata = $("#JobPostingTable .nodata")
+        if (nodata.length) {
+          nodata.remove()
+        }
+
+        $("#addJobPostingModal #job_title").val("")
+        $("#addJobPostingModal #description").html("")
+        $("#addJobPostingModal #vacancy").val("")
+        $("#addJobPostingModal #salary_range_end").val("")
+        $("#addJobPostingModal #salary_range_start").val("")
+        $("#addJobPostingModal").modal('toggle');
+      },
+      error: function(xhr, textStatus, error){
+          console.log(xhr.statusText);
+          console.log(textStatus);
+          console.log(error);
+      }
+    });
+  });  // addEducationSubmit
+
 });  // Document ready
 
 $(document).on('click', 'table .remove-row', function() {
   var _this = $(this)
   var _id = _this.attr("data-id");
   var _table = _this.attr("data-table");
+  var th_count = _this.closest("table").find("th").length
+  var tbody = _this.closest("tbody")
 
   if (confirm('Are you sure you want to delete this?')) {
     $.ajax({
@@ -229,12 +310,12 @@ $(document).on('click', 'table .remove-row', function() {
       },
       success: function (data) {
         _this.closest("tr").remove();
-
-        if ($("#EmploymentHistoryTable tbody tr").length == 0) {
+        if (_this.closest("tbody").find("tr").length == 0) {
           var newTr = `<tr class="nodata">
-                          <td colspan="100%">No Data</td>
+                          <td colspan="${th_count}">No Data</td>
                         </tr>`
-          $(newTr).appendTo($("#EmploymentHistoryTable tbody"))
+
+          $(newTr).appendTo(tbody)
         }
       },
       error: function(xhr, textStatus, error){
@@ -268,6 +349,4 @@ $(document).on('click', '.badge .delete-file', function() {
       }
     });
   }
-
-
 }) ;

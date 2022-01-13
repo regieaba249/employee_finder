@@ -3,7 +3,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from .managers import CustomUserManager
+from employee_finder.managers import CustomUserManager
 
 from employee_finder.models import BaseModel
 
@@ -280,7 +280,7 @@ class ApplicantAttachment(BaseModel):
         on_delete=models.CASCADE,
         null=True
     )
-    attachment = models.FileField(**optional)
+    attachment = models.FileField(null=True)
 
     def __str__(self):
         return f"{self.attachment}"
@@ -451,7 +451,7 @@ class ApplicantSeminarAttachment(BaseModel):
         on_delete=models.CASCADE,
         null=True
     )
-    attachment = models.FileField(**optional)
+    attachment = models.FileField(null=True)
 
     def __str__(self):
         return f"{self.applicant.user.email} - {self.attachment}"

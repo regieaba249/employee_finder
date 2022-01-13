@@ -1,0 +1,6 @@
+{% autoescape off %}
+Hi {{ hiring_agent.full_name }},
+User {{ user.full_name }} has applied for the job position: {{ job_posting.job_title }}
+
+You can check his profile details here: {{ user_profile }}
+{% endautoescape %}

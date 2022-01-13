@@ -1,28 +1,75 @@
 from datetime import datetime
 
+from django.http import JsonResponse
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views.generic.edit import (
     FormView,
     CreateView,
     UpdateView
 )
 
-from .models import Company
+from apps.jobs.models import (
+    CompanyJobPosting,
+    JobPostingAttachment
+)
 from apps.users.models import (
+    CustomUser,
     Region,
     Province,
     Municipality,
     Barangay,
+    EMPLOYMENT_TYPE_CHOICES
 )
 
+
 # Create your views here.
+def ajax_add_job_posting(request):
+
+    job_title = request.POST.get('job_title')
+    description = request.POST.get('description')
+    vacancy = request.POST.get('vacancy')
+    salary_range_end = request.POST.get('salary_range_end')
+    salary_range_start = request.POST.get('salary_range_start')
+    attachments = request.FILES.getlist('files')
+
+    data = {
+        'company': request.user.company_data,
+        'job_title': job_title,
+        'description': description,
+        'vacancy': vacancy,
+        'salary_range_end': salary_range_end,
+        'salary_range_start': salary_range_start,
+    }
+    posting = CompanyJobPosting.objects.create(**data)
+
+    for file in attachments:
+        data = {
+            'job_posting': posting,
+            'attachment': file,
+        }
+        JobPostingAttachment.objects.create(**data)
+
+    postings = CompanyJobPosting.objects.filter(
+        company=request.user.company_data
+    ).order_by('-created_at').values()
+
+    attachments = JobPostingAttachment.objects.filter(
+        job_posting=posting
+    ).order_by('-created_at').values()
+
+    return JsonResponse({
+        'success': True,
+        'items': list(postings),
+        'attachments': list(attachments),
+    })
 
 
 class CompanyUpdateView(UpdateView):
 
-    model = Company
+    model = CustomUser
     fields = '__all__'
-    template_name = 'company_profile.html'
+    template_name = 'company_profile_update.html'
 
     def get_success_url(self):
         return reverse_lazy(
@@ -58,10 +105,10 @@ class CompanyUpdateView(UpdateView):
         year = datetime.today().year
         context['years'] = list(range(year, year - 50, -1))
 
-        _region = context['form'].instance.owner.region
-        _province = context['form'].instance.owner.province
-        _municipality = context['form'].instance.owner.municipality
-        _barangay = context['form'].instance.owner.barangay
+        _region = context['form'].instance.region
+        _province = context['form'].instance.province
+        _municipality = context['form'].instance.municipality
+        _barangay = context['form'].instance.barangay
 
         context['regions'] = Region.objects.all()
         if _region:
@@ -78,5 +125,11 @@ class CompanyUpdateView(UpdateView):
             context['barangays'] = Barangay.objects.filter(municipality=_municipality)
         else:
             context['barangays'] = Barangay.objects.all()
+
+        context['job_postings'] = CompanyJobPosting.objects.filter(
+            company=obj.company_data
+        ).order_by('-created_at')
+
+        context['employment_type_choices'] = dict(EMPLOYMENT_TYPE_CHOICES)
 
         return context

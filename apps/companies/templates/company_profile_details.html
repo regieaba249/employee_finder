@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load common_tags %}
+
+{% block title %} Profile {% endblock %}
+{% block user_login %} active {% endblock %}
+{% block css %}
+  <link href="{% static 'css/profile.css' %}" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block body %}
+
+  <div class="content">
+    <div class="container rounded bg-white mt-5 mb-5">
+      <form id="profileForm" action="#" method="post" enctype="multipart/form-data">
+        <hr>
+        <!-- Tabs content -->
+
+          {% csrf_token %}
+          <div class="row mb-4">
+
+            <!-- LEFT DIV -->
+            <div class="col-md-3 px-1">
+
+              <!-- User Avatar -->
+              <div class="d-flex flex-column align-items-center p-2 py-3">
+                <img class="rounded-circle avatar" width="200px" src="{{ object.user_avatar.url }}">
+              </div>
+
+              <div class="form-group px-4 mb-2">
+                <h5>Hiring Agent</h5>
+                <small id="emailHelp" class="form-text text-muted">Officer in charge of the hiring process...</small>
+
+                <div class="form-group mb-2">
+                  <label class="required-field-label" for="first_name">First Name</label>
+                  <input value="{{ object.first_name|default_if_none:'' }}" type="text" id="first_name" name="first_name" class="form-control form-control-lg required" maxlength="25" required/>
+                </div>
+
+                <div class="form-group mb-2">
+                  <label class="" for="middle_name">Middle Name</label>
+                  <input value="{{ object.middle_name|default_if_none:'' }}" type="text" id="middle_name" name="middle_name" class="form-control form-control-lg" maxlength="25"/>
+                </div>
+
+                <div class="form-group mb-2">
+                  <label class="required-field-label" for="last_name">Last Name</label>
+                    <input value="{{ object.last_name|default_if_none:'' }}" type="text" id="last_name" name="last_name" class="form-control form-control-lg required" maxlength="25" required/>
+                </div>
+
+                <div class="form-group mb-2">
+                  <label class="" for="extension">Extensions</label>
+                  <input value="{{ object.extension|default_if_none:'' }}" type="text" id="extension" name="extension" class="form-control form-control-lg" maxlength="25"/>
+                </div>
+
+                <!-- Gender -->
+                <div class="form-group mb-2">
+                  <label class="required-field-label" for="gender">Gender</label>
+                  <select name="gender" class="gender-select mdb-select md-form form-control form-control-lg required" required>
+                    <option value="" disabled {% if not object.gender %}selected{% endif %}>------</option>
+                    <option value="male" {% if object.gender == 'male' %}selected{% endif %}>Male</option>
+                    <option value="female" {% if object.gender == 'female' %}selected{% endif %}>Female</option>
+                    <option value="others" {% if object.gender == 'others' %}selected{% endif %}>Others</option>
+                  </select>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="form-group mb-2">
+                  <label class="" for="phone_number">Telephone Number</label>
+                  <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                      <select name="area_code" class="input-group-text md-form form-control form-control-lg p-0 required" dir="rtl" required>
+                        {% for code in area_codes %}
+                        <option value="{{ code }}" {% if object.area_code == code %}selected{% endif %}>({{ code }})</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <input value="{{ object.phone_number|default_if_none:'' }}" type="text" id="phone_number" name="phone_number" class="phone_number form-control form-control-lg number_only" maxlength="8"/>
+                    <small id="emailHelp" class="form-text text-muted">You can select a different area code from the dropdown.</small>
+                  </div>
+                </div>
+
+                <!-- Mobile Number -->
+                <div class="form-group mb-2">
+                  <label class="" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
+                  <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text" id="inputGroupPrepend2">+63</span>
+                    </div>
+                    <input value="{{ object.mobile_number|default_if_none:'' }}" type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only" maxlength="10"/>
+                  </div>
+                </div>
+
+              </div>
+
+
+
+            </div>
+
+            <!-- RIGHT DIV -->
+            <div class="form-group col-md-9">
+
+              <!-- Personal -->
+              <div class="card border-light my-3">
+                <div class="card-header"><h3>Company Details</h3></div>
+                <div class="card-body row">
+
+                  <!-- Name Fields -->
+                  <div class="row mb-4 col-6 col-md-6">
+                    <div class="form-group mb-2">
+                      <label class="required-field-label" for="company_name">Company Name</label>
+                      <input value="{{ object.company_data.name }}" type="text" id="company_name" name="name" class="form-control form-control-lg required" required/>
+                    </div>
+
+                    <div class="form-group mb-2">
+                      <label class="required-field-label" for="website">Website</label>
+                      <input value="{{ object.company_data.website }}" type="text" id="website" name="website" class="form-control form-control-lg required" required/>
+                    </div>
+
+                    <div class="form-group mb-2">
+                      <label class="required-field-label" for="email">Company Email</label>
+                      <input value="{{ object.company_data.email }}" type="text" id="email" name="email" class="form-control form-control-lg required" required/>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <label class="" for="founded_on">Foundation Date</label>
+                        <input value="{{ object.company_data.founded_on }}" type="date" id="founded_on" name="founded_on" class="form-control form-control-lg"/>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label class="" for="employee_count">Employee Count</label>
+                        <input value="{{ object.company_data.employee_count }}" type="text" id="employee_count" name="employee_count" class="form-control form-control-lg"/>
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="form-group mb-2">
+                      <label class="" for="phone_number">Telephone Number</label>
+                      <div class="input-group input-group-lg">
+                        <div class="input-group-prepend">
+                          <select name="area_code" class="input-group-text md-form form-control form-control-lg p-0 required" dir="rtl" required>
+                            {% for code in area_codes %}
+                            <option value="{{ code }}" {% if object.area_code == code %}selected{% endif %}>({{ code }})</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                        <input value="{{ object.company_data.phone_number|default_if_none:'' }}" type="text" id="phone_number" name="phone_number" class="phone_number form-control form-control-lg number_only" maxlength="8"/>
+                        <small id="emailHelp" class="form-text text-muted">You can select a different area code from the dropdown.</small>
+                      </div>
+                    </div>
+
+                    <!-- Mobile Number -->
+                    <div class="form-group mb-2">
+                      <label class="" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
+                      <div class="input-group input-group-lg">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text" id="inputGroupPrepend2">+63</span>
+                        </div>
+                        <input value="{{ object.company_data.mobile_number|default_if_none:'' }}" type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only" maxlength="10"/>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <!-- Address Fields -->
+
+                  <div class="row mb-4 col-6 col-md-6">
+
+                    <h5>Address</h5>
+                    <small id="emailHelp" class="form-text text-muted">Applicants will filter by area. It is benificial to fill in your address details accurately.</small>
+
+                    <div class="form-group my-2">
+                      <label class="required-field-label" for="region">Region</label>
+                      <select name="region" id="user_region" class="address-select mdb-select md-form form-control form-control-lg required" data-ajax-url="{% url 'users:ajax_load_address_dropdown' %}" data-value="{{ object.region }}" data-target="user_province" required>
+                        <option value="">------</option>
+                        {% for region in regions.all %}
+                          <option value="{{ region.id }}" {% if object.region.id == region.id %} selected {% endif %}>{{ region.name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    <div class="form-group mb-2">
+                      <label class="required-field-label" for="province">Province</label>
+                      <select name="province" id="user_province" class="address-select mdb-select md-form form-control form-control-lg required" data-ajax-url="{% url 'users:ajax_load_address_dropdown' %}" data-value="{{ object.province }}" data-target="user_municipality" required>
+                        <option value="">------</option>
+                        {% if object.province %}
+                          {% for province in provinces.all %}
+                            <option value="{{ province.id }}" {% if object.province.id == province.id %}selected{% endif %}>{{ province.name }}</option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+
+                    <div class="form-group mb-2">
+                      <label class="required-field-label" for="municipality">Municipality</label>
+                      <select name="municipality" id="user_municipality" class="address-select mdb-select md-form form-control form-control-lg required" data-ajax-url="{% url 'users:ajax_load_address_dropdown' %}" data-value="{{ object.municipality }}" data-target="user_barangay" required>
+                        <option value="">------</option>
+                        {% if object.municipality %}
+                          {% for municipality in municipalities.all %}
+                            <option value="{{ municipality.id }}" {% if object.municipality.id == municipality.id %}selected{% endif %}>{{ municipality.name }}</option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+
+                    <div class="form-group mb-2">
+                      <label class="required-field-label" for="barangay">Barangay</label>
+                      <select name="barangay" id="user_barangay" class="mdb-select md-form form-control form-control-lg required" required>
+                        <option value="">------</option>
+                        {% if object.barangay %}
+                          {% for barangay in barangays.all %}
+                            <option value="{{ barangay.id }}" {% if object.barangay.id == barangay.id %}selected{% endif %}>{{ barangay.name }}</option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+
+                    <div class="form-group mb-2">
+                      <label class="" for="address">Full Address</label>
+                      <input value="{{ object.address|default_if_none:'' }}" type="text" id="address" name="address" class="form-control form-control-lg" />
+                    </div>
+
+                  </div>
+
+                  <div class="row mb-4 col-12 col-md-12">
+                    <div class="form-group mb-2">
+                      <label class="" for="company_overview">Company Background</label>
+                      <textarea class="form-control" id="company_overview" name="company_overview"  rows="4">{{ object.company_data.overview }}</textarea>
+                    </div>
+                  </div>
+
+                  <!-- Employment History -->
+                  <div class="row mb-4 col-12 col-md-12">
+                    <div class="form-group mb-2">
+
+                      <h4 class="float-start">Job Postings</h4>
+                      <!-- Button trigger modal -->
+                      <button type="button" class="btn btn-primary float-end mb-2" data-bs-toggle="modal" data-bs-target="#addJobPostingModal">
+                        Add
+                      </button>
+                      <table id="JobPostingTable" class="table table-bordered table-responsive-md table-striped text-center">
+                        <thead>
+                          <tr>
+                            <th class="text-center">Job Title</th>
+                            <th class="text-center" style="width: 35%">Job Description</th>
+                            <th class="text-center">Vacancy</th>
+                            <th class="text-center">Salary Range</th>
+                            <th class="text-center">Attachments</th>
+                            <th class="text-center"></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% if job_postings.all %}
+                            {% for data in job_postings.all %}
+                            <tr>
+                              <td>{{ data.job_title }}</td>
+                              <td class="text-truncate">{{ data.description }}</td>
+                              <td>{{ data.vacancy }}</td>
+                              <td>{{ data.salary_range }}</td>
+                              <td></td>
+                              <td class="p-0">
+                                <span class="table-remove">
+                                  <span class="remove-row" data-id="{{ data.id }}" data-table="CompanyJobPosting">
+                                    <i class="fas fa-times-circle"></i>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          {% else %}
+                            <tr class="nodata">
+                              <td colspan="6">No Data</td>
+                            </tr>
+                          {% endif %}
+                        </tbody>
+                      </table>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="addJobPostingModal" data-ajax-url="{% url 'companies:ajax_add_job_posting' %}" data-csrf-token="{{ csrf_token }}" tabindex="-1" role="dialog" aria-labelledby="addJobPostingTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="">Job Posting Details</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row col">
+
+            <div class="form-group mt-0 mb-2">
+              <label class="required-field-label" for="job_title">Job Title</label>
+              <input type="text" id="job_title" name="job_title" class="form-control form-control-lg required" required/>
+            </div>
+
+            <div class="form-group mb-2">
+              <label class="" for="description">Job Description</label>
+              <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+            </div>
+
+            <div class="form-group mb-2">
+              <label for="vacancy">Vacancy</label>
+              <input type="number" id="vacancy" name="vacancy" class="form-control form-control-lg required" min="1" max="99" required/>
+            </div>
+
+            <div class="form-group mb-2 row">
+
+              <label>Salary Range</label>
+              <div class="form-group col">
+                <input type="number" id="salary_range_start" name="salary_range_start" class="form-control form-control-lg required" placeholder="MIN" required/>
+              </div>
+              -
+              <div class="form-group col">
+                <input type="number" id="salary_range_end" name="salary_range_end" class="form-control form-control-lg required" placeholder="MAX" required/>
+              </div>
+
+            </div>
+
+            <div class="form-group mb-2">
+              <span>Attachments</span>
+              <input type="file" id="attachments" name="attachments" class="form-control form-control-lg" multiple/>
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="addJobPostingSubmit" class="btn btn-primary">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'js/profile.js' %}"></script>
+{% endblock %}

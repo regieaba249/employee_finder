@@ -1,32 +1,5 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %} Jobs Board {% endblock %}
-{% block user_login %} active {% endblock %}
-{% block css %}
-    <link rel="stylesheet" href="{% static 'css/jobs-board.css' %}" type="text/css">
-{% endblock %}
-
-{% block body %}
-
-<div class="container mt-4 mb-5">
-    <div class="d-flex justify-content-center row">
-        <div class="col-md-8">
-            <div class="feed p-2">
-                <div class="d-flex flex-row justify-content-between align-items-center p-2 bg-white border">
-                    <div class="feed-text px-2 w-100">
-                      <div class="form-group mb-2">
-                        <input id="searchInput" type="text" class="form-control form-control-lg" data-ajax-url="{% url 'jobs:ajax_filter_postings' %}"/>
-                        <button id="filterPostings">Search</button>
-                      </div>
-                    </div>
-                    <div class="feed-icon px-2"><i class="fa fa-long-arrow-up text-black-50"></i></div>
-                </div>
-
-                <div id="postingsContainer">
-                  {% for posting in latest_jobs %}
-
-                  <div class="bg-white border mt-2">
+{% autoescape off %}
+				<div class="bg-white border mt-2">
                       <div>
                           <div class="d-flex flex-row justify-content-between align-items-center p-2 border-bottom">
                               <div class="d-flex flex-row align-items-center feed-text px-2"><img class="rounded-circle" src="{{ posting.company.owner.user_avatar.url }}" width="45">
@@ -97,16 +70,4 @@
                       </div>
                       {% endif %}
                   </div>
-
-                  {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{% endblock %}
-
-{% block js %}
-<script src="{% static 'js/jobs_board.js' %}"></script>
-{% endblock %}
+{% endautoescape %}
