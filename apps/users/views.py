@@ -29,13 +29,15 @@ from .models import (
     Applicant,
     ApplicantAttachment,
     ApplicantExperience,
+    ApplicantEducation,
     Region,
     Province,
     Municipality,
     Barangay,
 
     # choices
-    EMPLOYMENT_TYPE_CHOICES
+    EMPLOYMENT_TYPE_CHOICES,
+    MONTH_CHOICES
 )
 
 
@@ -46,6 +48,7 @@ Tables = {
     'Applicant': Applicant,
     'ApplicantAttachment': ApplicantAttachment,
     'ApplicantExperience': ApplicantExperience,
+    'ApplicantEducation': ApplicantEducation,
     'Region': Region,
     'Province': Province,
     'Municipality': Municipality,
@@ -131,6 +134,9 @@ def ajax_add_employment_history(request):
     reference_person = request.GET.get('reference_person')
     mobile_number = request.GET.get('mobile_number')
 
+    if mobile_number == "+63":
+        mobile_number = None
+
     data = {
         'applicant': request.user.applicant_data,
         'company_name': company,
@@ -145,9 +151,56 @@ def ajax_add_employment_history(request):
         'reference_person': reference_person,
         'mobile_number': mobile_number,
     }
-    experience = ApplicantExperience.objects.create(**data)
+    ApplicantExperience.objects.create(**data)
 
-    return JsonResponse({'success': True})
+    queryset = ApplicantExperience.objects.filter(
+        applicant=request.user.applicant_data
+    ).order_by('-current', '-start_month', '-start_year').values()
+
+    return JsonResponse({
+        'success': True,
+        'items': list(queryset),
+        'types': dict(EMPLOYMENT_TYPE_CHOICES),
+        'months': dict(MONTH_CHOICES)
+    })
+
+
+def ajax_add_education(request):
+
+    school_name = request.GET.get('school_name')
+    degree = request.GET.get('degree')
+    start_month = request.GET.get('start_month')
+    start_year = request.GET.get('start_year')
+    end_month = request.GET.get('end_month')
+    end_year = request.GET.get('end_year')
+    reference_person = request.GET.get('reference_person')
+    mobile_number = request.GET.get('mobile_number')
+
+    if mobile_number == "+63":
+        mobile_number = None
+
+    data = {
+        'applicant': request.user.applicant_data,
+        'school_name': school_name,
+        'degree': degree,
+        'start_month': start_month,
+        'start_year': start_year,
+        'end_month': end_month,
+        'end_year': end_year,
+        'reference_person': reference_person,
+        'mobile_number': mobile_number,
+    }
+    ApplicantEducation.objects.create(**data)
+
+    queryset = ApplicantEducation.objects.filter(
+        applicant=request.user.applicant_data
+    ).order_by('-start_month', '-start_year').values()
+
+    return JsonResponse({
+        'success': True,
+        'items': list(queryset),
+        'months': dict(MONTH_CHOICES)
+    })
 
 
 def ajax_delete_data(request):
@@ -157,6 +210,20 @@ def ajax_delete_data(request):
 
     record = table.objects.get(id=_id)
     record.delete()
+
+    return JsonResponse({'success': True})
+
+
+def ajax_delete_attachment(request):
+
+    _id = request.GET.get('id')
+    _type = request.GET.get('type')
+
+    if _type == "resume":
+        Applicant.objects.filter(id=_id).update(resume=None)
+    else:
+        record = ApplicantAttachment.objects.get(id=_id)
+        record.delete()
 
     return JsonResponse({'success': True})
 
@@ -177,8 +244,8 @@ class LoginView(FormView):
     def get_success_url(self):
 
         urls = {
-            'employer': 'companies:profile',
-            'applicant': 'users:profile',
+            'employer': 'companies:profile_edit',
+            'applicant': 'users:profile_edit',
         }
 
         return reverse_lazy(
@@ -369,7 +436,7 @@ class CustomUserUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy(
-            'users:profile',
+            'users:profile_edit',
             kwargs={'pk': self.request.user.pk}
         )
 
@@ -425,7 +492,13 @@ class CustomUserUpdateView(UpdateView):
         else:
             context['barangays'] = Barangay.objects.all()
 
-        context['employment_history'] = ApplicantExperience.objects.filter(applicant=obj.applicant_data)
+        context['employment_history'] = ApplicantExperience.objects.filter(
+            applicant=obj.applicant_data
+        ).order_by('-current', '-start_month', '-start_year')
+
+        context['educational_history'] = ApplicantEducation.objects.filter(
+            applicant=obj.applicant_data
+        ).order_by('-start_month', '-start_year')
 
         return context
 

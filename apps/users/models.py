@@ -3,8 +3,9 @@ from django.contrib.auth.models import PermissionsMixin
 from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
 from .managers import CustomUserManager
+
+from employee_finder.models import BaseModel
 
 
 optional = {
@@ -22,7 +23,7 @@ EFFICIENCY_CHOICES = (
     ('7', '7'),
     ('8', '8'),
     ('9', '9'),
-    ('10', '10'),
+    ('10', '10')
 )
 
 MONTH_CHOICES = (
@@ -38,24 +39,24 @@ MONTH_CHOICES = (
     ('sep', 'September'),
     ('oct', 'October'),
     ('nov', 'November'),
-    ('dec', 'December'),
+    ('dec', 'December')
 )
 
 GENDER_CHOICES = (
     ('select', 'Select...'),
     ('male', 'Male'),
     ('female', 'Female'),
-    ('others', 'Others'),
+    ('others', 'Others')
 )
 
 USER_TYPE_CHOICES = (
     ('employer', 'Employer'),
-    ('applicant', 'Applicant'),
+    ('applicant', 'Applicant')
 )
 
 APPLICANT_STATUS_CHOICES = (
     ('employed', 'Employed'),
-    ('unemployed', 'Unemployed'),
+    ('unemployed', 'Unemployed')
 )
 
 EMPLOYMENT_TYPE_CHOICES = (
@@ -65,11 +66,11 @@ EMPLOYMENT_TYPE_CHOICES = (
     ('self_employed', 'Self Employed'),
     ('freelance', 'Freelance'),
     ('contract', 'Contractual'),
-    ('internship', 'Internship'),
+    ('internship', 'Internship')
 )
 
 
-class AreaCode(models.Model):
+class AreaCode(BaseModel):
     code = models.CharField(max_length=5, blank=False)
     name = models.CharField(max_length=50, blank=False)
 
@@ -77,7 +78,7 @@ class AreaCode(models.Model):
         return f"{self.name} ({self.code})"
 
 
-class Region(models.Model):
+class Region(BaseModel):
     ISLAND_GROUP_LUZON = 'L'
     ISLAND_GROUP_VISAYAS = 'V'
     ISLAND_GROUP_MINDANAO = 'M'
@@ -94,7 +95,7 @@ class Region(models.Model):
         return f"{self.name}"
 
 
-class Province(models.Model):
+class Province(BaseModel):
     name = models.CharField(max_length=100, null=False, verbose_name='Name')
     region = models.ForeignKey(
         Region,
@@ -109,7 +110,7 @@ class Province(models.Model):
         return f"{self.name}"
 
 
-class Municipality(models.Model):
+class Municipality(BaseModel):
     name = models.CharField(max_length=100, null=False, verbose_name='Name')
     province = models.ForeignKey(
         Province,
@@ -124,7 +125,7 @@ class Municipality(models.Model):
         return f"{self.name}"
 
 
-class Barangay(models.Model):
+class Barangay(BaseModel):
     name = models.CharField(max_length=100, null=False, verbose_name='Name')
     municipality = models.ForeignKey(
         Municipality,
@@ -210,7 +211,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = _('users')
 
     def __str__(self):
-        return self.email
+        return f"{self.email} ({self.user_type})"
 
     def __unicode__(self):
         return self.email
@@ -248,7 +249,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return numbers
 
 
-class Applicant(models.Model):
+class Applicant(BaseModel):
     user = models.OneToOneField(
         CustomUser,
         related_name='applicant_data',
@@ -267,24 +268,34 @@ class Applicant(models.Model):
     def __str__(self):
         return f"{self.user.email}"
 
+    def delete(self, using=None, keep_parents=False):
+        self.resume.storage.delete(self.resume.name)
+        super().delete()
 
-class ApplicantAttachment(models.Model):
+
+class ApplicantAttachment(BaseModel):
     applicant = models.ForeignKey(
         Applicant,
         related_name='applicant_attachments',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True
     )
     attachment = models.FileField(**optional)
 
     def __str__(self):
-        return f"{self.applicant.user.email} - {self.attachment}"
+        return f"{self.attachment}"
+
+    def delete(self, using=None, keep_parents=False):
+        self.attachment.storage.delete(self.attachment.name)
+        super().delete()
 
 
-class ApplicantExperience(models.Model):
+class ApplicantExperience(BaseModel):
     applicant = models.ForeignKey(
         Applicant,
         related_name='applicant_experience',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True
     )
     company_name = models.CharField(max_length=50, blank=False)
     start_month = models.CharField(
@@ -318,23 +329,42 @@ class ApplicantExperience(models.Model):
     @property
     def start(self):
         if self.start_month and self.start_year:
-            return f'{self.start_month} / {self.start_year}'
+            months = dict(MONTH_CHOICES)
+            return f'{months[self.start_month]} / {self.start_year}'
         return ''
 
     @property
     def end(self):
         if self.end_month and self.end_year:
-            return f'{self.end_month} / {self.end_year}'
+            months = dict(MONTH_CHOICES)
+            return f'{months[self.end_month]} / {self.end_year}'
         return ''
 
+    @property
+    def full_reference(self):
+        if self.reference_person and self.mobile_number:
+            ref = f'{self.reference_person} ({self.mobile_number})'
+        elif self.reference_person:
+            ref = self.reference_person
+        else:
+            ref = self.mobile_number
 
-class ApplicantEducation(models.Model):
+        return ref
+
+    def save(self, *args, **kwargs):
+        res = ApplicantExperience.objects.filter(applicant=self.applicant, current=True)
+        res.update(current=False)
+        super(ApplicantExperience, self).save(*args, **kwargs)
+
+
+class ApplicantEducation(BaseModel):
     applicant = models.ForeignKey(
         Applicant,
         related_name='applicant_education',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True
     )
-    school = models.CharField(max_length=250, blank=False)
+    school_name = models.CharField(max_length=250, blank=False)
     degree = models.CharField(max_length=250, blank=False)
     start_month = models.CharField(
         max_length=15,
@@ -348,17 +378,45 @@ class ApplicantEducation(models.Model):
         default='select'
     )
     end_year = models.CharField(max_length=50, blank=False)
-    description = models.TextField(**optional)
+    reference_person = models.CharField(max_length=250, **optional)
+    mobile_regex = RegexValidator(regex=r'^(\+\d{1,3})?,?\s?\d{8,13}', message="Mobile number format must be: '+639999999999'.")
+    mobile_number = models.CharField(validators=[mobile_regex], max_length=13, **optional) # validators should be a list
 
     def __str__(self):
-        return f"{self.applicant.user.email}"
+        return f"{self.applicant.user.email} - ({self.school_name})"
+
+    @property
+    def start(self):
+        if self.start_month and self.start_year:
+            months = dict(MONTH_CHOICES)
+            return f'{months[self.start_month]} / {self.start_year}'
+        return ''
+
+    @property
+    def end(self):
+        if self.end_month and self.end_year:
+            months = dict(MONTH_CHOICES)
+            return f'{months[self.end_month]} / {self.end_year}'
+        return ''
+
+    @property
+    def full_reference(self):
+        if self.reference_person and self.mobile_number:
+            ref = f'{self.reference_person} ({self.mobile_number})'
+        elif self.reference_person:
+            ref = self.reference_person
+        else:
+            ref = self.mobile_number
+
+        return ref
 
 
-class ApplicantSkill(models.Model):
+class ApplicantSkill(BaseModel):
     applicant = models.ForeignKey(
         Applicant,
         related_name='applicant_skills',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True
     )
     name = models.FileField(**optional)
     efficiency = models.CharField(
@@ -371,11 +429,12 @@ class ApplicantSkill(models.Model):
         return f"{self.applicant.user.email}"
 
 
-class ApplicantSeminar(models.Model):
+class ApplicantSeminar(BaseModel):
     applicant = models.ForeignKey(
         Applicant,
         related_name='applicant_seminars',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True
     )
     summary = models.FileField(**optional)
     description = models.TextField(**optional)
@@ -385,11 +444,12 @@ class ApplicantSeminar(models.Model):
         return f"{self.applicant.user.email}"
 
 
-class ApplicantSeminarAttachment(models.Model):
+class ApplicantSeminarAttachment(BaseModel):
     seminar = models.ForeignKey(
         ApplicantSeminar,
         related_name='seminar_attachments',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True
     )
     attachment = models.FileField(**optional)
 

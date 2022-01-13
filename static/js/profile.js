@@ -1,3 +1,10 @@
+function modal_valid(modal) {
+  modal.find('.required').each(function() {
+    debugger;
+    this.valid();
+  });
+};
+
 $(document).ready(function() {
 
   $('#addEmploymentHistorySubmit').click(function (e) {
@@ -17,7 +24,7 @@ $(document).ready(function() {
     if (end_month && end_year) {
       start = `${end_month} / ${end_year}`
     }
-    var current = $("#addEmploymentHistoryModal #current").is(':checked')
+    var current = $("#addEmploymentHistoryModal #current").val()
     var overview = $("#addEmploymentHistoryModal #overview").val()
     var reference_person = $("#addEmploymentHistoryModal #reference_person").val()
     var mobile_number = "+63" + $("#addEmploymentHistoryModal #mobile_number").val()
@@ -40,34 +47,53 @@ $(document).ready(function() {
         'mobile_number': mobile_number,
       },
       success: function (data) {
+        var newTbody = ""
+        data.items.forEach(function(row) {
+          var start = ""
+          var end = ""
+          var mobile_number = ""
+          var current = ""
+          var employment_type = data.types[row.employment_type]
+          var start_month = data.months[row.start_month]
+          var end_month = data.months[row.end_month]
 
-        if (current == 'true') {
-          current = `<i class="far fa-check-circle"></i>`
-        } else {
-          current = ""
-        }
-        const newTr = `
-          <tr>
-            <td>${company}</td>
-            <td>${position}</td>
-            <td>${employment_type}</td>
-            <td>${start}</td>
-            <td>${end}</td>
-            <td>${current}</td>
-            <td>${reference_person} (${mobile_number})</td>
-            <td>
-              <span class="table-remove">
-                <button type="button" class="remove-row btn btn-danger btn-rounded btn-sm my-0">
-                  <i class="fas fa-times"></i>
-                </button>
-              </span>
-            </td>
-          </tr>
-        `;
+          if (start_month && row.start_year) {
+            start = `${start_month} / ${row.start_year}`
+          }
+          if (end_month && row.end_year) {
+            end = `${end_month} / ${row.end_year}`
+          }
+          if (row.mobile_number) {
+            mobile_number = `(${row.mobile_number})`
+          }
 
-        $(newTr).appendTo($("#addEmploymentHistoryTable tbody"))
+          if (row.current) {
+            current = `<i class="far fa-check-circle"></i>`
+          }
 
-        var nodata = $("#addEmploymentHistoryTable .nodata")
+          newTbody += `
+            <tr>
+              <td>${row.company_name}</td>
+              <td>${row.job_position}</td>
+              <td>${employment_type}</td>
+              <td>${start}</td>
+              <td>${end}</td>
+              <td>${current}</td>
+              <td>${row.reference_person} ${mobile_number}</td>
+              <td class="p-0">
+                <span class="table-remove">
+                  <span class="remove-row" data-id="${row.id}">
+                    <i class="fas fa-times-circle"></i>
+                  </span>
+                </span>
+              </td>
+            </tr>
+          `;
+        });
+
+        $("#EmploymentHistoryTable tbody").html(newTbody);
+
+        var nodata = $("#EmploymentHistoryTable .nodata")
         if (nodata.length) {
           nodata.remove()
         }
@@ -75,11 +101,11 @@ $(document).ready(function() {
         $("#addEmploymentHistoryModal #company").val("")
         $("#addEmploymentHistoryModal #position").val("")
         $("#addEmploymentHistoryModal #employment_type").val("")
-        $("#addEmploymentHistoryModal #start_month").val("january")
-        $("#addEmploymentHistoryModal #start_year").val("2022")
+        $("#addEmploymentHistoryModal #start_month").val("")
+        $("#addEmploymentHistoryModal #start_year").val("")
         $("#addEmploymentHistoryModal #end_month").val("")
         $("#addEmploymentHistoryModal #end_year").val("")
-        $("#addEmploymentHistoryModal #current").val("")
+        $("#addEmploymentHistoryModal #current").prop('checked', false);
         $("#addEmploymentHistoryModal #overview").val("")
         $("#addEmploymentHistoryModal #reference_person").val("")
         $("#addEmploymentHistoryModal #mobile_number").val("")
@@ -94,28 +120,121 @@ $(document).ready(function() {
 
   });
 
+  $('#addEducationSubmit').click(function (e) {
+    var school_name = $("#addEducationModal #school_name").val()
+    var degree = $("#addEducationModal #degree").val()
+    var start_month = $("#addEducationModal #start_month").val()
+    var start_year = $("#addEducationModal #start_year").val()
+    var start = ""
+    if (start_month && start_year) {
+      start = `${start_month} / ${start_year}`
+    }
+    var end_month = $("#addEducationModal #end_month").val()
+    var end_year = $("#addEducationModal #end_year").val()
+    var end = ""
+    if (end_month && end_year) {
+      start = `${end_month} / ${end_year}`
+    }
+    var reference_person = $("#addEducationModal #reference_person").val()
+    var mobile_number = "+63" + $("#addEducationModal #mobile_number").val()
+
+    var url = $("#addEducationModal").attr("data-ajax-url");
+
+    $.ajax({
+      url: url,
+      data: {
+        'school_name': school_name,
+        'degree': degree,
+        'start_month': start_month,
+        'start_year': start_year,
+        'end_month': end_month,
+        'end_year': end_year,
+        'reference_person': reference_person,
+        'mobile_number': mobile_number,
+      },
+      success: function (data) {
+        var newTbody = ""
+        data.items.forEach(function(row) {
+          var start = ""
+          var end = ""
+          var mobile_number = ""
+          var start_month = data.months[row.start_month]
+          var end_month = data.months[row.end_month]
+
+          if (start_month && row.start_year) {
+            start = `${start_month} / ${row.start_year}`
+          }
+          if (end_month && row.end_year) {
+            end = `${end_month} / ${row.end_year}`
+          }
+          if (row.mobile_number) {
+            mobile_number = `(${row.mobile_number})`
+          }
+
+          newTbody += `
+            <tr>
+              <td>${row.school_name}</td>
+              <td>${row.degree}</td>
+              <td>${start}</td>
+              <td>${end}</td>
+              <td>${row.reference_person} ${mobile_number}</td>
+              <td class="p-0">
+                <span class="table-remove">
+                  <span class="remove-row" data-id="${row.id}">
+                    <i class="fas fa-times-circle"></i>
+                  </span>
+                </span>
+              </td>
+            </tr>
+          `;
+        });
+
+        $("#educationTable tbody").html(newTbody);
+
+        var nodata = $("#educationTable .nodata")
+        if (nodata.length) {
+          nodata.remove()
+        }
+
+        $("#addEducationModal #school_name").val("")
+        $("#addEducationModal #degree").val("")
+        $("#addEducationModal #start_month").val("")
+        $("#addEducationModal #start_year").val("")
+        $("#addEducationModal #end_month").val("")
+        $("#addEducationModal #end_year").val("")
+        $("#addEducationModal #reference_person").val("")
+        $("#addEducationModal #mobile_number").val("")
+        $("#addEducationModal").modal('toggle');
+      },
+      error: function(xhr, textStatus, error){
+          console.log(xhr.statusText);
+          console.log(textStatus);
+          console.log(error);
+      }
+    });
+  });
 });  // Document ready
 
 $(document).on('click', 'table .remove-row', function() {
-  var _id = $(this).attr("data-id");
   var _this = $(this)
+  var _id = _this.attr("data-id");
+  var _table = _this.attr("data-table");
 
-  debugger;
   if (confirm('Are you sure you want to delete this?')) {
     $.ajax({
       url: '/users/ajax/delete-data/',
       data: {
         'id': _id,
-        'table': "ApplicantExperience"
+        'table': _table
       },
       success: function (data) {
         _this.closest("tr").remove();
 
-        if ($("#addEmploymentHistoryTable tbody tr").length == 0) {
+        if ($("#EmploymentHistoryTable tbody tr").length == 0) {
           var newTr = `<tr class="nodata">
                           <td colspan="100%">No Data</td>
                         </tr>`
-          $(newTr).appendTo($("#addEmploymentHistoryTable tbody"))
+          $(newTr).appendTo($("#EmploymentHistoryTable tbody"))
         }
       },
       error: function(xhr, textStatus, error){
@@ -125,4 +244,30 @@ $(document).on('click', 'table .remove-row', function() {
       }
     });
   }
+}) ;
+
+$(document).on('click', '.badge .delete-file', function() {
+  var _id = $(this).attr("data-id");
+  var _type = $(this).attr("data-type");
+  var _this = $(this);
+
+  if (confirm('Are you sure you want to delete this?')) {
+    $.ajax({
+      url: '/users/ajax/delete-attachment/',
+      data: {
+        'id': _id,
+        'type': _type
+      },
+      success: function (data) {
+        _this.parent().remove();
+      },
+      error: function(xhr, textStatus, error){
+          console.log(xhr.statusText);
+          console.log(textStatus);
+          console.log(error);
+      }
+    });
+  }
+
+
 }) ;

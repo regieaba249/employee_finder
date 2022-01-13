@@ -18,7 +18,7 @@
   <div class="content">
     <div class="container mt-5">
       <div class="row">
-        <div class="col-md-12 contents">
+        <div class="col-md-12 contents mb-5">
           <div class="row justify-content-center">
 
             <div class="col-md-10">
@@ -100,7 +100,7 @@
                   <div class="tab-pane fade show active" id="tab-personal" role="tabpanel" aria-labelledby="ex2-tab-1">
 
                       {% csrf_token %}
-                      <div class="row mb-4">
+                      <div class="row">
                         <div class="col-md-3 px-1">
 
                           <!-- User Avatar -->
@@ -108,7 +108,11 @@
                             <div class="image-upload-wrap">
                               <input class="file-upload-input" type='file' id="user_avatar" name="user_avatar" onchange="readURL(this);" accept="image/*" />
                               <div class="drag-text">
-                                <h5 class="pt-5">Profile Avatar</h5>
+                                {% if user_type == 'employer' %}
+                                  <h5 class="pt-5">Company Avatar</h5>
+                                {% else %}
+                                  <h5 class="pt-5">Profile Avatar</h5>
+                                {% endif %}
                                 <p class="pb-4 px-4">Drag and drop a file or select add Image</p>
                               </div>
                             </div>
@@ -117,6 +121,34 @@
                               <button type="button" onclick="removeUpload()" class="btn btn-danger btn-rounded px-3"><span aria-hidden="true"><i class="fas fa-times"></i></span></button>
                             </div>
                           </div>
+
+                          {% if user_type == 'employer' %}
+                            <h4 class="pt-5">Company Agent</h4><hr>
+
+                            <!-- First name -->
+                            <div class="form-group px-2 mb-2">
+                              <label class="required-field-label" for="first_name">First Name</label>
+                              <input value="{{ form.data.first_name }}" type="text" id="first_name" name="first_name" class="form-control form-control-lg required" maxlength="25" required/>
+                            </div>
+
+                            <!-- Middle name -->
+                            <div class="form-group px-2 mb-2">
+                                <label class="" for="middle_name">Middle Name</label>
+                                <input value="{{ form.data.middle_name }}" type="text" id="middle_name" name="middle_name" class="form-control form-control-lg" maxlength="25"/>
+                            </div>
+
+                            <!-- Last name -->
+                            <div class="form-group px-2 mb-2">
+                                <label class="required-field-label" for="last_name">Last Name</label>
+                                <input value="{{ form.data.last_name }}" type="text" id="last_name" name="last_name" class="form-control form-control-lg required" maxlength="25" required/>
+                            </div>
+
+                            <!-- Extensions -->
+                            <div class="form-group px-2 mb-2">
+                              <label class="" for="extension">Extensions</label>
+                              <input value="{{ form.data.extension }}" type="text" id="extension" name="extension" class="form-control form-control-lg" maxlength="25"/>
+                            </div>
+                          {% endif %}
 
                           <!-- Phone Number -->
                           <div class="form-group px-2 mb-2">
@@ -165,6 +197,7 @@
                         </div>
                         <div class="form-group col">
 
+                          {% if user_type == 'applicant' %}
                           <div class="row mb-4">
                               <!-- First name -->
                               <div class="form-group col">
@@ -190,6 +223,7 @@
                                 <input value="{{ form.data.extension }}" type="text" id="extension" name="extension" class="form-control form-control-lg" maxlength="25"/>
                               </div>
                           </div>
+                          {% endif %}
 
                           {% if user_type == 'employer' %}
                           <div class="row mb-4">
@@ -208,7 +242,7 @@
 
                           <div class="row mb-4">
                             <div class="form-group mb-2 col">
-                              <label class="required-field-label" for="email">Email</label>
+                              <label class="required-field-label" for="email">Company Email</label>
                               <input value="{{ object.email }}" type="text" id="email" name="company_email" class="form-control form-control-lg required" required/>
                             </div>
 

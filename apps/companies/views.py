@@ -26,7 +26,7 @@ class CompanyUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy(
-            'company:profile',
+            'company:profile_edit',
             kwargs={'pk': self.request.user.pk}
         )
 

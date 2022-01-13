@@ -3,5 +3,5 @@ from . import views
 
 app_name = 'apps.companies'
 urlpatterns = [
-    path('profile/<int:pk>/', views.CompanyUpdateView.as_view(), name='profile'),
+    path('profile/edit/<int:pk>/', views.CompanyUpdateView.as_view(), name='profile_edit'),
 ]

@@ -125,3 +125,15 @@ td {
 .fa-check-circle {
   color: green;
 }
+
+.badge a {
+  color: inherit;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  text-decoration-color: none !important;
+  text-decoration-style: none !important;
+}
+
+.badge .fas.fa-times, .fas.fa-times-circle {
+  color: #f75252;
+}
