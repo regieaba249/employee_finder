@@ -1,13 +1,16 @@
 from datetime import datetime
-
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.template.loader import render_to_string
 from django.views.generic.edit import (
     FormView,
     CreateView,
     UpdateView
 )
+from apps.companies.models import Company
 
 from apps.jobs.models import (
     CompanyJobPosting,
@@ -21,6 +24,9 @@ from apps.users.models import (
     Barangay,
     EMPLOYMENT_TYPE_CHOICES
 )
+from apps.users.forms import (
+    UpdateForm
+)
 
 
 # Create your views here.
@@ -31,6 +37,7 @@ def ajax_add_job_posting(request):
     vacancy = request.POST.get('vacancy')
     salary_range_end = request.POST.get('salary_range_end')
     salary_range_start = request.POST.get('salary_range_start')
+    preferred_skills = request.POST.get('preferred_skills')
     attachments = request.FILES.getlist('files')
 
     data = {
@@ -40,6 +47,7 @@ def ajax_add_job_posting(request):
         'vacancy': vacancy,
         'salary_range_end': salary_range_end,
         'salary_range_start': salary_range_start,
+        'preferred_skills': preferred_skills,
     }
     posting = CompanyJobPosting.objects.create(**data)
 
@@ -50,36 +58,38 @@ def ajax_add_job_posting(request):
         }
         JobPostingAttachment.objects.create(**data)
 
-    postings = CompanyJobPosting.objects.filter(
-        company=request.user.company_data
-    ).order_by('-created_at').values()
+    postings = request.user.company_data.company_jobs.all().order_by('-created_at').values()
+    attachments = posting.job_posting_attachments.all().order_by('-created_at').values()
 
-    attachments = JobPostingAttachment.objects.filter(
-        job_posting=posting
-    ).order_by('-created_at').values()
+    postingStr = ''
+    for posting in postings:
+        postingStr += render_to_string('job_posting_table_item.html', {
+            'posting': posting,
+        })
 
     return JsonResponse({
         'success': True,
-        'items': list(postings),
+        'postingStr': postingStr,
         'attachments': list(attachments),
     })
 
 
-class CompanyUpdateView(UpdateView):
+class CompanyUpdateView(LoginRequiredMixin, UpdateView):
 
     model = CustomUser
-    fields = '__all__'
+    form_class = UpdateForm
     template_name = 'company_profile_update.html'
 
     def get_success_url(self):
         return reverse_lazy(
-            'company:profile_edit',
+            'companies:profile_edit',
             kwargs={'pk': self.request.user.pk}
         )
 
     def get_context_data(self, **kwargs):
         context = super(CompanyUpdateView, self).get_context_data(**kwargs)
-        obj = self.model.objects.get(pk=self.kwargs.get('pk'))
+        company = self.object.company_data
+
         context['area_codes'] = ['02', '032', '033', '034', '035', '036',
                                  '038', '042', '043', '044', '045', '046',
                                  '047', '048', '049', '052', '053', '054',
@@ -99,16 +109,14 @@ class CompanyUpdateView(UpdateView):
             'sep': 'September',
             'oct': 'October',
             'nov': 'November',
-            'dec': 'December',
-        }
-
+            'dec': 'December'}
         year = datetime.today().year
         context['years'] = list(range(year, year - 50, -1))
+        context['employment_type_choices'] = dict(EMPLOYMENT_TYPE_CHOICES)
 
         _region = context['form'].instance.region
         _province = context['form'].instance.province
         _municipality = context['form'].instance.municipality
-        _barangay = context['form'].instance.barangay
 
         context['regions'] = Region.objects.all()
         if _region:
@@ -126,10 +134,50 @@ class CompanyUpdateView(UpdateView):
         else:
             context['barangays'] = Barangay.objects.all()
 
-        context['job_postings'] = CompanyJobPosting.objects.filter(
-            company=obj.company_data
-        ).order_by('-created_at')
+        context['job_postings'] = company.company_jobs.all().order_by('-created_at')
 
-        context['employment_type_choices'] = dict(EMPLOYMENT_TYPE_CHOICES)
+        return context
 
+    def post(self, request, *args, **kwargs):
+        res = super(CompanyUpdateView, self).post(request, *args, **kwargs)
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        company = form.instance.company_data
+
+        name = form.data.get('company_name', '')
+        website = form.data.get('website', '')
+        overview = form.data.get('company_overview', '')
+        employee_count = form.data.get('employee_count', '')
+        email = form.data.get('company_email', '')
+        phone_number = form.data.get('company_phone_number', '')
+        mobile_number = form.data.get('company_mobile_number', '')
+
+        company_data = {
+            'name': name,
+            'website': website,
+            'overview': overview,
+            'employee_count': employee_count,
+            'email': email,
+            'phone_number': phone_number,
+            'mobile_number': mobile_number
+        }
+
+        if form.data.get('founded_on', None):
+            company_data['founded_on'] = form.data.get('founded_on')
+
+        # Update Applicant Data
+        Company.objects.filter(id=company.id).update(**company_data)
+
+        return res
+
+    def form_invalid(self, form):
+        for key, value in form.errors.items():
+            for msg in value:
+                messages.error(self.request, f"{key}: {msg}")
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        """ process user login"""
+        context = super(CompanyUpdateView, self).form_valid(form)
+        messages.success(self.request, "Successfully Updated your Company details")
         return context

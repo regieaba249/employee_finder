@@ -47,6 +47,7 @@ class CompanyJobPosting(BaseModel):
         choices=EMPLOYMENT_TYPE_CHOICES,
         default='full_time'
     )
+    preferred_skills = models.CharField(max_length=255, **optional)
 
     def __str__(self):
         return f"{self.company.name} - {self.job_title}"

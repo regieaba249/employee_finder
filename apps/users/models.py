@@ -14,16 +14,9 @@ optional = {
 }
 
 EFFICIENCY_CHOICES = (
-    ('1', '1'),
-    ('2', '2'),
-    ('3', '3'),
-    ('4', '4'),
-    ('5', '5'),
-    ('6', '6'),
-    ('7', '7'),
-    ('8', '8'),
-    ('9', '9'),
-    ('10', '10')
+    ('beginner', 'Beginner'),
+    ('intermediate', 'Intermediate'),
+    ('advanced', 'Advanced'),
 )
 
 MONTH_CHOICES = (
@@ -153,11 +146,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     headline = models.CharField(max_length=250, **optional)
     birthdate = models.DateField(**optional)
     user_avatar = models.ImageField(default='user_avatar.png', upload_to='user_avatars', **optional)
-    overview = models.TextField(**optional)
     gender = models.CharField(
         max_length=10,
         choices=GENDER_CHOICES,
-        default='select'
+        default='select',
+        **optional
     )
     user_type = models.CharField(
         max_length=10,
@@ -263,6 +256,7 @@ class Applicant(BaseModel):
         default='unemployed'
     )
     resume = models.FileField(**optional)
+    overview = models.TextField(**optional)
     # minimum_expected_salary
 
     def __str__(self):
@@ -420,10 +414,11 @@ class ApplicantSkill(BaseModel):
     )
     name = models.FileField(**optional)
     efficiency = models.CharField(
-        max_length=2,
+        max_length=12,
         choices=EFFICIENCY_CHOICES,
         default='1'
     )
+    attachment = models.FileField(null=True)
 
     def __str__(self):
         return f"{self.applicant.user.email}"

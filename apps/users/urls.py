@@ -11,7 +11,10 @@ urlpatterns = [
     path('ajax/load-address-dropdown/', views.ajax_load_address_dropdown, name='ajax_load_address_dropdown'),
     path('ajax/add-employment-history/', views.ajax_add_employment_history, name='ajax_add_employment_history'),
     path('ajax/add-education/', views.ajax_add_education, name='ajax_add_education'),
+    path('ajax/add-skill/', views.ajax_add_skill, name='ajax_add_skill'),
     path('ajax/delete-data/', views.ajax_delete_data, name='ajax_delete_data'),
     path('ajax/delete-attachment/', views.ajax_delete_attachment, name='ajax_delete_attachment'),
+    path('ajax/check-email/', views.ajax_check_email, name='ajax_check_email'),
+    path('ajax/check-password/', views.ajax_check_password, name='ajax_check_password'),
     path('logout/', views.Logout, name='logout'),
 ]

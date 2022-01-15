@@ -1,0 +1,36 @@
+{% autoescape off %}
+                            {{ job_applicant.applicant.user.full_name }}
+                              <a href="{% url 'users:profile_edit' pk=job_applicant.applicant.user.id %}" target="_blank">Visit Profile</a>
+
+                              {% if job_applicant.status != 'declined' and job_applicant.status != 'hired'%}
+                              <div class="job_posting_actions">
+                                <button data-bs-toggle="modal" data-bs-target="#scheduleInterviewModal">Schedule Interview</button>
+                                <button class="hireApplicant" data-posting-id="{{ posting.id }}" data-user-id="{{ job_applicant.applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_hire_applicant' %}">Hire</button>
+                                <button class="declineApplicant" data-posting-id="{{ posting.id }}" data-user-id="{{ job_applicant.applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_decline_applicant' %}">Decline</button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="scheduleInterviewModal" data-posting-id="{{ posting.id }}" data-user-id="{{ job_applicant.applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_schedule_interview' %}" tabindex="-1" role="dialog" aria-labelledby="addJobPostingTitle" aria-hidden="true">
+                                  <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title" id="">Pick Schedule</h5>
+                                      </div>
+                                      <div class="modal-body">
+                                        <div class="row col">
+
+                                          <div class="form-group mt-0 mb-2">
+                                            <label class="required-field-label" for="interview_schedule">Date</label>
+                                            <input value="" type="date" id="interview_schedule" name="interview_schedule" class="form-control form-control-lg required" max="2999-12-31" required>
+                                          </div>
+
+                                        </div>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="scheduleInterviewSubmit" class="btn btn-primary">Submit</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            {% endif %}
+{% endautoescape %}

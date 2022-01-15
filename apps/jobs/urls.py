@@ -3,7 +3,7 @@ from . import views
 
 app_name = 'apps.jobs'
 urlpatterns = [
-    path('board/', views.JobsBoardView.as_view(), name='jobs-board'),
+    path('board/', views.JobsBoardView.as_view(), name='jobs_board'),
     path('ajax/apply/', views.ajax_apply, name='ajax_apply'),
     path('ajax/schedule_interview/', views.ajax_schedule_interview, name='ajax_schedule_interview'),
     path('ajax/decline_applicant/', views.ajax_decline_applicant, name='ajax_decline_applicant'),

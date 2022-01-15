@@ -36,6 +36,7 @@ def ajax_add_to_posting(request):
         'success': True,
     })
 
+
 def ajax_archive_postings(request):
     _id = request.GET.get('_id')
     posting = CompanyJobPosting.objects.filter(id=_id)
@@ -236,8 +237,16 @@ def ajax_apply(request):
         fail_silently=True,
     )
 
+    applicantsStr = ""
+    for applicant in job_posting.job_applicants.all():
+        applicantsStr += render_to_string('new_applicant_email.html', {
+            'job_applicant': request.user,
+            'posting': job_posting,
+        })
+
     return JsonResponse({
         'success': True,
+        'applicantsStr': applicantsStr,
     })
 
 
@@ -246,5 +255,8 @@ class JobsBoardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['latest_jobs'] = CompanyJobPosting.objects.all().order_by('-created_at')
+        if self.request.user.user_type == 'applicant':
+            context['latest_jobs'] = CompanyJobPosting.objects.all().order_by('-created_at')
+        else:
+            context['latest_jobs'] = self.request.user.company_data.company_jobs.all()
         return context

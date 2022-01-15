@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from apps.users.forms import UserForm
 from apps.users.models import (
     CustomUser,
     Applicant,
@@ -19,7 +18,6 @@ from apps.users.models import (
 
 @admin.register(CustomUser)
 class MyUserAdmin(AuthUserAdmin):
-    # form = UserForm
     exclude = ('username',)
 
     fieldsets = (
@@ -39,7 +37,6 @@ class MyUserAdmin(AuthUserAdmin):
             'headline',
             'birthdate',
             'user_avatar',
-            'overview',
             'gender',
             'user_type',
         )}),

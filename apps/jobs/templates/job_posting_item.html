@@ -1,5 +1,5 @@
 {% autoescape off %}
-				<div class="bg-white border mt-2">
+				          <div class="bg-white border mt-2">
                       <div>
                           <div class="d-flex flex-row justify-content-between align-items-center p-2 border-bottom">
                               <div class="d-flex flex-row align-items-center feed-text px-2"><img class="rounded-circle" src="{{ posting.company.owner.user_avatar.url }}" width="45">
@@ -28,20 +28,20 @@
 
                       {% if user.user_type == "employer" and user == posting.company.owner %}
                       <hr>
-                      <div>
+                      <div class="job_posting_applicants">
 
-                          {% for applicant in posting.job_applicants.all %}
-                              {{ applicant.applicant.user.full_name }}
-                              <a href="{% url 'users:profile_edit' pk=applicant.applicant.user.id %}" target="_blank">Visit Profile</a>
+                          {% for job_applicant in posting.job_applicants.all %}
+                              {{ job_applicant.applicant.user.full_name }}
+                              <a href="{% url 'users:profile_edit' pk=job_applicant.applicant.user.id %}" target="_blank">Visit Profile</a>
 
-                              {% if applicant.status != 'declined' and applicant.status != 'hired'%}
+                              {% if job_applicant.status != 'declined' and job_applicant.status != 'hired'%}
                               <div class="job_posting_actions">
                                 <button data-bs-toggle="modal" data-bs-target="#scheduleInterviewModal">Schedule Interview</button>
-                                <button class="hireApplicant" data-posting-id="{{ posting.id }}" data-user-id="{{ applicant.applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_hire_applicant' %}">Hire</button>
-                                <button class="declineApplicant" data-posting-id="{{ posting.id }}" data-user-id="{{ applicant.applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_decline_applicant' %}">Decline</button>
+                                <button class="hireApplicant" data-posting-id="{{ posting.id }}" data-user-id="{{ job_applicant.applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_hire_applicant' %}">Hire</button>
+                                <button class="declineApplicant" data-posting-id="{{ posting.id }}" data-user-id="{{ job_applicant.applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_decline_applicant' %}">Decline</button>
 
                                 <!-- Modal -->
-                                <div class="modal fade" id="scheduleInterviewModal" data-posting-id="{{ posting.id }}" data-user-id="{{ applicant.applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_schedule_interview' %}" tabindex="-1" role="dialog" aria-labelledby="addJobPostingTitle" aria-hidden="true">
+                                <div class="modal fade" id="scheduleInterviewModal" data-posting-id="{{ posting.id }}" data-user-id="{{ job_applicant.applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_schedule_interview' %}" tabindex="-1" role="dialog" aria-labelledby="addJobPostingTitle" aria-hidden="true">
                                   <div class="modal-dialog modal-dialog-scrollable" role="document">
                                     <div class="modal-content">
                                       <div class="modal-header">

@@ -4,6 +4,8 @@ $(document).on('click', '.jobPostingApply', function (e) {
   var url = $(this).attr("data-ajax-url");
   var action = $(this).attr("data-action");
 
+  _this.attr('disabled','disabled');
+
   if (confirm(`Are you sure you want to ${action}?`)) {
       $.ajax({
           url: url,
@@ -18,6 +20,7 @@ $(document).on('click', '.jobPostingApply', function (e) {
                 var btnStr = `<button id="jobPostingApply" data-id="${_id}" data-ajax-url="${url}" data-action="apply">Apply</button>`
             }
             _this.replaceWith(btnStr)
+            $('.job_posting_applicants').replaceWith(data.applicantsStr)
           },
           error: function(xhr, textStatus, error){
               console.log(xhr.statusText);

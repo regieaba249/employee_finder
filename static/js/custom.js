@@ -1,15 +1,89 @@
-function password_match() {
-  if ($("#password1").val() != $("#password2").val()) {
-    $("#password1").addClass("is-invalid").removeClass("is-valid");
-    $("#password2").addClass("is-invalid").removeClass("is-valid");
-    $('<label class="error">Passwords do not match.</label>').insertAfter($("#password2"));
-    return false
-  } else {
-    $("#password1").removeClass("is-invalid").addClass("is-valid");
-    $("#password2").removeClass("is-invalid").addClass("is-valid");
-    $("#password2").parent().children(".error").remove()
-    return true
-  }
+function email_check(email_element) {
+
+  var value = email_element.val()
+  $.ajax({
+    url: '/users/ajax/check-email/',
+    data: {
+      'email': value,
+    },
+    success: function (data) {
+      if (data.exists) {
+        email_element.addClass("is-invalid").removeClass("is-valid");
+        if (email_element.closest(".form-group").children("label.error").length == 0){
+          $('<label class="error">Email already exists. Please choose a different one.</label>').insertAfter(email_element);
+        }
+        return false
+      } else {
+        if (value) {
+          email_element.removeClass("is-invalid").addClass("is-valid");
+        } else {
+          email_element.removeClass("is-invalid").removeClass("is-valid");
+        }
+        email_element.parent().children(".error").remove()
+        return true
+      }
+    },
+    error: function(xhr, textStatus, error){
+        console.log(xhr.statusText);
+        console.log(textStatus);
+        console.log(error);
+    }
+  });
+};
+
+function password_valid() {
+  var password1 = $("#password1").val()
+  var password2 = $("#password2").val()
+
+  $.ajax({
+    url: '/users/ajax/check-password/',
+    data: {
+      'password1': password1,
+      'password2': password2,
+    },
+    success: function (data) {
+
+      if (password1.length === 0) {
+        $("#password1").removeClass("is-invalid").removeClass("is-valid");
+      }
+
+      if (password2.length === 0) {
+        $("#password2").removeClass("is-invalid").removeClass("is-valid");
+      }
+
+      if (data.valid) {
+          if (password1 && password2) {
+            $("#password1").removeClass("is-invalid").addClass("is-valid");
+            $("#password2").removeClass("is-invalid").addClass("is-valid");
+            $("#password1").parent().children(".error").remove()
+            $("#password2").parent().children(".error").remove()
+          } else {
+            $("#password1").removeClass("is-invalid").removeClass("is-valid");
+            $("#password1").parent().children(".error").remove()
+          }
+      } else {
+        if (data.type == 'match' && (password1 && password2)) {
+          $("#password1").addClass("is-invalid").removeClass("is-valid");
+          $("#password2").addClass("is-invalid").removeClass("is-valid");
+          if ($("#password2").closest(".form-group").children("label.error").length == 0){
+            $(`<label class="error">${data.message}</label>`).insertAfter($("#password2"));
+          }
+        } else {
+          $("#password1").addClass("is-invalid").removeClass("is-valid");
+          if ($("#password1").closest(".form-group").children("label.error").length == 0){
+            $(`<label class="error">${data.message}</label>`).insertAfter($("#password1"));
+          }
+        }
+      }
+
+    },
+    error: function(xhr, textStatus, error){
+        console.log(xhr.statusText);
+        console.log(textStatus);
+        console.log(error);
+    }
+  });
+
 };
 
 function number_only(element, e) {
@@ -32,247 +106,144 @@ function number_only(element, e) {
   }
 }
 
-$(document).ready(function() {
-    $('.gender-select').change(function(){
-      $('.gender-input').val($('.gender-select').val())
-    });
-    $('.applicant-status-select').change(function(){
-      $('.applicant-status-input').val($('.applicant-status-select').val())
-    });
-
-    const $tableID = $('#table'); const $BTN = $('#export-btn'); const $EXPORT = $('#export');
-    const newTr = `
-    <tr>
-      <td class="p-0" contenteditable="true"></td>
-      <td class="p-0" contenteditable="true"></td>
-      <td class="p-0" contenteditable="true">
-        <select class="gender-select mdb-select md-form form-control form-control-lg" required>
-          <option value="0" disabled selected>Month</option>
-          <option value="1">Jan</option>
-          <option value="2">Feb</option>
-          <option value="3">Mar</option>
-          <option value="4">Apr</option>
-          <option value="5">May</option>
-          <option value="6">Jun</option>
-          <option value="7">Jul</option>
-          <option value="8">Aug</option>
-          <option value="9">Sep</option>
-          <option value="10">Oct</option>
-          <option value="11">Nov</option>
-          <option value="12">Dec</option>
-        </select></td>
-      <td class="p-0" contenteditable="true"></td>
-      <td class="p-0" contenteditable="true">
-        <select class="gender-select mdb-select md-form form-control form-control-lg" required>
-          <option value="0" disabled selected>Month</option>
-          <option value="1">Jan</option>
-          <option value="2">Feb</option>
-          <option value="3">Mar</option>
-          <option value="4">Apr</option>
-          <option value="5">May</option>
-          <option value="6">Jun</option>
-          <option value="7">Jul</option>
-          <option value="8">Aug</option>
-          <option value="9">Sep</option>
-          <option value="10">Oct</option>
-          <option value="11">Nov</option>
-          <option value="12">Dec</option>
-        </select></td>
-      <td class="p-0" contenteditable="true"></td>
-      <td class="p-0"><span class="table-remove"><button type="button" class="btn btn-danger btn-rounded btn-sm my-2 px-3"><i class="fas fa-times"></i></button></span></td>
-    </tr>
-    `;
-
-    $('.table-add').on('click', 'i', () => {
-        const $clone = $tableID
-            .find('tbody tr')
-            .last()
-            .clone(true)
-            .removeClass('hide table-line');
-
-        if ($tableID.find('tbody tr').length=== 0) {
-            $('tbody').append(newTr);
-        }
-        $tableID.find('table').append($clone);
-    });
-
-    $tableID.on('click', '.table-remove', function () {
-        $(this).parents('tr').detach();
-    });
-
-    $tableID.on('click', '.table-up', function () {
-        const $row = $(this).parents('tr');
-        if ($row.index() === 0) {
-            return;
-        }
-        $row.prev().before($row.get(0));
-     });
-
-     $tableID.on('click', '.table-down', function () {
-        const $row = $(this).parents('tr');
-        $row.next().after($row.get(0));
-     });
-
-     // A few jQuery helpers for exporting only jQuery.fn.pop= [].pop;
-
-     jQuery.fn.shift = [].shift;
-
-     $BTN.on('click', () => {
-        const $rows = $tableID.find('tr:not(:hidden)');
-        const headers = [];
-        const data = [];
-
-        // Get the headers (add special header logic here)
-        $($rows.shift()).find('th:not(:empty)').each(function () {
-            headers.push($(this).text().toLowerCase());
-        });
-
-        // Turn all existing rows into a loopable array
-        $rows.each(function () {
-            const $td = $(this).find('td');
-            const h = {};
-            // Use the headers from earlier to name our hash keys
-            headers.forEach((header, i) => {
-                h[header] = $td.eq(i).text();
-            });
-            data.push(h);
-        });
-        // Output the result
-        $EXPORT.text(JSON.stringify(data));
-     });
-
-
-    $('.step-personal').on('click', function (e) {
-      e.preventDefault()
-      if ($(this).hasClass("next")) {
-        var valid = $("#registrationForm").valid()
-        if(valid == true) {
-            $('.nav-item a[href="#tab-personal"]').tab('show')
-        }
-      } else {
+$(document).on('click', '.step-personal', function (e) {
+  e.preventDefault()
+  if ($(this).hasClass("next")) {
+    var valid = $("#registrationForm").valid()
+    if(valid == true) {
         $('.nav-item a[href="#tab-personal"]').tab('show')
+    }
+  } else {
+    $('.nav-item a[href="#tab-personal"]').tab('show')
+  }
+})
+
+$(document).on('click', '.step-login', function (e) {
+  e.preventDefault()
+  if ($(this).hasClass("next")) {
+      var valid = $("#registrationForm").valid()
+      if (valid == true) {
+          $('.nav-item a[href="#tab-login"]').tab('show')
       }
-    })
+  } else {
+    $('.nav-item a[href="#tab-login"]').tab('show')
+  }
+})
 
-
-    $('.step-login').on('click', function (e) {
-      e.preventDefault()
-      if ($(this).hasClass("next")) {
-          var valid = $("#registrationForm").valid()
-          if (valid == true) {
-              $('.nav-item a[href="#tab-login"]').tab('show')
-          }
-      } else {
-        $('.nav-item a[href="#tab-login"]').tab('show')
-      }
-    })
-
-    $('.step-experience').on('click', function (e) {
-      e.preventDefault()
-      if ($(this).hasClass("next")) {
-          var valid = $("#registrationForm").valid()
-          if(valid == true) {
-            if (password_match()) {
-              $('.nav-item a[href="#tab-experience"]').tab('show')
-            }
-          }
-      } else {
-        $('.nav-item a[href="#tab-experience"]').tab('show')
-      }
-    })
-
-    $('.step-company-details').on('click', function (e) {
-      e.preventDefault()
-      if ($(this).hasClass("next")) {
-          var valid = $("#registrationForm").valid()
-          if(valid == true) {
-            if (password_match()) {
-              $('.nav-item a[href="#tab-company-details"]').tab('show')
-            }
-          }
-      } else {
-        $('.nav-item a[href="#tab-company-details"]').tab('show')
-      }
-    })
-
-    $("#registrationForm").submit(function(e){
-      if ($('.required:visible').length) {
-        var valid = $('.required:visible').valid()
-        if (valid) {
-          if ($(".submit").is(":visible")) {
-            $("#overlay").css('display', 'flex');
-          } else {
-            e.preventDefault();
-            $(".next:visible").trigger("click");
-          }
-        } else {
-          e.preventDefault();
-        }
-      } else {
-        if ($(".submit").is(":visible")) {
-          $("#overlay").css('display', 'flex');
-        } else {
-          e.preventDefault();
-          $(".next:visible").trigger("click");
+$(document).on('click', '.step-experience', function (e) {
+  e.preventDefault()
+  if ($(this).hasClass("next")) {
+      var valid = $("#registrationForm").valid()
+      if(valid == true) {
+        if (password_valid()) {
+          $('.nav-item a[href="#tab-experience"]').tab('show')
         }
       }
-    });
+  } else {
+    $('.nav-item a[href="#tab-experience"]').tab('show')
+  }
+})
 
-    $(".number_only").keypress(function (e) {
-      //if the letter is not digit then display error and don't type anything
-      return number_only($(this), e)
-    });
-
-    $(".number_only").focusout(function (e) {
-      //if the letter is not digit then display error and don't type anything
-      return number_only($(this), e)
-    });
-
-    $('#password2').focusout(function (e) {
-      password_match()
-    })
-
-    $(".address-select").change(function (e) {
-      var _id = $(this).val();
-      var url = $(this).attr("data-ajax-url");
-      var value = $(this).attr("data-value");
-      var target_name = $(this).attr("data-target").replace('user_','');
-      var current_name = $(this).attr('name');
-      var heirarchy = {
-          "region": [$("#user_province"), $("#user_municipality"), $("#user_barangay")],
-          "province": [$("#user_municipality"), $("#user_barangay")],
-          "municipality": [$("#user_barangay")],
-          "barangay": [],
-      }
-      $.ajax({
-        url: url,
-        data: {
-          '_id': _id,
-          'value': value,
-          'target_name': target_name,
-          'current_name': current_name,
-        },
-        success: function (data) {
-          heirarchy = heirarchy[current_name]
-          var target = heirarchy.shift();
-          target.html(data);
-          $.each( heirarchy, function( index, element ){
-              element.html('<option value="">Select...</option>');
-          });
-        },
-        error: function(xhr, textStatus, error){
-            console.log(xhr.statusText);
-            console.log(textStatus);
-            console.log(error);
+$(document).on('click', '.step-company-details', function (e) {
+  e.preventDefault()
+  if ($(this).hasClass("next")) {
+      var valid = $("#registrationForm").valid()
+      if(valid == true) {
+        if (password_valid()) {
+          $('.nav-item a[href="#tab-company-details"]').tab('show')
         }
+      }
+  } else {
+    $('.nav-item a[href="#tab-company-details"]').tab('show')
+  }
+})
+
+$(document).on('submit', "#registrationForm", function(e){
+  if ($('.required:visible').length) {
+    var valid = $('.required:visible').valid()
+    if (valid) {
+      if ($(".submit").is(":visible")) {
+        $("#overlay").css('display', 'flex');
+      } else {
+        e.preventDefault();
+        $(".next:visible").trigger("click");
+      }
+    } else {
+      e.preventDefault();
+    }
+  } else {
+    if ($(".submit").is(":visible")) {
+      $("#overlay").css('display', 'flex');
+    } else {
+      e.preventDefault();
+      $(".next:visible").trigger("click");
+    }
+  }
+});
+
+$(document).on('keypress', ".number_only", function (e) {
+  //if the letter is not digit then display error and don't type anything
+  return number_only($(this), e)
+});
+
+$(document).on('focusout', ".number_only", function (e) {
+  //if the letter is not digit then display error and don't type anything
+  return number_only($(this), e)
+});
+
+$(document).on('focusout', '#password2', function (e) {
+    password_valid()
+});
+
+$(document).on('change', ".address-select", function (e) {
+  var _id = $(this).val();
+  var url = $(this).attr("data-ajax-url");
+  var value = $(this).attr("data-value");
+  var target_name = $(this).attr("data-target").replace('user_','');
+  var current_name = $(this).attr('name');
+  var heirarchy = {
+      "region": [$("#user_province"), $("#user_municipality"), $("#user_barangay")],
+      "province": [$("#user_municipality"), $("#user_barangay")],
+      "municipality": [$("#user_barangay")],
+      "barangay": [],
+  }
+  $.ajax({
+    url: url,
+    data: {
+      '_id': _id,
+      'value': value,
+      'target_name': target_name,
+      'current_name': current_name,
+    },
+    success: function (data) {
+      heirarchy = heirarchy[current_name]
+      var target = heirarchy.shift();
+      target.html(data);
+      $.each( heirarchy, function( index, element ){
+          element.html('<option value="">Select...</option>');
       });
-    });
+    },
+    error: function(xhr, textStatus, error){
+        console.log(xhr.statusText);
+        console.log(textStatus);
+        console.log(error);
+    }
+  });
+});
 
-    $('.phone_number').keyup(function (e) {
-      var value = $(this).val()
-      if (value.length == 3) {
-        $(this).val(value + '-')
-      }
-    })
+$(document).on('keyup', '.phone_number', function (e) {
+  var value = $(this).val()
+  if (value.length == 3) {
+    $(this).val(value + '-')
+  }
+})
 
+$(document).on('focusout', '#password1', function (e) {
+  password_valid();
+});
+
+
+
+$(".alert").delay(4000).slideUp(200, function() {
+    $(this).alert('close');
 });

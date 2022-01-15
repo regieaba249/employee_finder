@@ -35,28 +35,58 @@
 
   <body>
     {% block navbar %}
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-          <a class="navbar-brand" href="#">Employee Finder</a>
-          <a class="text-light nounderline" href="{% url 'users:logout' %}">Sign Out</a>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Navbar w/ text</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-mdb-toggle="collapse"
+            data-mdb-target="#navbarText"
+            aria-controls="navbarText"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{% url 'jobs:jobs_board' %}">Home</a>
+              </li>
+            </ul>
+
+            <div class="btn-group">
+              <button type="button" class="btn btn-secondary dropdown-toggle" data-mdb-toggle="dropdown" aria-expanded="false">
+                {{ user.full_name }}
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                {% if user.user_type == "applicant" %}
+                <button class="dropdown-item" type="button"><a class="nav-link" href="{% url 'users:profile_edit' pk=user.id %}">Profile</a></button>
+                {% else %}
+                <button class="dropdown-item" type="button"><a class="nav-link" href="{% url 'companies:profile_edit' pk=user.id %}">Profile</a></button>
+                {% endif %}
+                <button class="dropdown-item" type="button"><a class="nav-link" href="{% url 'users:logout' %}">Logout</a></button>
+              </ul>
+            </div>
+          </div>
         </div>
       </nav>
     {% endblock %}
+    <main>
     {% block messages %}
       {% if messages %}
       <div id="message-container">
           {% for message in messages %}
           <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
             {{ message }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
           </div>
           {% endfor %}
       </div>
       {% endif %}
     {% endblock %}
     {% block body %}{% endblock %}
+    </main>
   </body>
 
   <div id="overlay" class="position-fixed">

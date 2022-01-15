@@ -17,7 +17,32 @@ from .models import (
 )
 
 
-class UserForm(forms.ModelForm):
+class UpdateForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+
+        fields = [
+            'first_name',
+            'last_name',
+            'middle_name',
+            'extension',
+            'gender',
+            'birthdate',
+            'user_avatar',
+            'area_code',
+            'phone_number',
+            'mobile_number',
+            'address',
+            'region',
+            'province',
+            'municipality',
+            'barangay',
+            'headline',
+            'user_type',
+        ]
+
+
+class RegistrationForm(forms.ModelForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(
         label='Password confirmation',
@@ -51,7 +76,6 @@ class UserForm(forms.ModelForm):
             'barangay',
             'email',
             'headline',
-            'overview',
             'user_type',
             'password1',
             'password2'

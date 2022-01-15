@@ -21,7 +21,8 @@ from django.views.generic.edit import (
 from .tokens import account_activation_token
 from .forms import (
     LoginForm,
-    UserForm
+    RegistrationForm,
+    UpdateForm
 )
 from apps.companies.models import Company
 from apps.jobs.models import (
@@ -34,6 +35,7 @@ from .models import (
     ApplicantAttachment,
     ApplicantExperience,
     ApplicantEducation,
+    ApplicantSkill,
     Region,
     Province,
     Municipality,
@@ -41,7 +43,8 @@ from .models import (
 
     # choices
     EMPLOYMENT_TYPE_CHOICES,
-    MONTH_CHOICES
+    MONTH_CHOICES,
+    EFFICIENCY_CHOICES
 )
 
 
@@ -100,6 +103,45 @@ def activate(request, uidb64, token):
 
     return HttpResponseRedirect(reverse_lazy('login'))
 
+
+def ajax_check_password(request):
+    password1 = request.GET.get("password1")
+    password2 = request.GET.get("password2")
+    MIN_LENGTH = 8
+    valid = True
+    _type = ""
+    message = ""
+
+    if password1 and password2 and password1 != password2:
+        return JsonResponse({
+            'valid': False,
+            'type': 'match',
+            'message': "Passwords don't match!",
+        })
+
+    # At least MIN_LENGTH long
+    first_isalpha = password1[0].isalpha()
+    if (len(password1) < MIN_LENGTH) or all(c.isalpha() == first_isalpha for c in password1):
+        return JsonResponse({
+            'valid': False,
+            'type': 'format',
+            'message': f"Password must be at least {MIN_LENGTH} characters, with atleast one capital and digit or punctuation.",
+        })
+
+    return JsonResponse({
+        'valid': valid,
+        'type': _type,
+        'message': message,
+    })
+
+
+def ajax_check_email(request):
+    email = request.GET.get('email')
+    exists = CustomUser.objects.filter(email=email).exists()
+
+    return JsonResponse({
+        'exists': exists,
+    })
 
 def ajax_load_address_dropdown(request):
 
@@ -171,8 +213,32 @@ def ajax_add_employment_history(request):
     })
 
 
-def ajax_add_education(request):
+def ajax_add_skill(request):
+    user_id = request.POST.get('_id')
+    school_name = request.POST.get('school_name')
+    efficiency = request.POST.get('efficiency')
+    file = request.FILES.get('file')
 
+    user = CustomUser.objects.get(id=user_id)
+    data = {
+        'applicant': user.applicant_data,
+        'name': school_name,
+        'efficiency': efficiency,
+        'attachment': file,
+    }
+    ApplicantSkill.objects.create(**data)
+
+    queryset = ApplicantSkill.objects.filter(
+        applicant=request.user.applicant_data
+    ).values()
+
+    return JsonResponse({
+        'success': True,
+        'items': list(queryset),
+    })
+
+
+def ajax_add_education(request):
     school_name = request.GET.get('school_name')
     degree = request.GET.get('degree')
     start_month = request.GET.get('start_month')
@@ -240,25 +306,12 @@ class LoginView(FormView):
     form_class = LoginForm
     redirect_authenticated_user = True
     template_name = 'login.html'
+    success_url = reverse_lazy('jobs:jobs_board',)
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return HttpResponseRedirect(reverse_lazy('jobs:jobs-board'))
+            return HttpResponseRedirect(reverse_lazy('jobs:jobs_board'))
         return super(LoginView, self).get(request, *args, **kwargs)
-
-
-    def get_success_url(self):
-
-        urls = {
-            'employer': 'companies:profile_edit',
-            'applicant': 'users:profile_edit',
-        }
-
-        return reverse_lazy(
-            urls[self.request.user.user_type],
-            kwargs={'pk': self.request.user.pk}
-        )
-
 
     def form_invalid(self, form):
         for key, value in form.errors.items():
@@ -286,10 +339,10 @@ class LoginView(FormView):
         return HttpResponseRedirect(reverse_lazy('login'))
 
 
-class RegistrationView(FormView):
+class RegistrationView(LoginRequiredMixin, FormView):
     """registration view"""
 
-    form_class = UserForm
+    form_class = RegistrationForm
     redirect_authenticated_user = True
     success_url = reverse_lazy('login')
     template_name = 'registration.html'
@@ -420,7 +473,7 @@ class RegistrationView(FormView):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return HttpResponseRedirect(reverse_lazy('jobs:jobs-board'))
+            return HttpResponseRedirect(reverse_lazy('jobs:jobs_board'))
         return super(RegistrationView, self).get(request, *args, **kwargs)
 
     def form_invalid(self, form):
@@ -434,10 +487,10 @@ class RegistrationView(FormView):
         return super(RegistrationView, self).form_valid(form)
 
 
-class CustomUserUpdateView(UpdateView):
+class CustomUserUpdateView(LoginRequiredMixin, UpdateView):
 
     model = CustomUser
-    fields = '__all__'
+    form_class = UpdateForm
     template_name = 'user_profile_update.html'
 
     def get_success_url(self):
@@ -448,9 +501,9 @@ class CustomUserUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(CustomUserUpdateView, self).get_context_data(**kwargs)
-        obj = self.model.objects.get(pk=self.kwargs.get('pk'))
-        context['resume'] = obj.applicant_data.resume
-        context['attachment_objs'] = ApplicantAttachment.objects.filter(applicant=obj.applicant_data)
+        applicant = self.object.applicant_data
+
+        # Static Values
         context['area_codes'] = ['02', '032', '033', '034', '035', '036',
                                  '038', '042', '043', '044', '045', '046',
                                  '047', '048', '049', '052', '053', '054',
@@ -470,17 +523,15 @@ class CustomUserUpdateView(UpdateView):
             'sep': 'September',
             'oct': 'October',
             'nov': 'November',
-            'dec': 'December',
-        }
+            'dec': 'December',}
         year = datetime.today().year
         context['years'] = list(range(year, year - 50, -1))
-
         context['employment_type_choices'] = dict(EMPLOYMENT_TYPE_CHOICES)
+        context['efficiency_choices'] = dict(EFFICIENCY_CHOICES)
 
         _region = context['form'].instance.region
         _province = context['form'].instance.province
         _municipality = context['form'].instance.municipality
-        _barangay = context['form'].instance.barangay
 
         context['regions'] = Region.objects.all()
         if _region:
@@ -494,82 +545,55 @@ class CustomUserUpdateView(UpdateView):
             context['municipalities'] = Municipality.objects.all()
 
         if _municipality:
-            context['barangays'] = Barangay.objects.filter(municipality=_municipality)
+            context['barangays'] = Barangay.objects.filter(
+                municipality=_municipality)
         else:
             context['barangays'] = Barangay.objects.all()
 
-        context['employment_history'] = ApplicantExperience.objects.filter(
-            applicant=obj.applicant_data
+        context['employment_history'] = applicant.applicant_experience.all(
         ).order_by('-current', '-start_month', '-start_year')
-
-        context['educational_history'] = ApplicantEducation.objects.filter(
-            applicant=obj.applicant_data
+        context['educational_history'] = applicant.applicant_education.all(
         ).order_by('-start_month', '-start_year')
+        context['skills'] = applicant.applicant_skills.all()
 
         return context
 
-    # def post(self, request, *args, **kwargs):
-    #     form_class = self.get_form_class()
-    #     form = self.get_form(form_class)
-    #     user = form.instance
-    #     resume = request.FILES.get('resume')
-    #     files = request.FILES.getlist('attachments')
-    #     applicant_status = form.data.get('applicant_status', '')
-    #     token = account_activation_token.make_token(user)
-    #     form.instance.token = token
+    def post(self, request, *args, **kwargs):
+        res = super(CustomUserUpdateView, self).post(request, *args, **kwargs)
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        applicant = form.instance.applicant_data
 
-    #     if form.is_valid():
-    #         form.save()
-    #         if self.request.path == '/users/register/applicant/':
-    #             applicant_data = {
-    #                 'user': user,
-    #                 'applicant_status': applicant_status,
-    #                 'resume': resume,
-    #             }
-    #             applicant = Applicant.objects.create(**applicant_data)
+        resume = request.FILES.get('resume')
+        files = request.FILES.getlist('attachments')
+        applicant_status = form.data.get('applicant_status', '')
+        overview = form.data.get('overview', '')
 
-    #             for f in files:
-    #                 applicant_data = {
-    #                     'applicant': applicant,
-    #                     'attachment': f,
-    #                 }
-    #                 ApplicantAttachment.objects.create(**applicant_data)
-    #         else:
-    #             pass
+        # Update Applicant Data
+        Applicant.objects.filter(id=applicant.id).update(
+            resume=resume,
+            applicant_status=applicant_status,
+            overview=overview
+        )
 
-    #         res = self.form_valid(form)
+        for file in files:
+            ApplicantAttachment.objects.create(
+                applicant=applicant,
+                attachment=file
+            )
 
-    #         current_site = get_current_site(request)
-    #         mail_subject = 'Activate your account'
-    #         message = render_to_string('acc_active_email.html', {
-    #             'user': user,
-    #             'domain': current_site.domain,
-    #             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-    #             'token': token,
-    #         })
-    #         to_email = form.cleaned_data.get('email')
-    #         send_mail(
-    #             mail_subject,
-    #             message,
-    #             settings.EMAIL_HOST_USER,
-    #             [to_email],
-    #             fail_silently=False,
-    #         )
-
-    #         return res
-    #     else:
-    #         return self.form_invalid(form)
+        return res
 
     def form_invalid(self, form):
         for key, value in form.errors.items():
             for msg in value:
                 messages.error(self.request, f"{key}: {msg}")
-
-        return super(CustomUserUpdateView, self).form_invalid(form)
+        return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
         """ process user login"""
         context = super(CustomUserUpdateView, self).form_valid(form)
+        messages.success(self.request, "Successfully Updated your profile details")
         return context
 
 
