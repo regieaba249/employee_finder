@@ -6,60 +6,18 @@ from django.utils.translation import gettext_lazy as _
 from employee_finder.managers import CustomUserManager
 
 from employee_finder.models import BaseModel
+from employee_finder.helpers import (
+    # functions
+    get_upload_to,
 
-
-optional = {
-    'blank': True,
-    'null': True
-}
-
-EFFICIENCY_CHOICES = (
-    ('beginner', 'Beginner'),
-    ('intermediate', 'Intermediate'),
-    ('advanced', 'Advanced'),
-)
-
-MONTH_CHOICES = (
-    ('', '------'),
-    ('jan', 'January'),
-    ('feb', 'February'),
-    ('mar', 'March'),
-    ('apr', 'April'),
-    ('may', 'May'),
-    ('jun', 'June'),
-    ('jul', 'July'),
-    ('aug', 'August'),
-    ('sep', 'September'),
-    ('oct', 'October'),
-    ('nov', 'November'),
-    ('dec', 'December')
-)
-
-GENDER_CHOICES = (
-    ('select', 'Select...'),
-    ('male', 'Male'),
-    ('female', 'Female'),
-    ('others', 'Others')
-)
-
-USER_TYPE_CHOICES = (
-    ('employer', 'Employer'),
-    ('applicant', 'Applicant')
-)
-
-APPLICANT_STATUS_CHOICES = (
-    ('employed', 'Employed'),
-    ('unemployed', 'Unemployed')
-)
-
-EMPLOYMENT_TYPE_CHOICES = (
-    ('select', 'Select...'),
-    ('full_time', 'Full Time'),
-    ('part_time', 'Part Time'),
-    ('self_employed', 'Self Employed'),
-    ('freelance', 'Freelance'),
-    ('contract', 'Contractual'),
-    ('internship', 'Internship')
+    # reusable values
+    optional,
+    EFFICIENCY_CHOICES,
+    MONTH_CHOICES,
+    GENDER_CHOICES,
+    USER_TYPE_CHOICES,
+    APPLICANT_STATUS_CHOICES,
+    EMPLOYMENT_TYPE_CHOICES
 )
 
 
@@ -255,7 +213,7 @@ class Applicant(BaseModel):
         choices=APPLICANT_STATUS_CHOICES,
         default='unemployed'
     )
-    resume = models.FileField(**optional)
+    resume = models.FileField(upload_to=get_upload_to, **optional)
     overview = models.TextField(**optional)
     # minimum_expected_salary
 
@@ -266,6 +224,47 @@ class Applicant(BaseModel):
         self.resume.storage.delete(self.resume.name)
         super().delete()
 
+    @property
+    def get_total_points(self):
+        points = 0
+        user = self.user
+        points += 1 if user.first_name else 0
+        points += 1 if user.last_name else 0
+        points += 1 if user.extension else 0
+        points += 1 if user.email else 0
+        points += 2 if user.phone_number else 0
+        points += 2 if user.mobile_number else 0
+        points += 5 if user.headline else 0
+        points += 1 if user.birthdate else 0
+        points += 10 if user.user_avatar else 0
+        points += 1 if user.gender else 0
+        points += 5 if user.address else 0
+        points += 5 if user.region else 0
+        points += 5 if user.province else 0
+        points += 5 if user.municipality else 0
+        points += 5 if user.barangay else 0
+        points += 20 if self.resume else 0
+        points += 50 if self.overview else 0
+        points += self.applicant_attachments.count() * 10
+        points += self.applicant_education.count() * 10
+
+        for x in self.applicant_experience.all():
+            points += 1 if x.company_name else 0
+            points += 1 if x.job_position else 0
+            points += 1 if x.employment_type else 0
+            points += 10 if x.description else 0
+            points += 5 if x.reference_person else 0
+            points += 5 if x.mobile_number else 0
+
+        for x in self.applicant_skills.all():
+            points += 1 if x.name else 0
+            points += 5 if x.attachment else 0
+            points += 10 if x.efficiency == "beginner" else 0
+            points += 20 if x.efficiency == "intermediate" else 0
+            points += 30 if x.efficiency == "advanced" else 0
+
+        return points
+
 
 class ApplicantAttachment(BaseModel):
     applicant = models.ForeignKey(
@@ -274,7 +273,7 @@ class ApplicantAttachment(BaseModel):
         on_delete=models.CASCADE,
         null=True
     )
-    attachment = models.FileField(null=True)
+    attachment = models.FileField(upload_to=get_upload_to, null=False)
 
     def __str__(self):
         return f"{self.attachment}"
@@ -282,6 +281,10 @@ class ApplicantAttachment(BaseModel):
     def delete(self, using=None, keep_parents=False):
         self.attachment.storage.delete(self.attachment.name)
         super().delete()
+
+    @property
+    def get_user_id(self):
+        return self.applicant.user.id
 
 
 class ApplicantExperience(BaseModel):
@@ -295,13 +298,13 @@ class ApplicantExperience(BaseModel):
     start_month = models.CharField(
         max_length=15,
         choices=MONTH_CHOICES,
-        default='select'
+        default='jan'
     )
     start_year = models.CharField(max_length=50, blank=False)
     end_month = models.CharField(
         max_length=15,
         choices=MONTH_CHOICES,
-        default='select',
+        default='jan',
         **optional
     )
     end_year = models.CharField(max_length=50, **optional)
@@ -363,13 +366,13 @@ class ApplicantEducation(BaseModel):
     start_month = models.CharField(
         max_length=15,
         choices=MONTH_CHOICES,
-        default='select'
+        default='jan'
     )
     start_year = models.CharField(max_length=50, blank=False)
     end_month = models.CharField(
         max_length=15,
         choices=MONTH_CHOICES,
-        default='select'
+        default='jan'
     )
     end_year = models.CharField(max_length=50, blank=False)
     reference_person = models.CharField(max_length=250, **optional)
@@ -412,16 +415,20 @@ class ApplicantSkill(BaseModel):
         on_delete=models.CASCADE,
         null=True
     )
-    name = models.FileField(**optional)
+    name = models.CharField(max_length=50, blank=False)
     efficiency = models.CharField(
         max_length=12,
         choices=EFFICIENCY_CHOICES,
-        default='1'
+        default='beginner'
     )
-    attachment = models.FileField(null=True)
+    attachment = models.FileField(upload_to=get_upload_to, **optional)
 
     def __str__(self):
         return f"{self.applicant.user.email}"
+
+    @property
+    def get_user_id(self):
+        return self.applicant.user.id
 
 
 class ApplicantSeminar(BaseModel):
@@ -431,12 +438,16 @@ class ApplicantSeminar(BaseModel):
         on_delete=models.CASCADE,
         null=True
     )
-    summary = models.FileField(**optional)
+    summary = models.FileField(upload_to=get_upload_to, **optional)
     description = models.TextField(**optional)
     birthdate = models.DateField(**optional)
 
     def __str__(self):
         return f"{self.applicant.user.email}"
+
+    @property
+    def get_user_id(self):
+        return self.applicant.user.id
 
 
 class ApplicantSeminarAttachment(BaseModel):
@@ -446,7 +457,11 @@ class ApplicantSeminarAttachment(BaseModel):
         on_delete=models.CASCADE,
         null=True
     )
-    attachment = models.FileField(null=True)
+    attachment = models.FileField(upload_to=get_upload_to, null=True)
 
     def __str__(self):
         return f"{self.applicant.user.email} - {self.attachment}"
+
+    @property
+    def get_user_id(self):
+        return self.seminar.applicant.user.id

@@ -162,3 +162,7 @@ nav {
     border: 0;
     border-radius: 0;
 }
+
+tr.cursor {
+  cursor: pointer;
+}

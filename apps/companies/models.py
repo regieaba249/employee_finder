@@ -5,12 +5,10 @@ from django.utils.translation import gettext_lazy as _
 
 from apps.users.models import CustomUser, Applicant
 from employee_finder.models import BaseModel
+from employee_finder.helpers import (
+    optional
+)
 
-
-optional = {
-    'blank': True,
-    'null': True
-}
 
 EMPLOYMENT_STATUS_CHOICES = (
     ('full_time', 'Full Time'),

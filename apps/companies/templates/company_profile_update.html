@@ -22,11 +22,11 @@
             <div class="col-md-3 px-1">
 
               <!-- User Avatar -->
-              <div class="d-flex flex-column align-items-center p-2 py-3">
+              <div class="d-flex flex-column align-items-center p-2 pb-0 py-3">
                 <img class="rounded-circle avatar" width="200px" src="{{ object.user_avatar.url }}">
               </div>
 
-              <div class="form-group px-4 mb-2">
+              <div class="form-group p-3 mb-2 border">
                 <h5>Hiring Agent</h5>
                 <small class="form-text text-muted">Officer in charge of the hiring process...</small>
 
@@ -242,32 +242,20 @@
                           <tr>
                             <th class="text-center">Job Title</th>
                             <th class="text-center" style="width: 35%">Job Description</th>
-                            <th class="text-center">Vacancy</th>
-                            <th class="text-center">Salary Range</th>
-                            <th class="text-center" style="width: 15%">Attachments</th>
                             <th class="text-center" style="width: 15%">Skills</th>
-                            <th class="text-center"></th>
+                            <th class="text-center" style="width: 5%"></th>
                           </tr>
                         </thead>
                         <tbody>
                           {% if job_postings.all %}
-                            {% for data in job_postings.all %}
-                            <tr>
-                              <td>{{ data.job_title }}</td>
-                              <td class="text-truncate">{{ data.description }}</td>
-                              <td>{{ data.vacancy }}</td>
-                              <td>{{ data.salary_range }}</td>
-                              <td>
-                                  {% for file in data.job_posting_attachments.all %}
-                                    <span class="badge rounded-pill bg-info w-100 text-truncate">
-                                      <a href="{{ file.url }}">{{ file }}</a> |
-                                    </span>
-                                  {% endfor %}
-                              </td>
-                              <td>{{ data.required_skills }}</td>
+                            {% for posting in job_postings.all %}
+                            <tr class="job_posting_table_item cursor" data-id="{{ posting.id }}" data-ajax-url="{% url 'jobs:ajax_job_details' %}">
+                              <td>{{ posting.job_title }}</td>
+                              <td class="text-truncate">{{ posting.description }}</td>
+                              <td>{{ posting.required_skills }}</td>
                               <td class="p-0">
                                 <span class="table-remove">
-                                  <span class="remove-row" data-id="{{ data.id }}" data-table="CompanyJobPosting">
+                                  <span class="remove-row" data-id="{{ posting.id }}" data-table="CompanyJobPosting">
                                     <i class="fas fa-times-circle"></i>
                                   </span>
                                 </span>
@@ -302,8 +290,8 @@
   </div>
 
   <!-- Modal -->
-  <div class="modal fade" id="addJobPostingModal" data-ajax-url="{% url 'companies:ajax_add_job_posting' %}" data-csrf-token="{{ csrf_token }}" tabindex="-1" role="dialog" aria-labelledby="addJobPostingTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
+  <div class="modal fade" id="addJobPostingModal" data-ajax-url="{% url 'jobs:ajax_add_job_posting' %}" data-csrf-token="{{ csrf_token }}" tabindex="-1" role="dialog" aria-labelledby="addJobPostingTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="">Job Posting Details</h5>

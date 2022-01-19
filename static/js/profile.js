@@ -399,3 +399,118 @@ $(document).on('click', '#addSkillSubmit', function (e) {
   });
 
 });  // addSkillSubmit
+
+$(document).on('click', 'tr.job_posting_table_item', function() {
+  var _this = $(this)
+  var _id = _this.attr("data-id");
+
+  $.ajax({
+    url: '/jobs/ajax/job-details/',
+    data: {
+      'id': _id,
+    },
+    success: function (data) {
+      $("#emptyModal").modal('toggle');
+      $("#emptyModal .modal-content").html(data.postingStr);
+    },
+    error: function(xhr, textStatus, error){
+        console.log(xhr.statusText);
+        console.log(textStatus);
+        console.log(error);
+    }
+  });
+
+}) ;
+
+$(document).on('click', '#updateJobPostingSubmit', function (e) {
+  e.preventDefault()
+
+  var modal = $(this).closest(".modal")
+  var url = $(this).attr("data-ajax-url");
+  var csrf_token = $(this).attr("data-csrf-token");
+  var _id = $(this).attr("data-id");
+  var job_title = modal.find("#job_title").val()
+  var description = modal.find("#description").val()
+  var vacancy = modal.find("#vacancy").val()
+  var salary_range_end = modal.find("#salary_range_end").val()
+  var salary_range_start = modal.find("#salary_range_start").val()
+  var preferred_skills = modal.find("#preferred_skills").val()
+
+  var formData = new FormData()
+  formData.append('job_title', job_title)
+  formData.append('description', description)
+  formData.append('vacancy', vacancy)
+  formData.append('salary_range_end', salary_range_end)
+  formData.append('salary_range_start', salary_range_start)
+  formData.append('preferred_skills', preferred_skills)
+  formData.append('csrfmiddlewaretoken', csrf_token)
+  formData.append('id', _id)
+  $.each(modal.find("#attachments")[0].files, function(i, file) {
+    formData.append("files", file);
+  });
+
+  $.ajax({
+    url: url,
+    data: formData,
+    method: 'post',
+    processData: false,
+    contentType: false,
+    cache: false,
+    enctype: 'multipart/form-data',
+    success: function (data) {
+      $("#emptyModal .modal-content").html(data.postingStr);
+      modal.modal('toggle');
+    },
+    error: function(xhr, textStatus, error){
+        console.log(xhr.statusText);
+        console.log(textStatus);
+        console.log(error);
+    }
+  });
+
+});  // addJobPostingSubmit
+
+$(document).on('click', '.postingCandidateApply', function (e) {
+  var _this = $(this)
+  var _id = $(this).attr("data-posting-id");
+  var user_id = $(this).attr("data-user-id");
+  var url = $(this).attr("data-ajax-url");
+  var action = "apply"
+
+  _this.attr('disabled','disabled');
+
+  $.ajax({
+      url: url,
+      data: {
+        'id': _id,
+        'user_id': user_id,
+        'action': action,
+      },
+      success: function (data) {
+        reload_candidates(_id);
+      },
+      error: function(xhr, textStatus, error){
+          console.log(xhr.statusText);
+          console.log(textStatus);
+          console.log(error);
+      }
+    });
+
+});
+
+function reload_candidates(_id) {
+  $.ajax({
+    url: '/jobs/ajax/get-candidates/',
+    data: {
+      '_id':_id
+    },
+    success: function (data) {
+      $('.candidates_container').html(data.postingStr);
+    },
+    error: function(xhr, textStatus, error){
+        console.log(xhr.statusText);
+        console.log(textStatus);
+        console.log(error);
+    }
+  });
+}

@@ -1,7 +1,9 @@
 from django import template
 from django.template.defaultfilters import stringfilter
-from apps.users.models import MONTH_CHOICES
 from apps.jobs.models import JobPostingApplicant
+from employee_finder.helpers import (
+    MONTH_CHOICES
+)
 
 register = template.Library()
 

@@ -11,4 +11,8 @@ urlpatterns = [
     path('ajax/filter_postings/', views.ajax_filter_postings, name='ajax_filter_postings'),
     path('ajax/archive/', views.ajax_archive_postings, name='ajax_archive_postings'),
     path('ajax/add-to-posting/', views.ajax_add_to_posting, name='ajax_add_to_posting'),
+    path('ajax/job-details/', views.ajax_job_details, name='ajax_job_details'),
+    path('ajax/add-job-posting/', views.ajax_add_job_posting, name='ajax_add_job_posting'),
+    path('ajax/edit-job-posting/', views.ajax_edit_job_posting, name='ajax_edit_job_posting'),
+    path('ajax/get-candidates/', views.ajax_get_candidates, name='ajax_get_candidates'),
 ]

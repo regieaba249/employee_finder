@@ -1,0 +1,21 @@
+
+{% autoescape off %}
+  {% for applicant in posting.get_candidates %}
+    <div class="bg-white border mt-2 col-12 col-md-12">
+      <div class="d-flex">
+        <div class="me-auto p-2">
+          <div class="d-flex flex-row align-items-center feed-text px-2">
+            <img class="rounded-circle" src="{{ applicant.user.user_avatar.url }}" width="45">
+            <div class="d-flex flex-column flex-wrap ml-2">
+              <span class="font-weight-bold">{{ applicant.user.full_name }}</span>
+              <span class="text-black-50 time">{{ applicant.user.headline }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="p-2 align-self-center">
+          <button class="postingCandidateApply" data-posting-id="{{ posting.id }}" data-user-id="{{ applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_apply' %}" data-action="apply">Pick</button>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endautoescape %}

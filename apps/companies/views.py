@@ -22,58 +22,14 @@ from apps.users.models import (
     Province,
     Municipality,
     Barangay,
-    EMPLOYMENT_TYPE_CHOICES
 )
 from apps.users.forms import (
     UpdateForm
 )
+from employee_finder.helpers import EMPLOYMENT_TYPE_CHOICES
 
 
 # Create your views here.
-def ajax_add_job_posting(request):
-
-    job_title = request.POST.get('job_title')
-    description = request.POST.get('description')
-    vacancy = request.POST.get('vacancy')
-    salary_range_end = request.POST.get('salary_range_end')
-    salary_range_start = request.POST.get('salary_range_start')
-    preferred_skills = request.POST.get('preferred_skills')
-    attachments = request.FILES.getlist('files')
-
-    data = {
-        'company': request.user.company_data,
-        'job_title': job_title,
-        'description': description,
-        'vacancy': vacancy,
-        'salary_range_end': salary_range_end,
-        'salary_range_start': salary_range_start,
-        'preferred_skills': preferred_skills,
-    }
-    posting = CompanyJobPosting.objects.create(**data)
-
-    for file in attachments:
-        data = {
-            'job_posting': posting,
-            'attachment': file,
-        }
-        JobPostingAttachment.objects.create(**data)
-
-    postings = request.user.company_data.company_jobs.all().order_by('-created_at').values()
-    attachments = posting.job_posting_attachments.all().order_by('-created_at').values()
-
-    postingStr = ''
-    for posting in postings:
-        postingStr += render_to_string('job_posting_table_item.html', {
-            'posting': posting,
-        })
-
-    return JsonResponse({
-        'success': True,
-        'postingStr': postingStr,
-        'attachments': list(attachments),
-    })
-
-
 class CompanyUpdateView(LoginRequiredMixin, UpdateView):
 
     model = CustomUser

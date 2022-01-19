@@ -44,7 +44,11 @@ from .models import (
     # choices
     EMPLOYMENT_TYPE_CHOICES,
     MONTH_CHOICES,
-    EFFICIENCY_CHOICES
+)
+
+from employee_finder.helpers import (
+    EFFICIENCY_CHOICES,
+    MONTH_CHOICES
 )
 
 

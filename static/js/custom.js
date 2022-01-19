@@ -242,7 +242,19 @@ $(document).on('focusout', '#password1', function (e) {
   password_valid();
 });
 
-
+$(document).on('click', '.see-password', function (e) {
+  var input = $(this).parent().find('input')
+  event.preventDefault();
+  if(input.attr("type") == "text"){
+      input.attr('type', 'password');
+      $(this).find('i').addClass( "fa-eye-slash" );
+      $(this).find('i').removeClass( "fa-eye" );
+  }else if(input.attr("type") == "password"){
+      input.attr('type', 'text');
+      $(this).find('i').removeClass( "fa-eye-slash" );
+      $(this).find('i').addClass( "fa-eye" );
+  }
+});
 
 $(".alert").delay(4000).slideUp(200, function() {
     $(this).alert('close');

@@ -1,0 +1,18 @@
+Test the views:
+1. Switch to the GBQ project `Saltbox Clients ETL`
+2. Upload and replace `views.py` from local to `saltbox_test_dependencies` from https://console.cloud.google.com/storage/browser/us-east1-saltbox-airflow-aa3122fc-bucket/dags/saltbox_test_dependencies?pageState=(%22StorageObjectListTable%22:(%22f%22:%22%255B%255D%22))&project=saltbox-clients-etl&prefix=&forceOnObjectsSortingFiltering=false
+3. Modify the file `saltbox_test_dag.py` and comment out other unnecessary tasks and just leave the ones you need to test
+4. Upload and replace the file `saltbox_test_dag.py` from this bucket https://console.cloud.google.com/storage/browser/us-east1-saltbox-airflow-aa3122fc-bucket/dags;tab=objects?project=saltbox-clients-etl&pageState=(%22StorageObjectListTable%22:(%22f%22:%22%255B%255D%22))&prefix=&forceOnObjectsSortingFiltering=false
+5. Check Airflow if the task succeeds without issues.
+6. Check GBQ console if the view was successfully created under the project saltbox-test
+
+Push to prod process for Airflow:
+1. Delete the saltbox_dependencies directory (locally)
+2. Make a copy of the saltbox_test_dependencies folder and name it saltbox_dependencies (locally)
+3. Run a find and replace in the new saltbox_dependencies folder, replacing "saltbox_test_dependencies" with "saltbox_dependencies" and replacing "os.environ['SALTBOX_TEST_" with "os.environ['SALTBOX_APP_"  (locally)
+4. Replace the existing saltbox_dependencies folder in the Google Cloud Storage /dags folder with the new/modified saltbox_dependencies directory
+5. Delete the saltbox_prod_dag.py file (locally)
+6. Make a copy of the saltbox_test_dag.py file and rename it to saltbox_prod_dag.py  (locally)
+7. Find and replace "saltbox_test_dependencies" with "saltbox_dependencies" and "saltbox_test_dag" with "saltbox_prod_dag" in the new saltbox_prod_dag.py file (locally)
+8. Replace the existing saltbox_prod_dag.py file in the Google Cloud Storage /dags folder with the new file
+9. Delete the saltbox_test_dag.py file from the Google Cloud Storage /dags folder

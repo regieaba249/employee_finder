@@ -1,3 +1,4 @@
+import django
 from datetime import datetime
 
 from django.conf import settings
@@ -16,8 +17,122 @@ from apps.users.models import (
 )
 from .models import (
     CompanyJobPosting,
-    JobPostingApplicant
+    JobPostingApplicant,
+    JobPostingAttachment
 )
+from employee_finder.helpers import EMPLOYMENT_TYPE_CHOICES
+
+
+def ajax_get_candidates(request):
+    _id = request.GET.get('_id')
+    posting = CompanyJobPosting.objects.get(id=_id)
+    postingStr = render_to_string('posting_candidates_list_render.html', {
+        'posting': posting,
+    })
+
+    return JsonResponse({
+        'success': True,
+        'postingStr': postingStr,
+    })
+
+
+def ajax_edit_job_posting(request):
+
+    _id = request.POST.get('id')
+    job_title = request.POST.get('job_title')
+    description = request.POST.get('description')
+    vacancy = request.POST.get('vacancy')
+    salary_range_end = request.POST.get('salary_range_end')
+    salary_range_start = request.POST.get('salary_range_start')
+    preferred_skills = request.POST.get('preferred_skills')
+    attachments = request.FILES.getlist('files')
+
+    posting = CompanyJobPosting.objects.get(pk=_id)
+    posting.company = request.user.company_data
+    posting.job_title = job_title
+    posting.description = description
+    posting.vacancy = vacancy
+    posting.salary_range_end = salary_range_end
+    posting.salary_range_start = salary_range_start
+    posting.preferred_skills = preferred_skills
+    posting.save()
+
+    for file in attachments:
+        data = {
+            'job_posting': posting,
+            'attachment': file,
+        }
+        JobPostingAttachment.objects.create(**data)
+
+    message = f'''<div class="alert alert-success alert-dismissible fade show" role="alert">Successfully Updated.</div>'''
+    postingStr = render_to_string('job_posting_details_page.html', {
+        'posting': posting,
+        'employment_type_choices': dict(EMPLOYMENT_TYPE_CHOICES),
+        'csrf_token': django.middleware.csrf.get_token(request),
+        'message': message,
+    })
+
+    return JsonResponse({
+        'success': True,
+        'postingStr': postingStr,
+    })
+
+
+def ajax_add_job_posting(request):
+
+    job_title = request.POST.get('job_title')
+    description = request.POST.get('description')
+    vacancy = request.POST.get('vacancy')
+    salary_range_end = request.POST.get('salary_range_end')
+    salary_range_start = request.POST.get('salary_range_start')
+    preferred_skills = request.POST.get('preferred_skills')
+    attachments = request.FILES.getlist('files')
+
+    data = {
+        'company': request.user.company_data,
+        'job_title': job_title,
+        'description': description,
+        'vacancy': vacancy,
+        'salary_range_end': salary_range_end,
+        'salary_range_start': salary_range_start,
+        'preferred_skills': preferred_skills,
+    }
+    posting = CompanyJobPosting.objects.create(**data)
+
+    for file in attachments:
+        data = {
+            'job_posting': posting,
+            'attachment': file,
+        }
+        JobPostingAttachment.objects.create(**data)
+
+    postings = request.user.company_data.company_jobs.all().order_by('-created_at').values()
+    attachments = posting.job_posting_attachments.all().order_by('-created_at').values()
+
+    postingStr = ''
+    for posting in postings:
+        postingStr += render_to_string('job_posting_table_item.html', {
+            'posting': posting,
+        })
+
+    return JsonResponse({
+        'success': True,
+        'postingStr': postingStr,
+        'attachments': list(attachments),
+    })
+
+
+def ajax_job_details(request):
+    _id = request.GET.get('id')
+    postingStr = render_to_string('job_posting_details_page.html', {
+        'posting': CompanyJobPosting.objects.get(id=_id),
+        'employment_type_choices': dict(EMPLOYMENT_TYPE_CHOICES),
+        'csrf_token': django.middleware.csrf.get_token(request),
+    })
+    return JsonResponse({
+        'success': True,
+        'postingStr': postingStr,
+    })
 
 
 def ajax_add_to_posting(request):
@@ -206,13 +321,16 @@ def ajax_schedule_interview(request):
 
 def ajax_apply(request):
     _id = request.GET.get('id')
+    user_id = request.GET.get('user_id')
     action = request.GET.get('action')
     job_posting = CompanyJobPosting.objects.get(id=_id)
+    user = CustomUser.objects.get(id=user_id)
 
     data = {
         'company_job': job_posting,
-        'applicant': request.user.applicant_data,
+        'applicant': user.applicant_data,
     }
+
     if action == 'apply':
         JobPostingApplicant.objects.create(**data)
     else:
@@ -221,11 +339,11 @@ def ajax_apply(request):
 
     mail_subject = f'New Applicant for position: {job_posting.job_title}'
     message = render_to_string('new_applicant_email.html', {
-        'user': request.user,
+        'user': user,
         'hiring_agent': job_posting.company.owner,
         'job_posting': job_posting,
         'user_profile': reverse_lazy('users:profile_edit',
-                                     kwargs={'pk': request.user.pk})
+                                     kwargs={'pk': user_id})
     })
 
     to_email = job_posting.company.owner.email

@@ -1,6 +1,7 @@
 $(document).on('click', '.jobPostingApply', function (e) {
   var _this = $(this)
-  var _id = $(this).attr("data-id");
+  var _id = $(this).attr("data-posting-id");
+  var user_id = $(this).attr("data-user-id");
   var url = $(this).attr("data-ajax-url");
   var action = $(this).attr("data-action");
 
@@ -11,6 +12,7 @@ $(document).on('click', '.jobPostingApply', function (e) {
           url: url,
           data: {
             'id': _id,
+            'user_id': user_id,
             'action': action,
           },
           success: function (data) {
