@@ -343,13 +343,24 @@ class LoginView(FormView):
         return HttpResponseRedirect(reverse_lazy('login'))
 
 
-class RegistrationView( FormView):
+class RegistrationView(FormView):
     """registration view"""
 
     form_class = RegistrationForm
     redirect_authenticated_user = True
-    success_url = reverse_lazy('login')
     template_name = 'registration.html'
+
+    def get_success_url(self, **kwargs):
+        user = CustomUser.objects.get(id=self.user_id)
+        if user.user_type == 'applicant':
+            return reverse_lazy('login')
+        else:
+            return reverse_lazy(
+                'payments:cc_subscription_page',
+                kwargs={'pk': self.user_id}
+            )
+
+
 
     def get_context_data(self, *args, **kwargs):
         context = super(RegistrationView, self).get_context_data(*args, **kwargs)
@@ -405,19 +416,8 @@ class RegistrationView( FormView):
 
         if form.is_valid():
 
-            # if form.data.get('region', None):
-            #     form.instance.region = Region.objects.get(id=form.data.get('region'))
-
-            # if form.data.get('province', None):
-            #     form.instance.province = Province.objects.get(id=form.data.get('province'))
-
-            # if form.data.get('municipality', None):
-            #     form.instance.municipality = Municipality.objects.get(id=form.data.get('municipality'))
-
-            # if form.data.get('barangay', None):
-            #     form.instance.barangay = Barangay.objects.get(id=form.data.get('barangay'))
-
             form.save()
+            self.user_id = user.id
             if user_type == 'applicant':
                 applicant_data = {
                     'user': user,
@@ -432,8 +432,26 @@ class RegistrationView( FormView):
                         'attachment': f,
                     }
                     ApplicantAttachment.objects.create(**attachment_data)
-            else:
 
+                current_site = get_current_site(request)
+                mail_subject = 'Activate your account'
+                message = render_to_string('acc_active_email.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': token,
+                })
+                # to_email = form.cleaned_data.get('email')
+                to_email = 'regieaba249@gmail.com'
+                send_mail(
+                    mail_subject,
+                    message,
+                    settings.EMAIL_HOST_USER,
+                    [to_email],
+                    fail_silently=True,
+                )
+
+            else:
                 company_data = {
                     'owner': user,
                     'name': form.data.get('company_name', ''),
@@ -454,23 +472,6 @@ class RegistrationView( FormView):
 
             res = self.form_valid(form)
 
-            current_site = get_current_site(request)
-            mail_subject = 'Activate your account'
-            message = render_to_string('acc_active_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': token,
-            })
-            to_email = form.cleaned_data.get('email')
-            send_mail(
-                mail_subject,
-                message,
-                settings.EMAIL_HOST_USER,
-                [to_email],
-                fail_silently=True,
-            )
-
             return res
         else:
             return self.form_invalid(form)
@@ -487,6 +488,7 @@ class RegistrationView( FormView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
+        import pdb; pdb.set_trace()
         messages.success(self.request, "Successfully Registered. Please validate via the email we sent to activate your account.")
         return super(RegistrationView, self).form_valid(form)
 

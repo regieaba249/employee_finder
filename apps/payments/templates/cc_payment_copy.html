@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Payment {% endblock %}
+{% block css %}
+  <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block navbar %}{% endblock %}
+{% block messages %}{% endblock %}
+{% block body %}
+
+  <div class="content">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <img src="{% static '/images/undraw_remotely_2j6y.svg' %}" alt="Image" class="img-fluid">
+        </div>
+        <div class="col-md-6 contents">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="mb-4">
+                <h3>Payment</h3>
+              </div>
+              {% if messages %}
+              <div id="message-container">
+                  {% for message in messages %}
+                  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                  {% endfor %}
+              </div>
+              {% endif %}
+              <form action="#" method="post">
+                {% csrf_token %}
+                <h5>Card Information</h5>
+                <div class="row px-2">
+                  <div class="form-outline mb-1 col-12 col-md-12">
+                    <input type="text" id="card_number" name="card_number" class="form-control form-control-lg number_only" required/>
+                    <label class="form-label" for="card_number">Card Number</label>
+                  </div>
+                  <div class="form-outline mb-1 col-4 col-md-4">
+                    <input type="number" id="exp_month" name="exp_month" class="form-control form-control-lg number_only two-digit" min="01" max="12" required/>
+                    <label class="form-label" for="exp_month">MM</label>
+                  </div>
+                  <div class="form-outline mb-1 col-4 col-md-4">
+                    <input type="number" id="exp_year" name="exp_year" class="form-control form-control-lg number_only two-digit" min="01" max="99" required/>
+                    <label class="form-label" for="exp_year">YY</label>
+                  </div>
+                  <div class="form-outline mb-1 col-4 col-md-4">
+                    <input type="number" id="cvc" name="cvc" class="form-control form-control-lg number_only three-digit" min="000" max="999" required/>
+                    <label class="form-label" for="cvc">CVC</label>
+                  </div>
+                  <div class="form-outline mb-1 col-12 col-md-12">
+                    <input type="text" id="name" name="name" class="form-control form-control-lg" required/>
+                    <label class="form-label" for="name">Name on Card</label>
+                  </div>
+                </div>
+
+
+                <div class="align-items-center text-center mt-3">
+                  <input type="submit" value="Pay" class="btn btn-primary w-100 mb-3">
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block js %}{% endblock %}

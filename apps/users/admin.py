@@ -43,6 +43,7 @@ class MyUserAdmin(AuthUserAdmin):
         (_('Permissions'), {'fields': (
             'is_active',
             'is_staff',
+            'is_paid',
             'is_superuser',
             'token',
             'groups',

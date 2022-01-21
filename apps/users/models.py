@@ -107,7 +107,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     gender = models.CharField(
         max_length=10,
         choices=GENDER_CHOICES,
-        default='select',
         **optional
     )
     user_type = models.CharField(
@@ -120,6 +119,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_superadmin = models.BooleanField(_('is_superadmin'), default=False)
     is_active = models.BooleanField(_('is_active'), default=False)
     is_staff = models.BooleanField(default=True)
+    is_paid = models.BooleanField(default=False)
     address = models.CharField(max_length=250, **optional)
     region = models.ForeignKey(
         Region,
@@ -223,6 +223,10 @@ class Applicant(BaseModel):
     def delete(self, using=None, keep_parents=False):
         self.resume.storage.delete(self.resume.name)
         super().delete()
+
+    @property
+    def get_user_id(self):
+        return self.user.id
 
     @property
     def get_total_points(self):

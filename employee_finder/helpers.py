@@ -3,6 +3,12 @@ optional = {
     'null': True
 }
 
+SUBSCRIPTION_TYPE = (
+    ('monthly', 'Monthly'),
+    ('semi', 'Semi-annually'),
+    ('annually', 'Annually'),
+)
+
 EFFICIENCY_CHOICES = (
     ('beginner', 'Beginner'),
     ('intermediate', 'Intermediate'),

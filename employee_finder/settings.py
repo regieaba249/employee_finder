@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.jobs',
     'apps.companies',
+    'apps.payments',
 
     # third party
 ]
@@ -161,3 +162,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'opportunity.matchmaker@gmail.com'
 EMAIL_HOST_PASSWORD = '9NwGrEqux^1&'
+
+XENDIT_API_KEY = 'xnd_development_L9p9cxhahOwKrTwCHzZ7My2tn437KZblmJg6Wawb6fEQODbSe6NFP8nkuFaloyA'
+STRIPE_SECRET_KEY = 'sk_test_51KKEMHIpwnwtF73YPcSlX8d6mb8zw0QXWK8C3FVf2N6s2wWQEDSt8QDcyGxQIxqRd8my5QQgcEyQbiqYfZhAOnDi00KFP2fg8C'
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51KKEMHIpwnwtF73Yav530oxtId1m6RPgMuGjPyTMObbbmdRlngvKitnrqaPPRr4zBIRbaSmJ7gtx58448IL2qPXq00eF5j8HMu'

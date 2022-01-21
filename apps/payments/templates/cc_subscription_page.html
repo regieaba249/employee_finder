@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Registration {% endblock %}
+{% block user_login %} active {% endblock %}
+{% block css %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pixeden-stroke-7-icon@1.2.3/pe-icon-7-stroke/dist/pe-icon-7-stroke.min.css">
+{% endblock %}
+
+{% block navbar %}{% endblock %}
+{% block messages %}{% endblock %}
+{% block body %}
+
+  <div class="content">
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-8 contents mb-5">
+          <div class="card justify-content-center">
+            <div class="card-body text-center">
+              <h3>Agreement</h3>
+              <div class="d-flex justify-content-between">
+                <p class="mb-4">Long Agreement text Long Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement textLong Agreement text</p>
+              </div>
+              <div class="d-flex justify-content-center row">
+                <div class="col-md-12 justify-content-center text-center">
+                  <h2>Subscriptions</h2>
+                  <div class="row">
+                    <div class="col-sm-4">
+                      <div class="card">
+                        <div class="card-body">
+                          <h5 class="card-header">Monthly</h5>
+                          <div class="card-body">
+                            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                          </div>
+                          <div class="card-footer">
+                            <form id="paymentForm" action="{% url 'payments:cc_charge' user.id %}" method="post" enctype="multipart/form-data">
+                              <div class="row px-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="amount" value="19900">
+                                <input type="hidden" name="type" value="monthly">
+                                <script
+                                  src="https://checkout.stripe.com/checkout.js"
+                                  class="stripe-button"
+                                  data-key="{{ key }}"
+                                  data-currency="php"
+                                  data-description="Card Details"
+                                  data-amount="19900"
+                                  data-email="{{ user.email }}"
+                                  data-label="P199.00"
+                                  data-locale="auto"></script>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-4">
+                      <div class="card">
+                        <div class="card-body">
+                          <h5 class="card-header">Semi-Annually</h5>
+                          <div class="card-body">
+                            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                          </div>
+                          <div class="card-footer">
+                            <form id="paymentForm" action="{% url 'payments:cc_charge' user.id %}" method="post" enctype="multipart/form-data">
+                              <div class="row px-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="amount" value="89900">
+                                <input type="hidden" name="type" value="semi">
+                                <script
+                                  src="https://checkout.stripe.com/checkout.js"
+                                  class="stripe-button"
+                                  data-key="{{ key }}"
+                                  data-currency="php"
+                                  data-description="Card Details"
+                                  data-amount="89900"
+                                  data-label="P899.00"
+                                  data-email="{{ user.email }}"
+                                  data-locale="auto"></script>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-4">
+                      <div class="card">
+                        <div class="card-body">
+                          <h5 class="card-header">Annually</h5>
+                          <div class="card-body">
+                            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                          </div>
+                          <div class="card-footer">
+                            <form id="paymentForm" action="{% url 'payments:cc_charge' user.id %}" method="post" enctype="multipart/form-data">
+                              <div class="row px-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="amount" value="159900">
+                                <input type="hidden" name="type" value="annually">
+                                <script
+                                  src="https://checkout.stripe.com/checkout.js"
+                                  class="stripe-button"
+                                  data-key="{{ key }}"
+                                  data-currency="php"
+                                  data-description="Card Details"
+                                  data-amount="159900"
+                                  data-label="P1599.00"
+                                  data-email="{{ user.email }}"
+                                  data-locale="auto"></script>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'js/registration.js' %}"></script>
+{% endblock %}

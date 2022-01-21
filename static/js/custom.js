@@ -33,6 +33,8 @@ function email_check(email_element) {
 function password_valid() {
   var password1 = $("#password1").val()
   var password2 = $("#password2").val()
+  var valid = true
+
   $.ajax({
     url: '/users/ajax/check-password/',
     data: {
@@ -40,7 +42,7 @@ function password_valid() {
       'password2': password2,
     },
     success: function (data) {
-      
+
       document.querySelector('.step-experience').disabled = true
       if (password1.length === 0) {
         $("#password1").removeClass("is-invalid").removeClass("is-valid");
@@ -51,7 +53,7 @@ function password_valid() {
       }
 
       if (data.valid) {
-        if (password1 && password2 ) {
+        if (password1 && password2) {
           $("#password1").removeClass("is-invalid").addClass("is-valid");
           $("#password2").removeClass("is-invalid").addClass("is-valid");
           $("#password1").parent().children(".error").remove()
@@ -74,6 +76,7 @@ function password_valid() {
             $(`<label class="error">${data.message}</label>`).insertAfter($("#password1"));
           }
         }
+        valid = false
       }
     },
     error: function (xhr, textStatus, error) {
@@ -83,6 +86,7 @@ function password_valid() {
     }
   });
 
+  return valid
 };
 
 function number_only(element, e) {
@@ -118,7 +122,7 @@ $(document).on('click', '.step-personal', function (e) {
 })
 
 $(document).on('click', '.step-login', function (e) {
-  e.preventDefault()
+  e.preventDefault();
   if ($(this).hasClass("next")) {
     var valid = $("#registrationForm").valid()
     if (valid == true) {
@@ -130,7 +134,7 @@ $(document).on('click', '.step-login', function (e) {
 })
 
 $(document).on('click', '.step-experience', function (e) {
-  e.preventDefault()
+  e.preventDefault();
   if ($(this).hasClass("next")) {
     var valid = $("#registrationForm").valid()
     if (valid) {
@@ -253,6 +257,25 @@ $(document).on('click', '.see-password', function (e) {
   }
 });
 
-$(".alert").delay(4000).slideUp(200, function () {
-  $(this).alert('close');
+$(".alert").delay(10000).slideUp(200, function() {
+    $(this).alert('close');
 });
+
+$(document).on('keyup', '.two-digit', function() {
+    limitText(this, 2)
+});
+
+$(document).on('keyup', '.three-digit', function() {
+    limitText(this, 3)
+});
+
+function limitText(field, maxChar){
+    var ref = $(field),
+        val = ref.val();
+    if ( val.length >= maxChar ){
+        ref.val(function() {
+            console.log(val.substr(0, maxChar))
+            return val.substr(0, maxChar);
+        });
+    }
+}
