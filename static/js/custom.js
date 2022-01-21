@@ -9,7 +9,7 @@ function email_check(email_element) {
     success: function (data) {
       if (data.exists) {
         email_element.addClass("is-invalid").removeClass("is-valid");
-        if (email_element.closest(".form-group").children("label.error").length == 0){
+        if (email_element.closest(".form-group").children("label.error").length == 0) {
           $('<label class="error">Email already exists. Please choose a different one.</label>').insertAfter(email_element);
         }
         return false
@@ -23,18 +23,16 @@ function email_check(email_element) {
         return true
       }
     },
-    error: function(xhr, textStatus, error){
-        console.log(xhr.statusText);
-        console.log(textStatus);
-        console.log(error);
+    error: function (xhr, textStatus, error) {
+      console.log(xhr.statusText);
+      console.log(textStatus);
+      console.log(error);
     }
   });
 };
-
 function password_valid() {
   var password1 = $("#password1").val()
   var password2 = $("#password2").val()
-
   $.ajax({
     url: '/users/ajax/check-password/',
     data: {
@@ -42,7 +40,8 @@ function password_valid() {
       'password2': password2,
     },
     success: function (data) {
-
+      
+      document.querySelector('.step-experience').disabled = true
       if (password1.length === 0) {
         $("#password1").removeClass("is-invalid").removeClass("is-valid");
       }
@@ -52,35 +51,35 @@ function password_valid() {
       }
 
       if (data.valid) {
-          if (password1 && password2) {
-            $("#password1").removeClass("is-invalid").addClass("is-valid");
-            $("#password2").removeClass("is-invalid").addClass("is-valid");
-            $("#password1").parent().children(".error").remove()
-            $("#password2").parent().children(".error").remove()
-          } else {
-            $("#password1").removeClass("is-invalid").removeClass("is-valid");
-            $("#password1").parent().children(".error").remove()
-          }
+        if (password1 && password2 ) {
+          $("#password1").removeClass("is-invalid").addClass("is-valid");
+          $("#password2").removeClass("is-invalid").addClass("is-valid");
+          $("#password1").parent().children(".error").remove()
+          $("#password2").parent().children(".error").remove()
+          document.querySelector('.step-experience').disabled = false
+        } else {
+          $("#password1").removeClass("is-invalid").removeClass("is-valid");
+          $("#password1").parent().children(".error").remove()
+        }
       } else {
         if (data.type == 'match' && (password1 && password2)) {
           $("#password1").addClass("is-invalid").removeClass("is-valid");
           $("#password2").addClass("is-invalid").removeClass("is-valid");
-          if ($("#password2").closest(".form-group").children("label.error").length == 0){
+          if ($("#password2").closest(".form-group").children("label.error").length == 0) {
             $(`<label class="error">${data.message}</label>`).insertAfter($("#password2"));
           }
         } else {
           $("#password1").addClass("is-invalid").removeClass("is-valid");
-          if ($("#password1").closest(".form-group").children("label.error").length == 0){
+          if ($("#password1").closest(".form-group").children("label.error").length == 0) {
             $(`<label class="error">${data.message}</label>`).insertAfter($("#password1"));
           }
         }
       }
-
     },
-    error: function(xhr, textStatus, error){
-        console.log(xhr.statusText);
-        console.log(textStatus);
-        console.log(error);
+    error: function (xhr, textStatus, error) {
+      console.log(xhr.statusText);
+      console.log(textStatus);
+      console.log(error);
     }
   });
 
@@ -110,8 +109,8 @@ $(document).on('click', '.step-personal', function (e) {
   e.preventDefault()
   if ($(this).hasClass("next")) {
     var valid = $("#registrationForm").valid()
-    if(valid == true) {
-        $('.nav-item a[href="#tab-personal"]').tab('show')
+    if (valid == true) {
+      $('.nav-item a[href="#tab-personal"]').tab('show')
     }
   } else {
     $('.nav-item a[href="#tab-personal"]').tab('show')
@@ -121,10 +120,10 @@ $(document).on('click', '.step-personal', function (e) {
 $(document).on('click', '.step-login', function (e) {
   e.preventDefault()
   if ($(this).hasClass("next")) {
-      var valid = $("#registrationForm").valid()
-      if (valid == true) {
-          $('.nav-item a[href="#tab-login"]').tab('show')
-      }
+    var valid = $("#registrationForm").valid()
+    if (valid == true) {
+      $('.nav-item a[href="#tab-login"]').tab('show')
+    }
   } else {
     $('.nav-item a[href="#tab-login"]').tab('show')
   }
@@ -133,12 +132,10 @@ $(document).on('click', '.step-login', function (e) {
 $(document).on('click', '.step-experience', function (e) {
   e.preventDefault()
   if ($(this).hasClass("next")) {
-      var valid = $("#registrationForm").valid()
-      if(valid == true) {
-        if (password_valid()) {
-          $('.nav-item a[href="#tab-experience"]').tab('show')
-        }
-      }
+    var valid = $("#registrationForm").valid()
+    if (valid) {
+        $('.nav-item a[href="#tab-experience"]').tab('show')
+    }
   } else {
     $('.nav-item a[href="#tab-experience"]').tab('show')
   }
@@ -147,18 +144,18 @@ $(document).on('click', '.step-experience', function (e) {
 $(document).on('click', '.step-company-details', function (e) {
   e.preventDefault()
   if ($(this).hasClass("next")) {
-      var valid = $("#registrationForm").valid()
-      if(valid == true) {
-        if (password_valid()) {
-          $('.nav-item a[href="#tab-company-details"]').tab('show')
-        }
+    var valid = $("#registrationForm").valid()
+    if (valid == true) {
+      if (password_valid()) {
+        $('.nav-item a[href="#tab-company-details"]').tab('show')
       }
+    }
   } else {
     $('.nav-item a[href="#tab-company-details"]').tab('show')
   }
 })
 
-$(document).on('submit', "#registrationForm", function(e){
+$(document).on('submit', "#registrationForm", function (e) {
   if ($('.required:visible').length) {
     var valid = $('.required:visible').valid()
     if (valid) {
@@ -192,20 +189,20 @@ $(document).on('focusout', ".number_only", function (e) {
 });
 
 $(document).on('focusout', '#password2', function (e) {
-    password_valid()
+  password_valid()
 });
 
 $(document).on('change', ".address-select", function (e) {
   var _id = $(this).val();
   var url = $(this).attr("data-ajax-url");
   var value = $(this).attr("data-value");
-  var target_name = $(this).attr("data-target").replace('user_','');
+  var target_name = $(this).attr("data-target").replace('user_', '');
   var current_name = $(this).attr('name');
   var heirarchy = {
-      "region": [$("#user_province"), $("#user_municipality"), $("#user_barangay")],
-      "province": [$("#user_municipality"), $("#user_barangay")],
-      "municipality": [$("#user_barangay")],
-      "barangay": [],
+    "region": [$("#user_province"), $("#user_municipality"), $("#user_barangay")],
+    "province": [$("#user_municipality"), $("#user_barangay")],
+    "municipality": [$("#user_barangay")],
+    "barangay": [],
   }
   $.ajax({
     url: url,
@@ -219,14 +216,14 @@ $(document).on('change', ".address-select", function (e) {
       heirarchy = heirarchy[current_name]
       var target = heirarchy.shift();
       target.html(data);
-      $.each( heirarchy, function( index, element ){
-          element.html('<option value="">Select...</option>');
+      $.each(heirarchy, function (index, element) {
+        element.html('<option value="">Select...</option>');
       });
     },
-    error: function(xhr, textStatus, error){
-        console.log(xhr.statusText);
-        console.log(textStatus);
-        console.log(error);
+    error: function (xhr, textStatus, error) {
+      console.log(xhr.statusText);
+      console.log(textStatus);
+      console.log(error);
     }
   });
 });
@@ -245,17 +242,17 @@ $(document).on('focusout', '#password1', function (e) {
 $(document).on('click', '.see-password', function (e) {
   var input = $(this).parent().find('input')
   event.preventDefault();
-  if(input.attr("type") == "text"){
-      input.attr('type', 'password');
-      $(this).find('i').addClass( "fa-eye-slash" );
-      $(this).find('i').removeClass( "fa-eye" );
-  }else if(input.attr("type") == "password"){
-      input.attr('type', 'text');
-      $(this).find('i').removeClass( "fa-eye-slash" );
-      $(this).find('i').addClass( "fa-eye" );
+  if (input.attr("type") == "text") {
+    input.attr('type', 'password');
+    $(this).find('i').addClass("fa-eye-slash");
+    $(this).find('i').removeClass("fa-eye");
+  } else if (input.attr("type") == "password") {
+    input.attr('type', 'text');
+    $(this).find('i').removeClass("fa-eye-slash");
+    $(this).find('i').addClass("fa-eye");
   }
 });
 
-$(".alert").delay(4000).slideUp(200, function() {
-    $(this).alert('close');
+$(".alert").delay(4000).slideUp(200, function () {
+  $(this).alert('close');
 });

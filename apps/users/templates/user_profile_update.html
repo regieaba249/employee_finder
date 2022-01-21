@@ -248,6 +248,8 @@
                     </button>
                     <table id="EmploymentHistoryTable" class="table table-bordered table-responsive-md table-striped text-center">
                       <thead>
+                        
+                        {% if employment_history.all %}
                         <tr>
                           <th class="text-center">Company</th>
                           <th class="text-center">Position</th>
@@ -258,6 +260,7 @@
                           <th class="text-center">Reference</th>
                           <th class="text-center" style="width: 5%"></th>
                         </tr>
+                        {% endif %}
                       </thead>
                       <tbody>
                         {% if employment_history.all %}

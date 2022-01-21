@@ -343,7 +343,7 @@ class LoginView(FormView):
         return HttpResponseRedirect(reverse_lazy('login'))
 
 
-class RegistrationView(LoginRequiredMixin, FormView):
+class RegistrationView( FormView):
     """registration view"""
 
     form_class = RegistrationForm
