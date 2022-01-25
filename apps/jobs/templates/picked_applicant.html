@@ -1,0 +1,8 @@
+{% autoescape off %}
+Hi {{ user.full_name }},
+User {{ hiring_agent.full_name }} has picked you for the job position: {{ job_posting.job_title }}
+For the company: {{ job_posting.company.owner }}
+
+
+
+{% endautoescape %}

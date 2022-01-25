@@ -112,7 +112,9 @@
                         <div class="d-flex flex-row align-items-center feed-text px-2">
                           <img class="rounded-circle" src="{{ applicant.user.user_avatar.url }}" width="45">
                           <div class="d-flex flex-column flex-wrap ml-2">
-                            <span class="font-weight-bold">{{ applicant.user.full_name }}</span>
+                            <a href="{%  url 'users:profile_view' pk=applicant.user.id %}">
+                              <span class="font-weight-bold">{{ applicant.user.full_name }}</span>
+                            </a>
                             <span class="text-black-50 time">{{ applicant.user.headline }}</span>
                           </div>
                         </div>
@@ -134,7 +136,9 @@
                         <div class="d-flex flex-row align-items-center feed-text px-2">
                           <img class="rounded-circle" src="{{ item.applicant.user.user_avatar.url }}" width="45">
                           <div class="d-flex flex-column flex-wrap ml-2">
-                            <span class="font-weight-bold">{{ item.applicant.user.full_name }}</span>
+                            <a href="{%  url 'users:profile_view' pk=item.applicant.user.id %}">
+                              <span class="font-weight-bold">{{ item.applicant.user.full_name }}</span>
+                            </a>
                             <span class="text-black-50 time">{{ item.applicant.user.headline }}</span>
                           </div>
                         </div>

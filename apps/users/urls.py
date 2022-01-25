@@ -6,6 +6,7 @@ urlpatterns = [
     path('board/', views.ApplicantBoardView.as_view(), name='user-board'),
     path('test/', views.test, name='test'),
     path('profile/edit/<int:pk>/', views.CustomUserUpdateView.as_view(), name='profile_edit'),
+    path('profile/view/<int:pk>/', views.CustomUserView.as_view(), name='profile_view'),
     path('register/<str:_type>/', views.RegistrationView.as_view(), name='register'),
     path('activate/<str:uidb64>/<str:token>/', views.activate, name='activate'),
     path('ajax/load-address-dropdown/', views.ajax_load_address_dropdown, name='ajax_load_address_dropdown'),

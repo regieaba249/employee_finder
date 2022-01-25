@@ -5,543 +5,65 @@
 {% block title %} Profile {% endblock %}
 {% block user_login %} active {% endblock %}
 {% block css %}
-  <link href="{% static 'css/profile.css' %}" rel="stylesheet" type="text/css">
+  <link href="{% static 'css/profileUser.css' %}" rel="stylesheet" type="text/css">
 {% endblock %}
 {% block body %}
-
-  <div class="content">
-    <div class="container rounded bg-white mt-5 mb-5">
-      <form id="profileForm" action="#" method="post" enctype="multipart/form-data">
+<div class="profileHolder">
+  <div class="profileBody">
+    <div class="profileLeftDiv">
+      <div class="avatarHolder">
+        <img src="{{ object.user_avatar.url }}" alt="" class="avatar">
+      </div>
+      <hr>
+      <div class="title">
+        <span class="contact">Contact</span>
+        <ul style="font-size: smaller; padding: 0% 0% 0% 20%; font-weight: 100;width: 80%;">
+          <li>{{ object.email}}</li>
+          <li>{{ object.mobile_number }}</li>
+          <li>{{ object.region }}, {{ object.province}}, {{ object.municipality }}, {{ object.barangay }}</li>
+        </ul>
+      </div>
+      <hr>
+      <div class="title">
+        <span class="contact">Education</span>
+        
+        {% if educational_history.all %}
+        {% for school in educational_history.all %}
+        <div  style="font-weight: 100;font-size: 12px; padding-left: 15%; color: antiquewhite; ">
+          <span style="font-size: large; font-weight: 600; color: white;" >{{ school.degree }}</span>
+          <br>
+          <span>{{ school.school_name }}</span>
+          <br>
+          <span>{{ school.start }}-{{school.end}}</span>
+        </div>
+        {% endfor %}
+        {% endif %}
+        </ul>
+      </div>
+      <div class="title">
+        <span class="contact">Skill</span>
+        
+        {% if skills.all %}
+        {% for skill in skills.all %}
+        <div  style="font-weight: 100;font-size: 10px; padding-left: 15%;">
+          <span style="font-size: large; font-weight: 600;">{{ skill.name }}</span>
+        </div>
+        {% endfor %}
+        {% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="profileRightDiv">
+      <div class="name">
+        <span>{{object.full_name}}</span>
         <hr>
-        <!-- Tabs content -->
-
-          {% csrf_token %}
-          <div class="row mb-4">
-
-            <!-- LEFT DIV -->
-            <div class="col-md-3 px-1">
-
-              <!-- User Avatar -->
-              <div class="d-flex flex-column align-items-center p-2 py-3">
-                <img class="rounded-circle avatar" width="200px" src="{{ object.user_avatar.url }}">
-              </div>
-
-              <!-- Phone Number -->
-              <div class="form-group px-4 mb-2">
-                <label class="" for="phone_number">Telephone Number</label>
-                <div class="input-group input-group-lg">
-                  <div class="input-group-prepend">
-                    <select name="area_code" class="input-group-text md-form form-control form-control-lg p-0 required" dir="rtl" required>
-                      {% for code in area_codes %}
-                      <option value="{{ code }}" {% if object.area_code == code %}selected{% endif %}>({{ code }})</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <input value="{{ object.phone_number|default_if_none:'' }}" type="text" id="phone_number" name="phone_number" class="phone_number form-control form-control-lg number_only" maxlength="8"/>
-                  <small class="form-text text-muted">You can select a different area code from the dropdown</small>
-                </div>
-              </div>
-
-              <!-- Mobile Number -->
-              <div class="form-group px-4 mb-2">
-                <label class="" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
-                <div class="input-group input-group-lg">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroupPrepend2">+63</span>
-                  </div>
-                  <input value="{{ object.mobile_number|default_if_none:'' }}" type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only" maxlength="10"/>
-                </div>
-              </div>
-
-              <!-- Gender -->
-              <div class="form-group px-4 mb-2">
-                <label class="required-field-label" for="gender">Gender</label>
-                <select name="gender" class="gender-select mdb-select md-form form-control form-control-lg required" required>
-                  <option value="" disabled {% if not object.gender %}selected{% endif %}>------</option>
-                  <option value="male" {% if object.gender == 'male' %}selected{% endif %}>Male</option>
-                  <option value="female" {% if object.gender == 'female' %}selected{% endif %}>Female</option>
-                  <option value="others" {% if object.gender == 'others' %}selected{% endif %}>Others</option>
-                </select>
-              </div>
-
-              <!-- Birthday -->
-              <div class="form-group px-4 mb-2">
-                  <label class="required-field-label" for="birthdate">Birthday</label>
-                  <input value="{{ object.birthdate|date:"Y-m-d" }}" type="date" id="birthdate" name="birthdate" class="form-control form-control-lg required"/ max="2999-12-31" required>
-              </div>
-
-            </div>
-
-            <!-- RIGHT DIV -->
-            <div class="form-group col-md-9">
-
-              <!-- Personal -->
-              <div class="card border-light my-3">
-                <div class="card-header"><h3>Personal Details</h3></div>
-                <div class="card-body row">
-
-                  <!-- Name Fields -->
-                  <div class="row mb-4 col-6 col-md-6">
-
-                    <div class="form-group mb-2">
-                      <label class="required-field-label" for="first_name">First Name</label>
-                      <input value="{{ object.first_name|default_if_none:'' }}" type="text" id="first_name" name="first_name" class="form-control form-control-lg required" maxlength="25" required/>
-                    </div>
-
-                    <div class="form-group mb-2">
-                      <label class="" for="middle_name">Middle Name</label>
-                      <input value="{{ object.middle_name|default_if_none:'' }}" type="text" id="middle_name" name="middle_name" class="form-control form-control-lg" maxlength="25"/>
-                    </div>
-
-                    <div class="form-group mb-2">
-                      <label class="required-field-label" for="last_name">Last Name</label>
-                        <input value="{{ object.last_name|default_if_none:'' }}" type="text" id="last_name" name="last_name" class="form-control form-control-lg required" maxlength="25" required/>
-                    </div>
-
-                    <div class="form-group mb-2">
-                      <label class="" for="extension">Extensions</label>
-                      <input value="{{ object.extension|default_if_none:'' }}" type="text" id="extension" name="extension" class="form-control form-control-lg" maxlength="25"/>
-                    </div>
-
-                    <div class="form-group mb-2">
-                      <label class="" for="headline">Headline:</label>
-                      <input value="{{ object.headline|default_if_none:'' }}" type="text" id="headline" placeholder="'Software Developer / Freelancer'" name="headline" class="form-control form-control-lg"/>
-                    </div>
-
-                  </div>
-
-
-                  <!-- Address Fields -->
-
-                  <div class="row mb-4 col-6 col-md-6">
-
-                    <h5>Address</h5>
-                    <small class="form-text text-muted">Employers might filter by area. It is benificial to fill in your address details accurately</small>
-
-                    <div class="form-group my-2">
-                      <label class="required-field-label" for="region">Region</label>
-                      <select name="region" id="user_region" class="address-select mdb-select md-form form-control form-control-lg required" data-ajax-url="{% url 'users:ajax_load_address_dropdown' %}" data-value="{{ object.region }}" data-target="user_province" required>
-                        <option value="">------</option>
-                        {% for region in regions.all %}
-                          <option value="{{ region.id }}" {% if object.region.id == region.id %} selected {% endif %}>{{ region.name }}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
-
-                    <div class="form-group mb-2">
-                      <label class="required-field-label" for="province">Province</label>
-                      <select name="province" id="user_province" class="address-select mdb-select md-form form-control form-control-lg required" data-ajax-url="{% url 'users:ajax_load_address_dropdown' %}" data-value="{{ object.province }}" data-target="user_municipality" required>
-                        <option value="">------</option>
-                        {% if object.province %}
-                          {% for province in provinces.all %}
-                            <option value="{{ province.id }}" {% if object.province.id == province.id %}selected{% endif %}>{{ province.name }}</option>
-                          {% endfor %}
-                        {% endif %}
-                      </select>
-                    </div>
-
-                    <div class="form-group mb-2">
-                      <label class="required-field-label" for="municipality">Municipality</label>
-                      <select name="municipality" id="user_municipality" class="address-select mdb-select md-form form-control form-control-lg required" data-ajax-url="{% url 'users:ajax_load_address_dropdown' %}" data-value="{{ object.municipality }}" data-target="user_barangay" required>
-                        <option value="">------</option>
-                        {% if object.municipality %}
-                          {% for municipality in municipalities.all %}
-                            <option value="{{ municipality.id }}" {% if object.municipality.id == municipality.id %}selected{% endif %}>{{ municipality.name }}</option>
-                          {% endfor %}
-                        {% endif %}
-                      </select>
-                    </div>
-
-                    <div class="form-group mb-2">
-                      <label class="required-field-label" for="barangay">Barangay</label>
-                      <select name="barangay" id="user_barangay" class="mdb-select md-form form-control form-control-lg required" required>
-                        <option value="">------</option>
-                        {% if object.barangay %}
-                          {% for barangay in barangays.all %}
-                            <option value="{{ barangay.id }}" {% if object.barangay.id == barangay.id %}selected{% endif %}>{{ barangay.name }}</option>
-                          {% endfor %}
-                        {% endif %}
-                      </select>
-                    </div>
-
-                    <div class="form-group mb-2">
-                      <label class="" for="address">Full Address</label>
-                      <input value="{{ object.address|default_if_none:'' }}" type="text" id="address" name="address" class="form-control form-control-lg" />
-                    </div>
-
-                  </div>
-
-                </div>
-              </div>
-
-              <!-- Background -->
-              <div class="card border-light mb-3">
-                <div class="card-header"><h3>Background</h3></div>
-                <div class="card-body row">
-                  <div class="col-md-6 col-6 row">
-                    <div class="form-group mb-4 mx-1 col">
-                      <label class="" for="applicant_status">Employment Status</label>
-                      <select name="applicant_status" class="applicant-status-select mdb-select md-form form-control form-control-lg">
-                        <option value="" disabled {% if not object.applicant_data.applicant_status %}selected{% endif %}>------</option>
-                        <option value="unemployed" {% if object.applicant_data.applicant_status == 'unemployed' %}selected{% endif %}>Unemployed</option>
-                        <option value="employed" {% if object.applicant_data.applicant_status == 'employed' %}selected{% endif %}>Employed</option>
-                      </select>
-                    </div>
-
-                    <div class="form-group mb-4 mx-1 col-12 col-md-12">
-                      <label class="w-100" for="resume">Resume</label>
-                      <small class="form-text text-muted">You can update your resume by uploading a new file</small>
-                      <input type="file" value="" id="resume" name="resume" class="form-control form-control-lg mb-2" />
-                      {% if object.applicant_data.resume %}
-                        <span class="badge rounded-pill bg-info">
-                          <a href="{{ object.applicant_data.resume.url }}">{{ object.applicant_data.resume }}</a> |
-                          <span class="delete-file" data-id="{{ object.applicant_data.id }}" data-type="resume"><i class="fas fa-times"></i></span>
-                        </span>
-                      {% endif %}
-                    </div>
-
-                    <div class="form-group mb-4 mx-1 col-12 col-md-12">
-                      <label class="w-100" for="attachments">Other Attachments <small class="form-text text-muted">   (Certificates, Diploma, TOR, etc...)</small></label>
-                      <small class="form-text text-muted">Upload more attachments that would boost your profile</small>
-                      <input type="file" id="attachments" name="attachments" class="form-control form-control-lg mb-2" multiple/>
-                      {% for file in object.applicant_data.applicant_attachments.all %}
-                        <span class="badge rounded-pill bg-info">
-                          <a href="{{ file.url }}">{{ file }}</a> |
-                          <span class="delete-file" data-id="{{ file.id }}" data-type="attachment"><i class="fas fa-times"></i></span>
-                        </span>
-                      {% endfor %}
-                    </div>
-                  </div>
-
-                  <div class="col-md-6 col-6">
-
-                    <div class="row mb-4">
-                      <div class="form-group mx-1 col">
-                        <label class="w-100" for="overview">About Me</label>
-                        <small class="form-text text-muted">Make a pitch about yourself that would help employers understand you and how you are with work</small>
-                        <textarea class="form-control" id="overview" name="overview"  rows="10">{{ object.applicant_data.overview }}</textarea>
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                  <!-- Employment History -->
-                  <div class="col-md-12 col-12">
-
-                    <h4 class="float-start">Employment History</h4>
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary float-end mb-2" data-bs-toggle="modal" data-bs-target="#addEmploymentHistoryModal">
-                      Add
-                    </button>
-                    <table id="EmploymentHistoryTable" class="table table-bordered table-responsive-md table-striped text-center">
-                      <thead>
-                        <tr>
-                          <th class="text-center">Company</th>
-                          <th class="text-center">Position</th>
-                          <th class="text-center">Type</th>
-                          <th class="text-center">Start</th>
-                          <th class="text-center">End</th>
-                          <th class="text-center">Current</th>
-                          <th class="text-center">Reference</th>
-                          <th class="text-center" style="width: 5%"></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% if employment_history.all %}
-                          {% for data in employment_history.all %}
-                          <tr>
-                            <td>{{ data.company_name }}</td>
-                            <td>{{ data.job_position }}</td>
-                            <td>{{ data.employment_type }}</td>
-                            <td>{{ data.start }}</td>
-                            <td>{{ data.end }}</td>
-                            {% if data.current %}
-                              <td><i class="far fa-check-circle"></i></td>
-                            {% else %}
-                              <td></td>
-                            {% endif %}
-                            <td>{{ data.full_reference }}</td>
-                            <td class="p-0">
-                              <span class="table-remove">
-                                <span class="remove-row" data-id="{{ data.id }}" data-table="ApplicantExperience">
-                                  <i class="fas fa-times-circle"></i>
-                                </span>
-                              </span>
-                            </td>
-                          </tr>
-                          {% endfor %}
-                        {% else %}
-                          <tr class="nodata">
-                            <td colspan="100%">No Data</td>
-                          </tr>
-                        {% endif %}
-                      </tbody>
-                    </table>
-
-                  </div>
-
-                  <!-- Education History -->
-                  <div class="col-md-12 col-12">
-
-                    <h4 class="float-start">Education</h4>
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary float-end mb-2" data-bs-toggle="modal" data-bs-target="#addEducationModal">
-                      Add
-                    </button>
-
-                    <table id="educationTable" class="table table-bordered table-responsive-md table-striped text-center">
-                      <thead>
-                        <tr>
-                          <th class="text-center">School</th>
-                          <th class="text-center">Degree</th>
-                          <th class="text-center">Start</th>
-                          <th class="text-center">End</th>
-                          <th class="text-center">Reference</th>
-                          <th class="text-center" style="width: 5%"></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% if educational_history.all %}
-                          {% for school in educational_history.all %}
-                          <tr>
-                            <td>{{ school.school_name }}</td>
-                            <td>{{ school.degree }}</td>
-                            <td>{{ school.start }}</td>
-                            <td>{{ school.end }}</td>
-                            <td>{{ school.full_reference }}</td>
-                            <td class="p-0">
-                              <span class="table-remove">
-                                <span class="remove-row" data-id="{{ school.id }}" data-table="ApplicantEducation">
-                                  <i class="fas fa-times-circle"></i>
-                                </span>
-                              </span>
-                            </td>
-                          </tr>
-                          {% endfor %}
-                        {% else %}
-                          <tr class="nodata">
-                            <td colspan="100%">No Data</td>
-                          </tr>
-                        {% endif %}
-                      </tbody>
-                    </table>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-      </form>
-
-    </div>
-
-  </div>
-
-  <!-- Modal -->
-  <div class="modal fade" id="addEmploymentHistoryModal" data-ajax-url="{% url 'users:ajax_add_employment_history' %}" tabindex="-1" role="dialog" aria-labelledby="addEmploymentHistoryTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="">Employment History Details</h5>
-          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="row col">
-
-            <div class="form-group mt-0 mb-2">
-              <label class="required-field-label" for="company">Company Name</label>
-              <input type="text" id="company" name="company" class="form-control form-control-lg required" required/>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="required-field-label" for="position">Position</label>
-              <input type="text" id="position" name="position" class="form-control form-control-lg required" required/>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="required-field-label" for="employment_type">Employment Type</label>
-              <select name="employment_type" id="employment_type" class="mdb-select md-form form-control form-control-lg required" required>
-                {% for key, values in employment_type_choices.items %}
-                <option value="{{ key }}">{{ values }}</option>
-                {% endfor %}
-              </select>
-            </div>
-
-            <div class="form-group mb-2 col-6 row">
-              <label class="required-field-label">Date Start</label>
-              <div class="col-md-7 col-7 pe-0">
-                <select name="start_month" id="start_month" class="mdb-select md-form form-control form-control-lg required" required>
-                  <option value="">------</option>
-                  {% for key, values in months.items %}
-                  <option value="{{ key }}">{{ values }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="col pe-0">
-                <select name="start_year" id="start_year" class="mdb-select md-form form-control form-control-lg required" required>
-                  <option value="">------</option>
-                  {% for year in years %}
-                  <option value="{{ year }}">{{ year }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group mb-2 col-6 row">
-              <label>Date End</label>
-              <div class="col-md-7 col-7 ps-3 pe-0">
-                <select name="end_month" id="end_month" class="mdb-select md-form form-control form-control-lg">
-                  <option value="">------</option>
-                  {% for key, values in months.items %}
-                  <option value="{{ key }}">{{ values }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="col pe-0">
-                <select name="end_year" id="end_year" class="mdb-select md-form form-control form-control-lg">
-                  <option value="">----</option>
-                  {% for year in years %}
-                  <option value="{{ year }}">{{ year }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group my-2">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="current" id="current">
-                <label class="form-check-label" for="flexCheckDefault">
-                  Currently Employed
-                </label>
-              </div>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="" for="overview">Brief Overview</label>
-              <textarea class="form-control" id="overview" name="overview" rows="4"></textarea>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="required-field-label" for="reference_person">Reference Person</label>
-              <input type="text" id="reference_person" name="reference_person" class="form-control form-control-lg required" placeholder="Name" required/>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
-              <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                  <span class="input-group-text" id="inputGroupPrepend2">+63</span>
-                </div>
-                <input type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only" maxlength="10"/>
-              </div>
-            </div>
-
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" id="addEmploymentHistorySubmit" class="btn btn-primary">Add</button>
-        </div>
+        <small>{{object.headline}}</small>
       </div>
     </div>
   </div>
-
-  <div class="modal fade" id="addEducationModal" data-ajax-url="{% url 'users:ajax_add_education' %}" tabindex="-1" role="dialog" aria-labelledby="addEducationTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="">Education Details</h5>
-          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="row col">
-
-            <div class="form-group mt-0 mb-2">
-              <label class="required-field-label" for="school_name">School Name</label>
-              <input type="text" id="school_name" name="school_name" class="form-control form-control-lg required" required/>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="required-field-label" for="degree">Degree</label>
-              <input type="text" id="degree" name="degree" class="form-control form-control-lg required" required/>
-            </div>
-
-            <div class="form-group mb-2 col-6 row">
-              <label class="required-field-label">Date Start</label>
-              <div class="col-md-7 col-7 pe-0">
-                <select name="start_month" id="start_month" class="mdb-select md-form form-control form-control-lg required" required>
-                  <option value="">------</option>
-                  {% for key, values in months.items %}
-                  <option value="{{ key }}">{{ values }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="col pe-0">
-                <select name="start_year" id="start_year" class="mdb-select md-form form-control form-control-lg required" required>
-                  <option value="">------</option>
-                  {% for year in years %}
-                  <option value="{{ year }}">{{ year }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group mb-2 col-6 row">
-              <label>Date End</label>
-              <div class="col-md-7 col-7 ps-3 pe-0">
-                <select name="end_month" id="end_month" class="mdb-select md-form form-control form-control-lg">
-                  <option value="">------</option>
-                  {% for key, values in months.items %}
-                  <option value="{{ key }}">{{ values }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="col pe-0">
-                <select name="end_year" id="end_year" class="mdb-select md-form form-control form-control-lg">
-                  <option value="">----</option>
-                  {% for year in years %}
-                  <option value="{{ year }}">{{ year }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="required-field-label" for="reference_person">Reference Person</label>
-              <input type="text" id="reference_person" name="reference_person" class="form-control form-control-lg required" placeholder="Name" required/>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
-              <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                  <span class="input-group-text" id="inputGroupPrepend2">+63</span>
-                </div>
-                <input type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only" maxlength="10"/>
-              </div>
-            </div>
-
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" id="addEducationSubmit" class="btn btn-primary">Add</button>
-        </div>
-      </div>
-    </div>
-  </div>
+</div>
 
 {% endblock %}
 
 {% block js %}
-  <script src="{% static 'js/profile.js' %}"></script>
 {% endblock %}

@@ -13,6 +13,7 @@ from django.urls import reverse_lazy
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.views.generic.base import TemplateView
+from django.views.generic import DetailView
 from django.views.generic.edit import (
     FormView,
     CreateView,
@@ -600,6 +601,29 @@ class CustomUserUpdateView(LoginRequiredMixin, UpdateView):
         """ process user login"""
         context = super(CustomUserUpdateView, self).form_valid(form)
         messages.success(self.request, "Successfully Updated your profile details")
+        return context
+
+
+class CustomUserView(DetailView):
+
+    model = CustomUser
+    template_name = 'user_profile_details.html'
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'users:profile_view',
+            kwargs={'pk': self.request.user.pk}
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super(CustomUserView, self).get_context_data(**kwargs)
+        applicant = self.object.applicant_data
+        context['employment_history'] = applicant.applicant_experience.all(
+        ).order_by('-current', '-start_month', '-start_year')
+        context['educational_history'] = applicant.applicant_education.all(
+        ).order_by('-start_month', '-start_year')
+        context['skills'] = applicant.applicant_skills.all()
+
         return context
 
 
