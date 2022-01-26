@@ -300,58 +300,60 @@
           </button>
         </div>
         <div class="modal-body">
-          <div class="row col">
+          <form id="jobPostingForm">
+            <div class="row col">
 
-            <div class="form-group mt-0 mb-2">
-              <label class="required-field-label" for="job_title">Job Title</label>
-              <input type="text" id="job_title" name="job_title" class="form-control form-control-lg required" required/>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="" for="description">Job Description</label>
-              <textarea class="form-control" id="description" name="description" rows="4"></textarea>
-            </div>
-
-            <div class="form-group mb-2">
-              <label for="vacancy">Vacancy</label>
-              <input type="number" id="vacancy" name="vacancy" class="form-control form-control-lg required" min="1" max="99" required/>
-            </div>
-
-            <div class="form-group mb-2 row">
-
-              <label>Salary Range</label>
-              <div class="form-group col">
-                <input type="number" id="salary_range_start" name="salary_range_start" class="form-control form-control-lg required" placeholder="MIN" required/>
-              </div>
-              -
-              <div class="form-group col">
-                <input type="number" id="salary_range_end" name="salary_range_end" class="form-control form-control-lg required" placeholder="MAX" required/>
+              <div class="form-group mt-0 mb-2">
+                <label class="required-field-label" for="job_title">Job Title</label>
+                <input type="text" id="job_title" name="job_title" class="form-control form-control-lg required" required/>
               </div>
 
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="required-field-label" for="employment_type">Employment Type</label>
-              <div class="form-group col">
-                <select name="employment_type" id="employment_type" class="mdb-select md-form form-control form-control-lg required" required>
-                  {% for key, values in employment_type_choices.items %}
-                  <option value="{{ key }}">{{ values }}</option>
-                  {% endfor %}
-                </select>
+              <div class="form-group mb-2">
+                <label class="" for="description">Job Description</label>
+                <textarea class="form-control" id="description" name="description" rows="4"></textarea>
               </div>
-            </div>
 
-            <div class="form-group mb-2">
-              <span>Attachments</span>
-              <input type="file" id="attachments" name="attachments" class="form-control form-control-lg" multiple/>
-            </div>
+              <div class="form-group mb-2">
+                <label for="vacancy">Vacancy</label>
+                <input type="number" id="vacancy" name="vacancy" class="form-control form-control-lg required" min="1" max="99" required/>
+              </div>
 
-            <div class="form-group mt-0 mb-2">
-              <label class="required-field-label" for="preferred_skills">Skills Required</label>
-              <input type="text" id="preferred_skills" name="preferred_skills" class="form-control form-control-lg required" required/>
-            </div>
+              <div class="form-group mb-2 row">
 
-          </div>
+                <label>Salary Range</label>
+                <div class="form-group col">
+                  <input type="number" id="salary_range_start" name="salary_range_start" class="form-control form-control-lg required" placeholder="MIN" required/>
+                </div>
+                -
+                <div class="form-group col">
+                  <input type="number" id="salary_range_end" name="salary_range_end" class="form-control form-control-lg required" placeholder="MAX" required/>
+                </div>
+
+              </div>
+
+              <div class="form-group mb-2">
+                <label class="required-field-label" for="employment_type">Employment Type</label>
+                <div class="form-group col">
+                  <select name="employment_type" id="employment_type" class="mdb-select md-form form-control form-control-lg required" required>
+                    {% for key, values in employment_type_choices.items %}
+                    <option value="{{ key }}">{{ values }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group mb-2">
+                <span>Attachments</span>
+                <input type="file" id="attachments" name="attachments" class="form-control form-control-lg" multiple/>
+              </div>
+
+              <div class="form-group mt-0 mb-2">
+                <label class="required-field-label" for="preferred_skills">Skills Required</label>
+                <input type="text" id="preferred_skills" name="preferred_skills" class="form-control form-control-lg required" required/>
+              </div>
+
+            </div>
+          </form>
         </div>
         <div class="modal-footer">
           <button type="button" id="addJobPostingSubmit" class="btn btn-primary">Add</button>

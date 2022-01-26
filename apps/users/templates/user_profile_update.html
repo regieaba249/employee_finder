@@ -11,7 +11,7 @@
 {% block body %}
 
   <div class="content">
-    <div class="container rounded bg-white mt-5 mb-5">
+    <div class="container rounded mt-5 mb-5">
       <form id="profileForm" action="#" method="post" enctype="multipart/form-data">
         <!-- Tabs content -->
 
@@ -28,72 +28,15 @@
             {% endif %}
             <!-- LEFT DIV -->
             <div class="col-md-3 px-1">
-
-              <!-- User Avatar -->
-              <div class="d-flex flex-column align-items-center p-2 py-3">
-                <img class="rounded-circle avatar" width="200px" src="{{ object.user_avatar.url }}">
-              </div>
-
-              <!-- Phone Number -->
-              <div class="form-group px-4 mb-2">
-                <label class="" for="phone_number">Telephone Number</label>
-                <div class="input-group input-group-lg">
-                  <div class="input-group-prepend">
-                    <select name="area_code" class="input-group-text md-form form-control form-control-lg p-0 required" dir="rtl" required>
-                      {% for code in area_codes %}
-                      <option value="{{ code }}" {% if object.area_code == code %}selected{% endif %}>({{ code }})</option>
-                      {% endfor %}
-                    </select>
+              <div class="card border-light my-3 sticky-top">
+                <div class="card-body">
+                  <!-- User Avatar -->
+                  <div class="d-flex flex-column align-items-center p-2 py-3">
+                    <img class="rounded-circle avatar" width="200px" src="{{ object.user_avatar.url }}">
                   </div>
-                  <input value="{{ object.phone_number|default_if_none:'' }}" type="text" id="phone_number" name="phone_number" class="phone_number form-control form-control-lg number_only" maxlength="8"/>
-                  <small class="form-text text-muted">You can select a different area code from the dropdown</small>
-                </div>
-              </div>
-
-              <!-- Mobile Number -->
-              <div class="form-group px-4 mb-2">
-                <label class="" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
-                <div class="input-group input-group-lg">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroupPrepend2">+63</span>
-                  </div>
-                  <input value="{{ object.mobile_number|default_if_none:'' }}" type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only" maxlength="10"/>
-                </div>
-              </div>
-
-              <!-- Gender -->
-              <div class="form-group px-4 mb-2">
-                <label class="required-field-label" for="gender">Gender</label>
-                <select name="gender" class="gender-select mdb-select md-form form-control form-control-lg required" required>
-                  <option value="" disabled {% if not object.gender %}selected{% endif %}>------</option>
-                  <option value="male" {% if object.gender == 'male' %}selected{% endif %}>Male</option>
-                  <option value="female" {% if object.gender == 'female' %}selected{% endif %}>Female</option>
-                  <option value="others" {% if object.gender == 'others' %}selected{% endif %}>Others</option>
-                </select>
-              </div>
-
-              <!-- Birthday -->
-              <div class="form-group px-4 mb-2">
-                  <label class="required-field-label" for="birthdate">Birthday</label>
-                  <input value="{{ object.birthdate|date:"Y-m-d" }}" type="date" id="birthdate" name="birthdate" class="form-control form-control-lg required"/ max="2999-12-31" required>
-              </div>
-
-            </div>
-
-            <!-- RIGHT DIV -->
-            <div class="form-group col-md-9">
-
-              <!-- Personal -->
-              <div class="card border-light my-3">
-                <div class="card-header sticky-top">
-                  <button type="submit" value="Submit" class="btn btn-primary">Update Details</button>
-                </div>
-                <div class="card-body row">
-
-                  <h4 class="float-start">Personal Details</h4>
 
                   <!-- Name Fields -->
-                  <div class="row mb-4 col-6 col-md-6">
+                  <div>
 
                     <div class="form-group mb-2">
                       <label class="required-field-label" for="first_name">First Name</label>
@@ -115,16 +58,81 @@
                       <input value="{{ object.extension|default_if_none:'' }}" type="text" id="extension" name="extension" class="form-control form-control-lg" maxlength="25"/>
                     </div>
 
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT DIV -->
+            <div class="form-group col-md-9">
+
+              <!-- Personal -->
+              <div class="card border-light my-3">
+                <div class="card-header sticky-top">
+                  <button type="submit" value="Submit" class="btn btn-primary">Update Details</button>
+                </div>
+                <div class="card-body row">
+
+                  <h4 class="float-start">Personal Details</h4>
+
+
+                  <!-- Contact Fields -->
+                  <div class="mb-4 col-6 col-md-6">
+
                     <div class="form-group mb-2">
                       <label class="" for="headline">Headline:</label>
                       <input value="{{ object.headline|default_if_none:'' }}" type="text" id="headline" placeholder="'Software Developer / Freelancer'" name="headline" class="form-control form-control-lg"/>
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="form-group mb-2">
+                      <label class="" for="phone_number">Telephone Number</label>
+                      <div class="input-group input-group-lg">
+                        <div class="input-group-prepend">
+                          <select name="area_code" class="input-group-text md-form form-control form-control-lg p-0 required" dir="rtl" required>
+                            {% for code in area_codes %}
+                            <option value="{{ code }}" {% if object.area_code == code %}selected{% endif %}>({{ code }})</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                        <input value="{{ object.phone_number|default_if_none:'' }}" type="text" id="phone_number" name="phone_number" class="phone_number form-control form-control-lg number_only" maxlength="8"/>
+                      </div>
+                      <small class="form-text text-muted">You can select a different area code from the dropdown</small>
+                    </div>
+
+                    <!-- Mobile Number -->
+                    <div class="form-group mb-2">
+                      <label class="" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
+                      <div class="input-group input-group-lg">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text" id="inputGroupPrepend2">+63</span>
+                        </div>
+                        <input value="{{ object.mobile_number|default_if_none:'' }}" type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only" maxlength="10"/>
+                      </div>
+                    </div>
+
+                    <!-- Gender -->
+                    <div class="form-group mb-2">
+                      <label class="required-field-label" for="gender">Gender</label>
+                      <select name="gender" class="gender-select mdb-select md-form form-control form-control-lg required" required>
+                        <option value="" disabled {% if not object.gender %}selected{% endif %}>------</option>
+                        <option value="male" {% if object.gender == 'male' %}selected{% endif %}>Male</option>
+                        <option value="female" {% if object.gender == 'female' %}selected{% endif %}>Female</option>
+                        <option value="others" {% if object.gender == 'others' %}selected{% endif %}>Others</option>
+                      </select>
+                    </div>
+
+                    <!-- Birthday -->
+                    <div class="form-group mb-2">
+                        <label class="required-field-label" for="birthdate">Birthday</label>
+                        <input value="{{ object.birthdate|date:"Y-m-d" }}" type="date" id="birthdate" name="birthdate" class="form-control form-control-lg required"/ max="2999-12-31" required>
                     </div>
 
                   </div>
 
 
                   <!-- Address Fields -->
-                  <div class="row mb-4 col-6 col-md-6">
+                  <div class="col-6 col-md-6">
 
                     <h5>Address</h5>
                     <small class="form-text text-muted">Employers might filter by area. It is benificial to fill in your address details accurately</small>
@@ -175,11 +183,13 @@
                       </select>
                     </div>
 
-                    <div class="form-group mb-2">
+                  </div>
+
+                  <div class="col-12 col-md-12">
+                    <div class="form-group mb-4">
                       <label class="" for="address">Full Address</label>
                       <input value="{{ object.address|default_if_none:'' }}" type="text" id="address" name="address" class="form-control form-control-lg" />
                     </div>
-
                   </div>
 
                   <hr>
@@ -238,18 +248,16 @@
 
                   <hr>
 
-                  <!-- Employment History -->
+                  <!-- Experience -->
                   <div class="col-md-12 col-12">
 
-                    <h4 class="float-start">Employment History</h4>
+                    <h4 class="float-start">Experience</h4>
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary float-end mb-2" data-bs-toggle="modal" data-action="add" data-bs-target="#addEmploymentHistoryModal">
+                    <button type="button" class="btn btn-primary float-end mb-2" data-bs-toggle="modal" data-action="add" data-bs-target="#addExperienceModal">
                       Add
                     </button>
-                    <table id="EmploymentHistoryTable" class="table table-bordered table-responsive-md table-striped text-center">
+                    <table id="ExperienceTable" class="table table-bordered table-responsive-md table-striped text-center">
                       <thead>
-                        
-                        {% if employment_history.all %}
                         <tr>
                           <th class="text-center">Company</th>
                           <th class="text-center">Position</th>
@@ -260,7 +268,6 @@
                           <th class="text-center">Reference</th>
                           <th class="text-center" style="width: 5%"></th>
                         </tr>
-                        {% endif %}
                       </thead>
                       <tbody>
                         {% if employment_history.all %}
@@ -288,7 +295,7 @@
                           {% endfor %}
                         {% else %}
                           <tr class="nodata">
-                            <td colspan="100%">No Data</td>
+                            <td colspan="8">No Data</td>
                           </tr>
                         {% endif %}
                       </tbody>
@@ -299,7 +306,7 @@
                   <!-- Education History -->
                   <div class="col-md-12 col-12">
 
-                    <h4 class="float-start">Education</h4>
+                    <h4 class="float-start">Educational Background</h4>
                     <!-- Button trigger modal -->
                     <button type="button" class="btn btn-primary float-end mb-2" data-bs-toggle="modal" data-action="add" data-bs-target="#addEducationModal">
                       Add
@@ -336,7 +343,7 @@
                           {% endfor %}
                         {% else %}
                           <tr class="nodata">
-                            <td colspan="100%">No Data</td>
+                            <td colspan="6">No Data</td>
                           </tr>
                         {% endif %}
                       </tbody>
@@ -394,6 +401,52 @@
 
                   </div>
 
+                  <!-- Projects -->
+                  <div class="col-md-12 col-12">
+
+                    <h4 class="float-start">Projects</h4>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary float-end mb-2" data-bs-toggle="modal" data-action="add" data-bs-target="#addProjectModal">
+                      Add
+                    </button>
+
+                    <table id="projectsTable" class="table table-bordered table-responsive-md table-striped text-center">
+                      <thead>
+                        <tr>
+                          <th class="text-center">Company</th>
+                          <th class="text-center">Title</th>
+                          <th class="text-center">Start</th>
+                          <th class="text-center">End</th>
+                          <th class="text-center" style="width: 5%"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% if projects.all %}
+                          {% for project in projects.all %}
+                          <tr>
+                            <td>{{ project.experience.company_name }}</td>
+                            <td>{{ project.title }}</td>
+                            <td>{{ project.start }}</td>
+                            <td>{{ project.end }}</td>
+                            <td class="p-0">
+                              <span class="table-remove">
+                                <span class="remove-row" data-id="{{ project.id }}" data-table="ApplicantProject">
+                                  <i class="fas fa-times-circle"></i>
+                                </span>
+                              </span>
+                            </td>
+                          </tr>
+                          {% endfor %}
+                        {% else %}
+                          <tr class="nodata">
+                            <td colspan="5">No Data</td>
+                          </tr>
+                        {% endif %}
+                      </tbody>
+                    </table>
+
+                  </div>
+
                 </div>
 
               </div>
@@ -409,108 +462,110 @@
 
   </div>
 
-  <!-- Experience Modal -->
-  <div class="modal fade" id="addEmploymentHistoryModal" data-ajax-url="{% url 'users:ajax_add_employment_history' %}" tabindex="-1" role="dialog" aria-labelledby="addEmploymentHistoryTitle" aria-hidden="true">
+  <!-- Employment Modal -->
+  <div class="modal fade" id="addExperienceModal" data-ajax-url="{% url 'users:ajax_add_employment_history' %}" tabindex="-1" role="dialog" aria-labelledby="addExperienceTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="">Employment History Details</h5>
+          <h5 class="modal-title" id="">Experience Details</h5>
         </div>
         <div class="modal-body">
-          <div class="row col">
+          <form id="employmentHistoryForm">
+            <div class="row col">
 
-            <div class="form-group mt-0 mb-2">
-              <label class="required-field-label" for="company">Company Name</label>
-              <input type="text" id="company" name="company" class="form-control form-control-lg required" required/>
-            </div>
+              <div class="form-group mt-0 mb-2">
+                <label class="required-field-label" for="company">Company Name</label>
+                <input type="text" id="company" name="company" class="form-control form-control-lg required" required/>
+              </div>
 
-            <div class="form-group mb-2">
-              <label class="required-field-label" for="position">Position</label>
-              <input type="text" id="position" name="position" class="form-control form-control-lg required" required/>
-            </div>
+              <div class="form-group mb-2">
+                <label class="required-field-label" for="position">Position</label>
+                <input type="text" id="position" name="position" class="form-control form-control-lg required" required/>
+              </div>
 
-            <div class="form-group mb-2">
-              <label class="required-field-label" for="employment_type">Employment Type</label>
-              <select name="employment_type" id="employment_type" class="mdb-select md-form form-control form-control-lg required" required>
-                {% for key, values in employment_type_choices.items %}
-                <option value="{{ key }}">{{ values }}</option>
-                {% endfor %}
-              </select>
-            </div>
-
-            <div class="form-group mb-2 col-6 row">
-              <label class="required-field-label">Date Start</label>
-              <div class="col-md-7 col-7 pe-0">
-                <select name="start_month" id="start_month" class="mdb-select md-form form-control form-control-lg required" required>
-                  <option value="">------</option>
-                  {% for key, values in months.items %}
+              <div class="form-group mb-2">
+                <label class="required-field-label" for="employment_type">Employment Type</label>
+                <select name="employment_type" id="employment_type" class="mdb-select md-form form-control form-control-lg required" required>
+                  {% for key, values in employment_type_choices.items %}
                   <option value="{{ key }}">{{ values }}</option>
                   {% endfor %}
                 </select>
               </div>
-              <div class="col pe-0">
-                <select name="start_year" id="start_year" class="mdb-select md-form form-control form-control-lg required" required>
-                  <option value="">------</option>
-                  {% for year in years %}
-                  <option value="{{ year }}">{{ year }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
 
-            <div class="form-group mb-2 col-6 row">
-              <label>Date End</label>
-              <div class="col-md-7 col-7 ps-3 pe-0">
-                <select name="end_month" id="end_month" class="mdb-select md-form form-control form-control-lg">
-                  <option value="">------</option>
-                  {% for key, values in months.items %}
-                  <option value="{{ key }}">{{ values }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="col pe-0">
-                <select name="end_year" id="end_year" class="mdb-select md-form form-control form-control-lg">
-                  <option value="">----</option>
-                  {% for year in years %}
-                  <option value="{{ year }}">{{ year }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group my-2">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="current" id="current">
-                <label class="form-check-label" for="flexCheckDefault">
-                  Currently Employed
-                </label>
-              </div>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="" for="overview">Brief Overview</label>
-              <textarea class="form-control" id="overview" name="overview" rows="4"></textarea>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="required-field-label" for="reference_person">Reference Person</label>
-              <input type="text" id="reference_person" name="reference_person" class="form-control form-control-lg required" placeholder="Name" required/>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
-              <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                  <span class="input-group-text" id="inputGroupPrepend2">+63</span>
+              <div class="form-group mb-2 col-6 row">
+                <label class="required-field-label">Date Start</label>
+                <div class="col-md-7 col-7 pe-0">
+                  <select name="start_month" id="start_month" class="mdb-select md-form form-control form-control-lg required" required>
+                    <option value="">------</option>
+                    {% for key, values in months.items %}
+                    <option value="{{ key }}">{{ values }}</option>
+                    {% endfor %}
+                  </select>
                 </div>
-                <input type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only" maxlength="10"/>
+                <div class="col pe-0">
+                  <select name="start_year" id="start_year" class="mdb-select md-form form-control form-control-lg required" required>
+                    <option value="">------</option>
+                    {% for year in years %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
               </div>
-            </div>
 
-          </div>
+              <div class="form-group mb-2 col-6 row">
+                <label>Date End</label>
+                <div class="col-md-7 col-7 ps-3 pe-0">
+                  <select name="end_month" id="end_month" class="mdb-select md-form form-control form-control-lg">
+                    <option value="">------</option>
+                    {% for key, values in months.items %}
+                    <option value="{{ key }}">{{ values }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col pe-0">
+                  <select name="end_year" id="end_year" class="mdb-select md-form form-control form-control-lg">
+                    <option value="">----</option>
+                    {% for year in years %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group my-2">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="current" id="current">
+                  <label class="form-check-label" for="flexCheckDefault">
+                    Currently Employed
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group mb-2">
+                <label class="" for="overview">Brief Overview</label>
+                <textarea class="form-control" id="overview" name="overview" rows="4"></textarea>
+              </div>
+
+              <div class="form-group mb-2">
+                <label class="" for="reference_person">Reference Person</label>
+                <input type="text" id="reference_person" name="reference_person" class="form-control form-control-lg" placeholder="Name"/>
+              </div>
+
+              <div class="form-group mb-2">
+                <label class="" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
+                <div class="input-group input-group-lg">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroupPrepend2">+63</span>
+                  </div>
+                  <input type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only" maxlength="10"/>
+                </div>
+              </div>
+
+            </div>
+          </form>
         </div>
         <div class="modal-footer">
-          <button type="button" id="addEmploymentHistorySubmit" class="btn btn-primary">Add</button>
+          <button type="button" id="addExperienceSubmit" class="btn btn-primary">Add</button>
         </div>
       </div>
     </div>
@@ -524,74 +579,87 @@
           <h5 class="modal-title" id="">Education Details</h5>
         </div>
         <div class="modal-body">
-          <div class="row col">
+          <form id="educationForm">
+            <div class="row col">
 
-            <div class="form-group mt-0 mb-2">
-              <label class="required-field-label" for="school_name">School Name</label>
-              <input type="text" id="school_name" name="school_name" class="form-control form-control-lg required" required/>
-            </div>
+              <div class="form-group mt-0 mb-2">
+                <label class="required-field-label" for="school_name">School Name</label>
+                <input type="text" id="school_name" name="school_name" class="form-control form-control-lg required" required/>
+              </div>
 
-            <div class="form-group mb-2">
-              <label class="required-field-label" for="degree">Degree</label>
-              <input type="text" id="degree" name="degree" class="form-control form-control-lg required" required/>
-            </div>
-
-            <div class="form-group mb-2 col-6 row">
-              <label class="required-field-label">Date Start</label>
-              <div class="col-md-7 col-7 pe-0">
-                <select name="start_month" id="start_month" class="mdb-select md-form form-control form-control-lg required" required>
-                  <option value="">------</option>
-                  {% for key, values in months.items %}
-                  <option value="{{ key }}">{{ values }}</option>
-                  {% endfor %}
+              <div class="form-group mt-0 mb-2">
+                <label class="required-field-label" for="level">Level</label>
+                <select name="level" id="level" class="mdb-select md-form form-control form-control-lg required" required>
+                    <option value="primary">Primary</option>
+                    <option value="secondary">Secondary</option>
+                    <option value="bachelor">Bachelor's Degree</option>
+                    <option value="master">Master's Degree</option>
+                    <option value="doctorate">Doctorate</option>
                 </select>
               </div>
-              <div class="col pe-0">
-                <select name="start_year" id="start_year" class="mdb-select md-form form-control form-control-lg required" required>
-                  <option value="">------</option>
-                  {% for year in years %}
-                  <option value="{{ year }}">{{ year }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
 
-            <div class="form-group mb-2 col-6 row">
-              <label>Date End</label>
-              <div class="col-md-7 col-7 ps-3 pe-0">
-                <select name="end_month" id="end_month" class="mdb-select md-form form-control form-control-lg">
-                  <option value="">------</option>
-                  {% for key, values in months.items %}
-                  <option value="{{ key }}">{{ values }}</option>
-                  {% endfor %}
-                </select>
+              <div class="form-group mb-2 d-none">
+                <label class="required-field-label" for="degree">Degree</label>
+                <input type="text" id="degree" name="degree" class="form-control form-control-lg required" required/>
               </div>
-              <div class="col pe-0">
-                <select name="end_year" id="end_year" class="mdb-select md-form form-control form-control-lg">
-                  <option value="">----</option>
-                  {% for year in years %}
-                  <option value="{{ year }}">{{ year }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
 
-            <div class="form-group mb-2">
-              <label class="required-field-label" for="reference_person">Reference Person</label>
-              <input type="text" id="reference_person" name="reference_person" class="form-control form-control-lg required" placeholder="Name" required/>
-            </div>
-
-            <div class="form-group mb-2">
-              <label class="" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
-              <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                  <span class="input-group-text" id="inputGroupPrepend2">+63</span>
+              <div class="form-group mb-2 col-6 row">
+                <label class="required-field-label">Date Start</label>
+                <div class="col-md-7 col-7 pe-0">
+                  <select name="start_month" id="start_month" class="mdb-select md-form form-control form-control-lg required" required>
+                    <option value="">------</option>
+                    {% for key, values in months.items %}
+                    <option value="{{ key }}">{{ values }}</option>
+                    {% endfor %}
+                  </select>
                 </div>
-                <input type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only" maxlength="10"/>
+                <div class="col pe-0">
+                  <select name="start_year" id="start_year" class="mdb-select md-form form-control form-control-lg required" required>
+                    <option value="">------</option>
+                    {% for year in years %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
               </div>
-            </div>
 
-          </div>
+              <div class="form-group mb-2 col-6 row">
+                <label>Date End</label>
+                <div class="col-md-7 col-7 ps-3 pe-0">
+                  <select name="end_month" id="end_month" class="mdb-select md-form form-control form-control-lg">
+                    <option value="">------</option>
+                    {% for key, values in months.items %}
+                    <option value="{{ key }}">{{ values }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col pe-0">
+                  <select name="end_year" id="end_year" class="mdb-select md-form form-control form-control-lg">
+                    <option value="">----</option>
+                    {% for year in years %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group mb-2">
+                <label class="" for="reference_person">Reference Person</label>
+                <input type="text" id="reference_person" name="reference_person" class="form-control form-control-lg" placeholder="Name"/>
+              </div>
+
+              <div class="form-group mb-2">
+                <label class="" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
+                <div class="input-group input-group-lg">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroupPrepend2">+63</span>
+                  </div>
+                  <input type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only" maxlength="10"/>
+                </div>
+              </div>
+
+            </div>
+          </form>
         </div>
         <div class="modal-footer">
           <button type="button" id="addEducationSubmit" class="btn btn-primary">Add</button>
@@ -608,33 +676,121 @@
           <h5 class="modal-title" id="">Skill Details</h5>
         </div>
         <div class="modal-body">
-          <div class="row col">
 
-            <div class="form-group mt-0 mb-2">
-              <label class="required-field-label" for="school_name">Skill Name</label>
-              <input type="text" id="school_name" name="school_name" class="form-control form-control-lg required" required/>
-            </div>
+          <form id="skillDetailForm">
+            <div class="row col">
 
-            <div class="form-group mb-2">
-              <label class="required-field-label" for="efficiency">Efficiency</label>
-              <select name="efficiency" id="efficiency" class="mdb-select md-form form-control form-control-lg required" required>
-                {% for key, values in efficiency_choices.items %}
-                <option value="{{ key }}">{{ values }}</option>
-                {% endfor %}
-              </select>
-            </div>
-
-            <div class="form-group mb-2">
-              <span>Supporting Document</span>
-              <div class="form-group mb-2">
-                <input type="file" id="attachment" name="attachment" class="form-control form-control-lg" />
+              <div class="form-group mt-0 mb-2">
+                <label class="required-field-label" for="school_name">Skill Name</label>
+                <input type="text" id="school_name" name="school_name" class="form-control form-control-lg required" required/>
               </div>
-            </div>
 
-          </div>
+              <div class="form-group mb-2">
+                <label class="required-field-label" for="efficiency">Efficiency</label>
+                <select name="efficiency" id="efficiency" class="mdb-select md-form form-control form-control-lg required" required>
+                  <option value="">----</option>
+                  {% for key, values in efficiency_choices.items %}
+                  <option value="{{ key }}">{{ values }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group mb-2">
+                <span>Supporting Document</span>
+                <div class="form-group mb-2">
+                  <input type="file" id="attachment" name="attachment" class="form-control form-control-lg" />
+                </div>
+              </div>
+
+            </div>
+          </form>
+
         </div>
         <div class="modal-footer">
           <button type="button" id="addSkillSubmit" class="btn btn-primary">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Projects Modal -->
+  <div class="modal fade" id="addProjectModal" data-user-id="{{ user.id }}" data-csrf-token="{{ csrf_token }}" data-ajax-url="{% url 'users:ajax_add_project' %}" tabindex="-1" role="dialog" aria-labelledby="addProjectTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="">Project Details</h5>
+        </div>
+        <div class="modal-body">
+
+          <form id="projectDetailForm">
+            <div class="row col">
+
+              <div class="form-group mt-0 mb-2">
+                <label class="required-field-label" for="title">Title</label>
+                <input type="text" id="title" name="title" class="form-control form-control-lg required" required/>
+              </div>
+
+              <div class="form-group mb-2">
+                <label class="required-field-label" for="experience">Company</label>
+                <select name="experience" id="experience" class="mdb-select md-form form-control form-control-lg required" required>
+                  <option value="">----</option>
+                  {% for data in employment_history.all %}
+                  <option value="{{ data.id }}">{{ data.company_name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group mb-2 col-6 row">
+                <label class="required-field-label">Date Start</label>
+                <div class="col-md-7 col-7 pe-0">
+                  <select name="start_month" id="start_month" class="mdb-select md-form form-control form-control-lg required" required>
+                    <option value="">------</option>
+                    {% for key, values in months.items %}
+                    <option value="{{ key }}">{{ values }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col pe-0">
+                  <select name="start_year" id="start_year" class="mdb-select md-form form-control form-control-lg required" required>
+                    <option value="">------</option>
+                    {% for year in years %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group mb-2 col-6 row">
+                <label>Date End</label>
+                <div class="col-md-7 col-7 ps-3 pe-0">
+                  <select name="end_month" id="end_month" class="mdb-select md-form form-control form-control-lg">
+                    <option value="">------</option>
+                    {% for key, values in months.items %}
+                    <option value="{{ key }}">{{ values }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col pe-0">
+                  <select name="end_year" id="end_year" class="mdb-select md-form form-control form-control-lg">
+                    <option value="">----</option>
+                    {% for year in years %}
+                    <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group mb-2">
+                <label class="" for="overview">Brief Overview</label>
+                <textarea class="form-control" id="overview" name="overview" rows="4"></textarea>
+              </div>
+
+            </div>
+          </form>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="addProjectSubmit" class="btn btn-primary">Add</button>
         </div>
       </div>
     </div>

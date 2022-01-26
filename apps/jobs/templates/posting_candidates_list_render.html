@@ -1,6 +1,6 @@
 
 {% autoescape off %}
-  {% for applicant in posting.get_candidates %}
+  {% for applicant in candidates %}
     <div class="bg-white border mt-2 col-12 col-md-12">
       <div class="d-flex">
         <div class="me-auto p-2">
@@ -13,7 +13,7 @@
           </div>
         </div>
         <div class="p-2 align-self-center">
-          <button class="postingCandidateApply" data-posting-id="{{ posting.id }}" data-user-id="{{ applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_apply' %}" data-action="apply">Pick</button>
+          <button class="postingCandidateApply" data-posting-id="{{ posting.id }}" data-user-id="{{ applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_apply' %}" data-action="apply">Invite</button>
         </div>
       </div>
     </div>

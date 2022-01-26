@@ -15,4 +15,5 @@ urlpatterns = [
     path('ajax/add-job-posting/', views.ajax_add_job_posting, name='ajax_add_job_posting'),
     path('ajax/edit-job-posting/', views.ajax_edit_job_posting, name='ajax_edit_job_posting'),
     path('ajax/get-candidates/', views.ajax_get_candidates, name='ajax_get_candidates'),
+    path('ajax/get-invites/', views.ajax_get_invites, name='ajax_get_invites'),
 ]

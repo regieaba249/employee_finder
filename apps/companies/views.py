@@ -26,7 +26,11 @@ from apps.users.models import (
 from apps.users.forms import (
     UpdateForm
 )
-from employee_finder.helpers import EMPLOYMENT_TYPE_CHOICES
+from employee_finder.helpers import (
+    EMPLOYMENT_TYPE_CHOICES,
+    MONTH_CHOICES,
+    AREA_CODES
+)
 
 
 # Create your views here.
@@ -46,26 +50,8 @@ class CompanyUpdateView(LoginRequiredMixin, UpdateView):
         context = super(CompanyUpdateView, self).get_context_data(**kwargs)
         company = self.object.company_data
 
-        context['area_codes'] = ['02', '032', '033', '034', '035', '036',
-                                 '038', '042', '043', '044', '045', '046',
-                                 '047', '048', '049', '052', '053', '054',
-                                 '055', '056', '062', '063', '064', '065',
-                                 '068', '072', '074', '075', '077', '078',
-                                 '082', '083', '084', '085', '086', '087',
-                                 '088', '08822', '08842']
-        context['months'] = {
-            'jan': 'January',
-            'feb': 'February',
-            'mar': 'March',
-            'apr': 'April',
-            'may': 'May',
-            'jun': 'June',
-            'jul': 'July',
-            'aug': 'August',
-            'sep': 'September',
-            'oct': 'October',
-            'nov': 'November',
-            'dec': 'December'}
+        context['area_codes'] = AREA_CODES
+        context['months'] = dict(MONTH_CHOICES)
         year = datetime.today().year
         context['years'] = list(range(year, year - 50, -1))
         context['employment_type_choices'] = dict(EMPLOYMENT_TYPE_CHOICES)

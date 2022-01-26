@@ -197,24 +197,34 @@ $(document).on('focusout', '#password2', function (e) {
 });
 
 $(document).on('change', ".address-select", function (e) {
-  var _id = $(this).val();
-  var url = $(this).attr("data-ajax-url");
-  var value = $(this).attr("data-value");
-  var target_name = $(this).attr("data-target").replace('user_', '');
-  var current_name = $(this).attr('name');
+  var _id = $(this).val()
+  var url = $(this).attr("data-ajax-url")
+  var value = $(this).attr("data-value")
+  var target_name = $(this).attr("data-target").replace('user_', '')
+  var current_name = $(this).attr('name')
   var heirarchy = {
-    "region": [$("#user_province"), $("#user_municipality"), $("#user_barangay")],
-    "province": [$("#user_municipality"), $("#user_barangay")],
-    "municipality": [$("#user_barangay")],
+    "region": [
+      $(this).closest('.form-group').parent().find("#user_province"),
+      $(this).closest('.form-group').parent().find("#user_municipality"),
+      $(this).closest('.form-group').parent().find("#user_barangay")
+    ],
+    "province": [
+      $(this).closest('.form-group').parent().find("#user_municipality"),
+      $(this).closest('.form-group').parent().find("#user_barangay")
+    ],
+    "municipality": [
+      $(this).closest('.form-group').parent().find("#user_barangay")
+    ],
     "barangay": [],
   }
+
   $.ajax({
     url: url,
     data: {
       '_id': _id,
       'value': value,
       'target_name': target_name,
-      'current_name': current_name,
+      'current_name': current_name
     },
     success: function (data) {
       heirarchy = heirarchy[current_name]
@@ -257,7 +267,7 @@ $(document).on('click', '.see-password', function (e) {
   }
 });
 
-$(".alert").delay(10000).slideUp(200, function() {
+$(".alert").delay(20000).slideUp(200, function() {
     $(this).alert('close');
 });
 

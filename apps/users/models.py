@@ -100,7 +100,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     area_code = models.CharField(max_length=5, **optional)
     phone_number = models.CharField(max_length=10, **optional)
     mobile_regex = RegexValidator(regex=r'^(\+\d{1,3})?,?\s?\d{8,13}', message="Mobile number format must be: '+639999999999'.")
-    mobile_number = models.CharField(validators=[mobile_regex], max_length=13, **optional) # validators should be a list
+    mobile_number = models.CharField(validators=[mobile_regex], max_length=13, blank=False)
     headline = models.CharField(max_length=250, **optional)
     birthdate = models.DateField(**optional)
     user_avatar = models.ImageField(default='user_avatar.png', upload_to='user_avatars', **optional)
@@ -299,16 +299,14 @@ class ApplicantExperience(BaseModel):
         null=True
     )
     company_name = models.CharField(max_length=50, blank=False)
-    start_month = models.CharField(
-        max_length=15,
+    start_month = models.IntegerField(
         choices=MONTH_CHOICES,
-        default='jan'
+        default=1
     )
     start_year = models.CharField(max_length=50, blank=False)
-    end_month = models.CharField(
-        max_length=15,
+    end_month = models.IntegerField(
         choices=MONTH_CHOICES,
-        default='jan',
+        default=1,
         **optional
     )
     end_year = models.CharField(max_length=50, **optional)
@@ -366,17 +364,15 @@ class ApplicantEducation(BaseModel):
         null=True
     )
     school_name = models.CharField(max_length=250, blank=False)
-    degree = models.CharField(max_length=250, blank=False)
-    start_month = models.CharField(
-        max_length=15,
+    degree = models.CharField(max_length=250, **optional)
+    start_month = models.IntegerField(
         choices=MONTH_CHOICES,
-        default='jan'
+        default=1
     )
     start_year = models.CharField(max_length=50, blank=False)
-    end_month = models.CharField(
-        max_length=15,
+    end_month = models.IntegerField(
         choices=MONTH_CHOICES,
-        default='jan'
+        default=1
     )
     end_year = models.CharField(max_length=50, blank=False)
     reference_person = models.CharField(max_length=250, **optional)
@@ -433,6 +429,45 @@ class ApplicantSkill(BaseModel):
     @property
     def get_user_id(self):
         return self.applicant.user.id
+
+
+class ApplicantProject(BaseModel):
+    experience = models.ForeignKey(
+        ApplicantExperience,
+        related_name='projects',
+        on_delete=models.CASCADE,
+        null=True
+    )
+    title = models.CharField(max_length=50, blank=False)
+    start_month = models.IntegerField(
+        choices=MONTH_CHOICES,
+        default=1
+    )
+    start_year = models.CharField(max_length=50, blank=False)
+    end_month = models.IntegerField(
+        choices=MONTH_CHOICES,
+        default=1,
+        **optional
+    )
+    end_year = models.CharField(max_length=50, **optional)
+    overview = models.TextField(**optional)
+
+    def __str__(self):
+        return f"{self.applicant.user.full_name} - {self.title}"
+
+    @property
+    def start(self):
+        if self.start_month and self.start_year:
+            months = dict(MONTH_CHOICES)
+            return f'{months[self.start_month]} / {self.start_year}'
+        return ''
+
+    @property
+    def end(self):
+        if self.end_month and self.end_year:
+            months = dict(MONTH_CHOICES)
+            return f'{months[self.end_month]} / {self.end_year}'
+        return ''
 
 
 class ApplicantSeminar(BaseModel):

@@ -100,7 +100,7 @@
                         <div class="col-md-3 px-1">
 
                           <!-- User Avatar -->
-                          <div class="file-upload px-2 mb-2">
+                          <div class="file-upload px-3 mb-2">
                             <div class="image-upload-wrap">
                               <input class="file-upload-input" type='file' id="user_avatar" name="user_avatar" onchange="readURL(this);" accept="image/*" />
                               <div class="drag-text">
@@ -164,12 +164,12 @@
 
                           <!-- Mobile Number -->
                           <div class="form-group px-2 mb-2">
-                            <label class="" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
+                            <label class="required-field-label" for="mobile_number">Mobile Number</label>&nbsp;<span class="errmsg"></span>
                             <div class="input-group input-group-lg">
                               <div class="input-group-prepend">
                                 <span class="input-group-text" id="inputGroupPrepend2">+63</span>
                               </div>
-                              <input value="{{ form.data.mobile_number }}" type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only" maxlength="10"/>
+                              <input value="{{ form.data.mobile_number }}" type="text" id="mobile_number" name="mobile_number" class="form-control form-control-lg number_only required" maxlength="10" required/>
                             </div>
                           </div>
 

@@ -1,0 +1,23 @@
+{% autoescape off %}
+  {% if projects.all %}
+    {% for project in projects.all %}
+    <tr>
+      <td>{{ project.experience.company_name }}</td>
+      <td>{{ project.title }}</td>
+      <td>{{ project.start }}</td>
+      <td>{{ project.end }}</td>
+      <td class="p-0">
+        <span class="table-remove">
+          <span class="remove-row" data-id="{{ project.id }}" data-table="ApplicantProject">
+            <i class="fas fa-times-circle"></i>
+          </span>
+        </span>
+      </td>
+    </tr>
+    {% endfor %}
+  {% else %}
+    <tr class="nodata">
+      <td colspan="5">No Data</td>
+    </tr>
+  {% endif %}
+{% endautoescape %}

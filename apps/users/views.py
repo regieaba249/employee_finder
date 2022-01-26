@@ -12,19 +12,11 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.views.generic.base import TemplateView
 from django.views.generic import DetailView
-from django.views.generic.edit import (
-    FormView,
-    CreateView,
-    UpdateView
-)
+from django.views.generic.base import TemplateView
+from django.views.generic.edit import FormView, UpdateView
 from .tokens import account_activation_token
-from .forms import (
-    LoginForm,
-    RegistrationForm,
-    UpdateForm
-)
+from .forms import LoginForm, RegistrationForm, UpdateForm
 from apps.companies.models import Company
 from apps.jobs.models import (
     JobPostingApplicant,
@@ -37,19 +29,18 @@ from .models import (
     ApplicantExperience,
     ApplicantEducation,
     ApplicantSkill,
+    ApplicantProject,
     Region,
     Province,
     Municipality,
     Barangay,
-
-    # choices
-    EMPLOYMENT_TYPE_CHOICES,
-    MONTH_CHOICES,
 )
 
 from employee_finder.helpers import (
     EFFICIENCY_CHOICES,
-    MONTH_CHOICES
+    MONTH_CHOICES,
+    EMPLOYMENT_TYPE_CHOICES,
+    AREA_CODES
 )
 
 
@@ -61,6 +52,8 @@ Tables = {
     'ApplicantAttachment': ApplicantAttachment,
     'ApplicantExperience': ApplicantExperience,
     'ApplicantEducation': ApplicantEducation,
+    'ApplicantSkill': ApplicantSkill,
+    'ApplicantProject': ApplicantProject,
     'JobPostingApplicant': JobPostingApplicant,
     'CompanyJobPosting': CompanyJobPosting,
     'Region': Region,
@@ -148,6 +141,7 @@ def ajax_check_email(request):
         'exists': exists,
     })
 
+
 def ajax_load_address_dropdown(request):
 
     select_id = request.GET.get('_id')
@@ -182,7 +176,7 @@ def ajax_add_employment_history(request):
     start_year = request.GET.get('start_year')
     end_month = request.GET.get('end_month')
     end_year = request.GET.get('end_year')
-    current = bool(request.GET.get('current'))
+    current = True if request.GET.get('current') == 'true' else False
     overview = request.GET.get('overview')
     reference_person = request.GET.get('reference_person')
     mobile_number = request.GET.get('mobile_number')
@@ -208,13 +202,49 @@ def ajax_add_employment_history(request):
 
     queryset = ApplicantExperience.objects.filter(
         applicant=request.user.applicant_data
-    ).order_by('-current', '-start_month', '-start_year').values()
+    ).order_by('-start_year', '-start_month').values()
 
     return JsonResponse({
         'success': True,
         'items': list(queryset),
         'types': dict(EMPLOYMENT_TYPE_CHOICES),
         'months': dict(MONTH_CHOICES)
+    })
+
+
+def ajax_add_project(request):
+    user_id = request.GET.get('user_id')
+    title = request.GET.get('title')
+    experience = request.GET.get('experience')
+    overview = request.GET.get('overview')
+    start_month = request.GET.get('start_month')
+    start_year = request.GET.get('start_year')
+    end_month = request.GET.get('end_month')
+    end_year = request.GET.get('end_year')
+
+    user = CustomUser.objects.get(id=user_id)
+    experience = ApplicantExperience.objects.get(id=experience)
+    data = {
+        'experience': experience,
+        'title': title,
+        'start_month': start_month,
+        'start_year': start_year,
+        'end_month': end_month,
+        'end_year': end_year,
+        'overview': overview,
+    }
+    ApplicantProject.objects.create(**data)
+
+    projects = ApplicantProject.objects.filter(
+        experience=experience
+    )
+    htmlStr = render_to_string('applicant_project_list_render.html', {
+        'projects': projects,
+    })
+
+    return JsonResponse({
+        'success': True,
+        'htmlStr': htmlStr,
     })
 
 
@@ -271,7 +301,7 @@ def ajax_add_education(request):
 
     queryset = ApplicantEducation.objects.filter(
         applicant=request.user.applicant_data
-    ).order_by('-start_month', '-start_year').values()
+    ).order_by('-start_year', '-start_month').values()
 
     return JsonResponse({
         'success': True,
@@ -311,11 +341,26 @@ class LoginView(FormView):
     form_class = LoginForm
     redirect_authenticated_user = True
     template_name = 'login.html'
-    success_url = reverse_lazy('jobs:jobs_board',)
+
+    def get_success_url(self, **kwargs):
+        user = self.request.user
+        if user.user_type == 'applicant':
+            return reverse_lazy(
+                'users:profile_edit',
+                kwargs={'pk': self.request.user.pk}
+            )
+        else:
+            return reverse_lazy(
+                'companies:profile_edit',
+                kwargs={'pk': self.request.user.pk}
+            )
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return HttpResponseRedirect(reverse_lazy('jobs:jobs_board'))
+            return HttpResponseRedirect(reverse_lazy(
+                'users:profile_edit',
+                kwargs={'pk': self.request.user.pk}
+            ))
         return super(LoginView, self).get(request, *args, **kwargs)
 
     def form_invalid(self, form):
@@ -366,13 +411,7 @@ class RegistrationView(FormView):
     def get_context_data(self, *args, **kwargs):
         context = super(RegistrationView, self).get_context_data(*args, **kwargs)
         context['user_type'] = self.kwargs.get('_type')
-        context['area_codes'] = ['02', '032', '033', '034', '035', '036',
-                                 '038', '042', '043', '044', '045', '046',
-                                 '047', '048', '049', '052', '053', '054',
-                                 '055', '056', '062', '063', '064', '065',
-                                 '068', '072', '074', '075', '077', '078',
-                                 '082', '083', '084', '085', '086', '087',
-                                 '088', '08822', '08842']
+        context['area_codes'] = AREA_CODES
         _region = context['form'].instance.region
         _province = context['form'].instance.province
         _municipality = context['form'].instance.municipality
@@ -442,8 +481,7 @@ class RegistrationView(FormView):
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': token,
                 })
-                # to_email = form.cleaned_data.get('email')
-                to_email = 'regieaba249@gmail.com'
+                to_email = form.cleaned_data.get('email')
                 send_mail(
                     mail_subject,
                     message,
@@ -489,7 +527,6 @@ class RegistrationView(FormView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-        import pdb; pdb.set_trace()
         messages.success(self.request, "Successfully Registered. Please validate via the email we sent to activate your account.")
         return super(RegistrationView, self).form_valid(form)
 
@@ -511,26 +548,8 @@ class CustomUserUpdateView(LoginRequiredMixin, UpdateView):
         applicant = self.object.applicant_data
 
         # Static Values
-        context['area_codes'] = ['02', '032', '033', '034', '035', '036',
-                                 '038', '042', '043', '044', '045', '046',
-                                 '047', '048', '049', '052', '053', '054',
-                                 '055', '056', '062', '063', '064', '065',
-                                 '068', '072', '074', '075', '077', '078',
-                                 '082', '083', '084', '085', '086', '087',
-                                 '088', '08822', '08842']
-        context['months'] = {
-            'jan': 'January',
-            'feb': 'February',
-            'mar': 'March',
-            'apr': 'April',
-            'may': 'May',
-            'jun': 'June',
-            'jul': 'July',
-            'aug': 'August',
-            'sep': 'September',
-            'oct': 'October',
-            'nov': 'November',
-            'dec': 'December',}
+        context['area_codes'] = AREA_CODES
+        context['months'] = dict(MONTH_CHOICES)
         year = datetime.today().year
         context['years'] = list(range(year, year - 50, -1))
         context['employment_type_choices'] = dict(EMPLOYMENT_TYPE_CHOICES)
@@ -558,10 +577,11 @@ class CustomUserUpdateView(LoginRequiredMixin, UpdateView):
             context['barangays'] = Barangay.objects.all()
 
         context['employment_history'] = applicant.applicant_experience.all(
-        ).order_by('-current', '-start_month', '-start_year')
+        ).order_by('-start_year', '-start_month')
         context['educational_history'] = applicant.applicant_education.all(
-        ).order_by('-start_month', '-start_year')
+        ).order_by('-start_year', '-start_month')
         context['skills'] = applicant.applicant_skills.all()
+        context['projects'] = ApplicantProject.objects.filter(experience__applicant=applicant)
 
         return context
 

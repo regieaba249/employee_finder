@@ -13,7 +13,11 @@ from django.views.generic.base import TemplateView
 from apps.users.models import (
     CustomUser,
     Applicant,
-    ApplicantExperience
+    ApplicantExperience,
+    Region,
+    Province,
+    Municipality,
+    Barangay,
 )
 from .models import (
     CompanyJobPosting,
@@ -25,14 +29,59 @@ from employee_finder.helpers import EMPLOYMENT_TYPE_CHOICES
 
 def ajax_get_candidates(request):
     _id = request.GET.get('_id')
+    searchInput = None if request.GET.get('filters[searchInput]') == '' else request.GET.get('filters[searchInput]')
+    filter_status = request.GET.get('filters[filter_status]', None)
+    filter_years = None if request.GET.get('filters[filter_years]') == '' else request.GET.get('filters[filter_years]')
+    filter_gender = None if request.GET.get('filters[filter_gender]') == '' else request.GET.get('filters[filter_gender]')
+    user_region = None if request.GET.get('filters[user_region]') == '' else request.GET.get('filters[user_region]')
+    user_province = None if request.GET.get('filters[user_province]') == '' else request.GET.get('filters[user_province]')
+    user_municipality = None if request.GET.get('filters[user_municipality]') == '' else request.GET.get('filters[user_municipality]')
+
+    if any([searchInput,
+            filter_status,
+            filter_years,
+            filter_gender,
+            user_region,
+            user_province,
+            user_municipality]):
+
+        q = Q()
+        if filter_status:
+            q &= Q(applicant_status=filter_status)
+        if filter_gender:
+            q &= Q(user__gender=filter_gender)
+        if user_region:
+            q &= Q(user__region__id=user_region)
+        if user_province:
+            q &= Q(user__province__id=user_province)
+        if user_municipality:
+            q &= Q(user__municipality__id=user_municipality)
+
+        candidates = Applicant.objects.filter(q)
+    else:
+        posting = CompanyJobPosting.objects.get(id=_id)
+        candidates = posting.get_candidates
+
+    htmlStr = render_to_string('posting_candidates_list_render.html', {
+        'candidates': candidates
+    })
+
+    return JsonResponse({
+        'success': True,
+        'htmlStr': htmlStr,
+    })
+
+
+def ajax_get_invites(request):
+    _id = request.GET.get('_id')
     posting = CompanyJobPosting.objects.get(id=_id)
-    postingStr = render_to_string('posting_candidates_list_render.html', {
+    htmlStr = render_to_string('posting_invites_list_render.html', {
         'posting': posting,
     })
 
     return JsonResponse({
         'success': True,
-        'postingStr': postingStr,
+        'htmlStr': htmlStr,
     })
 
 
@@ -124,10 +173,14 @@ def ajax_add_job_posting(request):
 
 def ajax_job_details(request):
     _id = request.GET.get('id')
+
     postingStr = render_to_string('job_posting_details_page.html', {
         'posting': CompanyJobPosting.objects.get(id=_id),
         'employment_type_choices': dict(EMPLOYMENT_TYPE_CHOICES),
         'csrf_token': django.middleware.csrf.get_token(request),
+        'regions': Region.objects.all(),
+        'provinces': Province.objects.all(),
+        'municipalities': Municipality.objects.all(),
     })
     return JsonResponse({
         'success': True,
@@ -219,7 +272,7 @@ def ajax_hire_applicant(request):
     )
 
     # Create Experience Record
-    start_month = datetime.now().strftime("%b").lower()
+    start_month = datetime.now().strftime("%m")
     start_year = datetime.now().year
 
     data = {
@@ -229,8 +282,6 @@ def ajax_hire_applicant(request):
         'employment_type': job_posting.employment_type,
         'start_month': start_month,
         'start_year': start_year,
-        'end_month': '',
-        'end_year': '',
         'current': True,
         'description': job_posting.description,
         'reference_person': job_posting.company.owner.full_name,
@@ -295,7 +346,7 @@ def ajax_schedule_interview(request):
         'job_posting_link': ""
     })
 
-    to_email = job_posting.company.owner.email
+    to_email = user.email
     msg = EmailMessage(
         mail_subject,
         message,
@@ -337,8 +388,15 @@ def ajax_apply(request):
         applicants = JobPostingApplicant.objects.filter(**data)
         applicants.delete()
 
-    mail_subject = f'New Applicant for position: {job_posting.job_title}'
-    message = render_to_string('new_applicant_email.html', {
+    applicantsStr = ""
+    for applicant in job_posting.job_applicants.all():
+        applicantsStr += render_to_string('new_applicant_email.html', {
+            'job_applicant': request.user,
+            'posting': job_posting,
+        })
+
+    mail_subject = f'Invitation for position: {job_posting.job_title}'
+    message = render_to_string('job_invitation_email.html', {
         'user': user,
         'hiring_agent': job_posting.company.owner,
         'job_posting': job_posting,
@@ -346,7 +404,8 @@ def ajax_apply(request):
                                      kwargs={'pk': user_id})
     })
 
-    to_email = job_posting.company.owner.email
+    to_email = user.email
+
     send_mail(
         mail_subject,
         message,
@@ -354,13 +413,6 @@ def ajax_apply(request):
         [to_email],
         fail_silently=True,
     )
-
-    applicantsStr = ""
-    for applicant in job_posting.job_applicants.all():
-        applicantsStr += render_to_string('new_applicant_email.html', {
-            'job_applicant': request.user,
-            'posting': job_posting,
-        })
 
     return JsonResponse({
         'success': True,

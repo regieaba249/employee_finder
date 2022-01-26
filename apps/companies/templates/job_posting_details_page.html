@@ -1,29 +1,32 @@
 {% autoescape off %}
-        <div class="modal-body">
-          <div id="message-container" class="w-100">
-            {{ message }}
-          </div>
-          <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
+        <div class="modal-header">
+          <h5 class="modal-title" id="">Job Posting</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body pt-0">
+          <ul class="nav nav-tabs mb-3 sticky-top bg-white" id="ex1" role="tablist">
             <li class="nav-item" role="presentation">
               <a
                 class="nav-link active"
-                id="ex1-tab-1"
+                id="postingModalDetailsLink"
                 data-mdb-toggle="tab"
-                href="#ex1-tabs-1"
+                href="#postingModalDetails"
                 role="tab"
-                aria-controls="ex1-tabs-1"
+                aria-controls="postingModalDetails"
                 aria-selected="true"
-                >Job Posting Details</a
+                >Details</a
               >
             </li>
             <li class="nav-item" role="presentation">
               <a
                 class="nav-link"
-                id="ex1-tab-2"
+                id="postingModalCandidatesLink"
                 data-mdb-toggle="tab"
-                href="#ex1-tabs-2"
+                href="#postingModalCandidates"
                 role="tab"
-                aria-controls="ex1-tabs-2"
+                aria-controls="postingModalCandidates"
                 aria-selected="false"
                 >Suggested Candidates</a
               >
@@ -31,13 +34,14 @@
             <li class="nav-item" role="presentation">
               <a
                 class="nav-link"
-                id="ex1-tab-3"
+                id="postingModalInvitesLink"
+                data-posting-id="{{ posting.id }}"
                 data-mdb-toggle="tab"
-                href="#ex1-tabs-3"
+                href="#postingModalInvites"
                 role="tab"
-                aria-controls="ex1-tabs-3"
+                aria-controls="postingModalInvites"
                 aria-selected="false"
-                >Picked Applicants</a
+                >Invited Applicants</a
               >
             </li>
           </ul>
@@ -45,7 +49,11 @@
 
           <!-- Tabs content -->
           <div class="tab-content" id="ex1-content">
-            <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
+            <div id="message-container" class="w-100">
+              {{ message }}
+            </div>
+
+            <div class="tab-pane fade show active" id="postingModalDetails" role="tabpanel" aria-labelledby="postingModalDetailsLink">
               <form action="" method="post" class="mb-1">
                 <div class="form-group mt-0 mb-2">
                   <label class="required-field-label" for="job_title">Job Title</label>
@@ -57,60 +65,177 @@
                   <textarea class="form-control" id="description" name="description" rows="4">{{ posting.description|default_if_none:'' }}</textarea>
                 </div>
 
-                <div class="form-group mb-2">
-                  <label for="vacancy">Vacancy</label>
-                  <input value="{{ posting.vacancy|default_if_none:'' }}" type="number" id="vacancy" name="vacancy" class="form-control form-control-lg required" min="1" max="99" required/>
-                </div>
-
                 <div class="form-group mb-2 row">
 
-                  <label>Salary Range</label>
-                  <div class="form-group col">
+                  <div class="form-group col-2">
+                    <label>Vacancy</label>
+                    <input value="{{ posting.vacancy|default_if_none:'' }}" type="number" id="vacancy" name="vacancy" class="form-control form-control-lg required" min="1" max="99" required/>
+                  </div>
+
+                  <div class="form-group col-3">
+                    <label class="required-field-label" for="employment_type">Employment Type</label>
+                    <div class="form-group col">
+                      <select name="employment_type" id="employment_type" class="mdb-select md-form form-control form-control-lg required" required>
+                        {% for key, values in employment_type_choices.items %}
+                        <option value="{{ key }}" {% if posting.employment_type == key %}selected{% endif %}>{{ values }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group col-3 pr-0 pr-md-0">
+                    <label>Salary Range</label>
                     <input value="{{ posting.salary_range_start|default_if_none:'' }}" type="number" id="salary_range_start" name="salary_range_start" class="form-control form-control-lg required" placeholder="MIN" required/>
                   </div>
-                  -
-                  <div class="form-group col">
+                  <div class="form-group col-1 p-0">
+                    <label></label>
+                    <p class="text-center my-2">-</p>
+                  </div>
+                  <div class="form-group col-3">
+                    <label></label>
                     <input value="{{ posting.salary_range_end|default_if_none:'' }}" type="number" id="salary_range_end" name="salary_range_end" class="form-control form-control-lg required" placeholder="MAX" required/>
                   </div>
 
                 </div>
 
-                <div class="form-group mb-2">
-                  <label class="required-field-label" for="employment_type">Employment Type</label>
-                  <div class="form-group col">
-                    <select name="employment_type" id="employment_type" class="mdb-select md-form form-control form-control-lg required" required>
-                      {% for key, values in employment_type_choices.items %}
-                      <option value="{{ key }}" {% if posting.employment_type == key %}selected{% endif %}>{{ values }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
+                <div class="form-group mb-2 row">
 
-                <div class="form-group mb-2">
-                  <span>Attachments</span>
-                  <input type="file" id="attachments" name="attachments" class="form-control form-control-lg" multiple/>
-                  {% for file in posting.job_posting_attachments.all %}
-                    <span class="badge rounded-pill bg-info">
-                      <a href="{{ file.url }}">{{ file }}</a> |
-                      <span class="delete-file" data-id="{{ file.id }}" data-type="attachment"><i class="fas fa-times"></i></span>
-                    </span>
-                  {% endfor %}
+                  <div class="col-6 col-md-6">
+                    <span>Attachments</span>
+                    <input type="file" id="attachments" name="attachments" class="form-control form-control-lg" multiple/>
+                    {% for file in posting.job_posting_attachments.all %}
+                      <span class="badge rounded-pill bg-info">
+                        <a href="{{ file.url }}">{{ file }}</a> |
+                        <span class="delete-file" data-id="{{ file.id }}" data-type="attachment"><i class="fas fa-times"></i></span>
+                      </span>
+                    {% endfor %}
+                  </div>
+
                 </div>
 
                 <div class="form-group mt-0 mb-2">
                   <label class="required-field-label" for="preferred_skills">Skills Required</label>
                   <input value="{{ posting.preferred_skills|default_if_none:'' }}" type="text" id="preferred_skills" name="preferred_skills" class="form-control form-control-lg required" required/>
                 </div>
+
               </form>
             </div>
-            <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+            <div class="tab-pane fade" id="postingModalCandidates" role="tabpanel" aria-labelledby="postingModalCandidatesLink">
+              <div>
+                <div class="accordion" id="accordionCandidateFilters">
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                      <button
+                        class="accordion-button"
+                        type="button"
+                        data-mdb-toggle="collapse"
+                        data-mdb-target="#collapseOne"
+                        aria-expanded="true"
+                        aria-controls="collapseOne"
+                      >
+                        Filter Candidates
+                      </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-mdb-parent="#accordionExample">
+                      <div class="accordion-body">
+                        <div class="row m-2 mx-1 p-2 border filter-container">
+
+                          <input id="searchInput" type="text" placeholder="Comma Separated Keywords" class="form-control form-control-lg mb-2" data-ajax-url="{% url 'jobs:ajax_filter_postings' %}"/>
+                          <div class="col-4 col-md-4">
+
+                            <div class="form-check">
+                              <input class="form-check-input" type="radio" name="filter_status" id="filter_status1" value="employed" checked>
+                              <label class="form-check-label" for="filter_status1">
+                                Employed
+                              </label>
+                            </div>
+                            <div class="form-check">
+                              <input class="form-check-input" type="radio" name="filter_status" id="filter_status2" value="unemployed">
+                              <label class="form-check-label" for="filter_status2">
+                                Unemployed
+                              </label>
+                            </div>
+
+                          </div>
+
+                          <div class="col-4 col-md-4">
+                            <div class="form-group">
+                              <label for="filter_years">Years of Experience</label>
+                              <select class="form-control" id="filter_years" disabled>
+                                <option value="" selected>Choose...</option>
+                                <option value="0">less than 1 year</option>
+                                <option value="1">More than 1 Year</option>
+                                <option value="2">More than 2 Years</option>
+                                <option value="3">More than 3 Years</option>
+                                <option value="4">More than 4 Years</option>
+                                <option value="5">More than 5 Years</option>
+                                <option value="6">6 Years and above</option>
+                              </select>
+                            </div>
+
+                          </div>
+
+                          <div class="col-4 col-md-4">
+                            <div class="form-group">
+                              <label for="filter_gender">Gender</label>
+                              <select class="form-control" id="filter_gender">
+                                <option value="" selected>Choose...</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="col-12 col-md-12">
+                            <div class="form-group my-2">
+                              <label for="region">Region</label>
+                              <select name="region" id="user_region" class="address-select mdb-select md-form form-control form-control-lg" data-ajax-url="{% url 'users:ajax_load_address_dropdown' %}" data-target="user_province">
+                                <option value="">------</option>
+                                {% for region in regions.all %}
+                                  <option value="{{ region.id }}">{{ region.name }}</option>
+                                {% endfor %}
+                              </select>
+                            </div>
+
+                            <div class="form-group mb-2">
+                              <label for="province">Province</label>
+                              <select name="province" id="user_province" class="address-select mdb-select md-form form-control form-control-lg" data-ajax-url="{% url 'users:ajax_load_address_dropdown' %}" data-target="user_municipality">
+                                <option value="">------</option>
+                                  {% for province in provinces.all %}
+                                    <option value="{{ province.id }}">{{ province.name }}</option>
+                                  {% endfor %}
+                              </select>
+                            </div>
+
+                            <div class="form-group mb-2">
+                              <label for="municipality">Municipality</label>
+                              <select name="municipality" id="user_municipality" class="address-select mdb-select md-form form-control form-control-lg" data-ajax-url="{% url 'users:ajax_load_address_dropdown' %}" data-target="user_barangay">
+                                <option value="">------</option>
+                                  {% for municipality in municipalities.all %}
+                                    <option value="{{ municipality.id }}">{{ municipality.name }}</option>
+                                  {% endfor %}
+                              </select>
+                            </div>
+
+                          </div>
+
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-center">
+                          <button class="btn btn-light filterCandidates" data-posting-id="{{ posting.id }}">Filter</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <hr>
               <div class="candidates_container">
                 {% for applicant in posting.get_candidates %}
                   <div class="bg-white border mt-2 col-12 col-md-12">
                     <div class="d-flex">
                       <div class="me-auto p-2">
                         <div class="d-flex flex-row align-items-center feed-text px-2">
-                          <img class="rounded-circle" src="{{ applicant.user.user_avatar.url }}" width="45">
+                          <img class="rounded-circle me-2" src="{{ applicant.user.user_avatar.url }}" width="45">
                           <div class="d-flex flex-column flex-wrap ml-2">
                             <a href="{%  url 'users:profile_view' pk=applicant.user.id %}">
                               <span class="font-weight-bold">{{ applicant.user.full_name }}</span>
@@ -120,39 +245,20 @@
                         </div>
                       </div>
                       <div class="p-2 align-self-center">
-                        <button class="postingCandidateApply" data-posting-id="{{ posting.id }}" data-user-id="{{ applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_apply' %}" data-action="apply">Pick</button>
+                        <button class="postingCandidateApply btn btn-light px-3" data-posting-id="{{ posting.id }}" data-user-id="{{ applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_apply' %}" data-action="apply">Invite</button>
                       </div>
                     </div>
                   </div>
                 {% endfor %}
               </div>
             </div>
-            <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-              <div class="picked_container">
-                {% for item in posting.job_applicants.all %}
-                  <div class="bg-white border mt-2 col-12 col-md-12">
-                    <div class="d-flex">
-                      <div class="me-auto p-2">
-                        <div class="d-flex flex-row align-items-center feed-text px-2">
-                          <img class="rounded-circle" src="{{ item.applicant.user.user_avatar.url }}" width="45">
-                          <div class="d-flex flex-column flex-wrap ml-2">
-                            <a href="{%  url 'users:profile_view' pk=item.applicant.user.id %}">
-                              <span class="font-weight-bold">{{ item.applicant.user.full_name }}</span>
-                            </a>
-                            <span class="text-black-50 time">{{ item.applicant.user.headline }}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="p-2 align-self-center">
-                        <button disabled data-bs-toggle="modal" data-bs-target="#scheduleInterviewModal">Schedule Interview</button>
-                        <button disabled class="hireApplicant" data-posting-id="{{ posting.id }}" data-user-id="{{ job_applicant.applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_hire_applicant' %}">Hire</button>
-                        <button disabled class="declineApplicant" data-posting-id="{{ posting.id }}" data-user-id="{{ job_applicant.applicant.user.id }}" data-ajax-url="{% url 'jobs:ajax_decline_applicant' %}">Decline</button>
-                      </div>
-                    </div>
-                  </div>
-                {% endfor %}
+
+            <div class="tab-pane fade" id="postingModalInvites" role="tabpanel" aria-labelledby="postingModalInvitesLink">
+              <div class="invites_container">
+
               </div>
             </div>
+
           </div>
         </div>
         <div class="modal-footer">

@@ -19,15 +19,8 @@ from employee_finder.helpers import (
 
     # reusable values
     optional,
-    EMPLOYMENT_TYPE_CHOICES
-)
-
-
-JOB_APPLICANT_STATUS_CHOICES = (
-    ('pending', 'Pending'),
-    ('interview', 'For Interview'),
-    ('hired', 'Hired'),
-    ('declined', 'Declined'),
+    EMPLOYMENT_TYPE_CHOICES,
+    JOB_APPLICANT_STATUS_CHOICES
 )
 
 

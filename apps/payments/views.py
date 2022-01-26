@@ -46,7 +46,7 @@ def cc_charge(request, pk):
         amount=amount,
         currency='php',
         description='Premium Payment',
-        receipt_email='regieaba249@gmail.com',
+        receipt_email=user.email,
         source=request.POST.get('stripeToken'),
         api_key=settings.STRIPE_SECRET_KEY
     )
@@ -78,8 +78,7 @@ def cc_charge(request, pk):
             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
             'token': user.token,
         })
-        # to_email = user.email
-        to_email = 'regieaba249@gmail.com'
+        to_email = user.email
         send_mail(
             mail_subject,
             message,
