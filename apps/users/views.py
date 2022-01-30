@@ -396,8 +396,6 @@ class LoginView(FormView):
         user = CustomUser.objects.get(email=email)
         current = UserSubscription.objects.filter(user=user, is_current=True)
 
-        import pdb; pdb.set_trace()
-
         if user.user_type == 'employer' and not current and not user.is_active:
             return HttpResponseRedirect(reverse_lazy(
                 'payments:cc_subscription_page',

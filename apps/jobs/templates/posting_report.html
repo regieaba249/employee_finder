@@ -1,0 +1,14 @@
+{% autoescape off %}
+
+	<h3>Postings:</h3>
+	{% for posting in postings.all %}
+		- {{ posting }}
+
+		<h5>Invited:</h5>
+		{% for obj in posting.job_applicants.all %}
+			<p>{{ obj.applicant.user.full_name }}</p>
+		{% endfor %}
+
+	{% endfor %}
+
+{% endautoescape %}

@@ -1,5 +1,7 @@
-import re
 import django
+import pdfkit
+import re
+
 from datetime import datetime
 from django.conf import settings
 from django.contrib import messages
@@ -8,7 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from django.db.models import Q
-from django.http import (HttpResponseRedirect, JsonResponse)
+from django.http import (HttpResponseRedirect, JsonResponse, HttpResponse)
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
@@ -29,6 +31,30 @@ from .models import (
     JobPostingAttachment
 )
 from employee_finder.helpers import EMPLOYMENT_TYPE_CHOICES
+
+
+def ajax_generate_report(request, _id, _range):
+    user = request.user
+    _filter = {'company': user.company_data}
+
+    if _id != 0:
+        _filter['id'] = _id
+
+    _range = f"{_range}_" if _range else ""
+    filename = f'{_range}posting_report.pdf'
+    postings = CompanyJobPosting.objects.filter(**_filter)
+
+    reportStr = render_to_string('posting_report.html', {
+        'postings': postings,
+    })
+    options = {
+        'page-size': 'Letter',
+        'encoding': "UTF-8",
+    }
+    pdf = pdfkit.from_string(reportStr, False, options)
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
 
 
 def ajax_invite(request):

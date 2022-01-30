@@ -868,3 +868,16 @@ $(document).on('submit', '#updateConfigurationForm', function(e) {
   }
 
 });
+
+$(document).on('click', '#generateReportSubmit', function(e) {
+
+  var _this = $(this)
+  var _modal = $(this).closest('.modal')
+  var _id = _modal.find("#report_posting").val();
+  // var _range = _modal.find("#report_range").val();
+  var _range = 'all'
+  var _url = `/jobs/ajax/generate-report/${_id}/${_range}`
+  var xmlHttp = new XMLHttpRequest();
+  document.location.href = _url
+
+}) ;

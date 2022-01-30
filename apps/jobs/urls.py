@@ -18,4 +18,5 @@ urlpatterns = [
     path('ajax/get-invites/', views.ajax_get_invites, name='ajax_get_invites'),
     path('ajax/get-candidates/', views.ajax_get_candidates, name='ajax_get_candidates'),
     path('ajax/get-posting-details/', views.ajax_get_posting_details, name='ajax_get_posting_details'),
+    path('ajax/generate-report/<int:_id>/<str:_range>', views.ajax_generate_report, name='ajax_generate_report'),
 ]
