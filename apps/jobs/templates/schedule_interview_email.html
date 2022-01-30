@@ -1,13 +1,10 @@
 {% autoescape off %}
-Hi {{ user.full_name }},
 
-I am {{ hiring_agent.full_name }}, the hiring officer for {{ hiring_agent.company_data.name }}.
+<p>Hi {{ user.full_name }},</p>
+<p>I am {{ hiring_agent.full_name }}, the hiring officer for {{ hiring_agent.company_data.name }}.</p>
+<p>You applied for the job position: {{ job_posting.job_title }} and is scheduled for an interview on {{ interview_date }}.</p>
+<p>You can check the job description here: {{ job_posting_link }}.</p>
+<p>If you have questions, you can reach at me via email through {{ hiring_agent.email }}.</p>
+<p>Have a nice day!</p>
 
-You applied for the job position: {{ job_posting.job_title }} and is scheduled for an interview on {{ interview_date }}
-
-You can check the job description here: {{ job_posting_link }}
-
-If you have questions, you can reach at me via email through {{ hiring_agent.email }}
-
-Have a nice day!
 {% endautoescape %}

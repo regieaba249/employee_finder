@@ -1,15 +1,15 @@
 
 {% autoescape off %}
-				                    <tr>
-                              <td>{{ posting.job_title }}</td>
-                              <td class="text-truncate">{{ posting.description }}</td>
-                              <td>{{ posting.required_skills }}</td>
-                              <td class="p-0">
-                                <span class="table-remove">
-                                  <span class="remove-row" data-id="{{ posting.id }}" data-table="CompanyJobPosting">
-                                    <i class="fas fa-times-circle"></i>
-                                  </span>
-                                </span>
-                              </td>
-                            </tr>
+  <tr>
+    <td>{{ posting.job_title }}</td>
+    <td>{{ posting.preferred_skills }}</td>
+    <td class="p-0">
+      <span class="candidates-modal-open mx-2" data-id="{{ posting.id }}">
+        <i class="fas fa-users"></i>
+      </span>
+      <span class="remove-row" data-id="{{ posting.id }}" data-table="CompanyJobPosting">
+        <i class="fas fa-times-circle"></i>
+      </span>
+    </td>
+  </tr>
 {% endautoescape %}

@@ -62,7 +62,7 @@ def cc_charge(request, pk):
 
         subscription_data = {
             'user': user,
-            '_type': _type,
+            'payment_type': _type,
             'price': f'{amount[:-2]}.{amount[-2:]}',
             'expiry_date': date.today() + relativedelta(months=months[_type]),
         }

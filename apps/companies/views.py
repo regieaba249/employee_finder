@@ -1,6 +1,6 @@
 from datetime import datetime
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -34,11 +34,15 @@ from employee_finder.helpers import (
 
 
 # Create your views here.
-class CompanyUpdateView(LoginRequiredMixin, UpdateView):
+class CompanyUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 
     model = CustomUser
     form_class = UpdateForm
     template_name = 'company_profile_update.html'
+
+    def test_func(self):
+        user_id = self.kwargs.get('pk')
+        return self.request.user.id == user_id
 
     def get_success_url(self):
         return reverse_lazy(

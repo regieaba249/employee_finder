@@ -67,6 +67,45 @@ function reload_candidates(_id, filters) {
         console.log(error);
     }
   });
+
+}
+
+function clear_filters() {
+  var container = $("div#filterCandidatesModal").find('.filter-container')
+  var filter_skills = container.find('#filter_skills').val("")
+  var filter_posting = container.find('#filter_posting').val("")
+  var filter_status = container.find('input[name="filter_status"]:checked').val("");
+  var filter_years = container.find('#filter_years').val("")
+  var filter_gender = container.find('#filter_gender').val("")
+  var user_region = container.find('#user_region').val("")
+  var user_province = container.find('#user_province').val("")
+  var user_municipality = container.find('#user_municipality').val("")
+  $('.candidates_container').html('');
+}
+
+function filter_candidates() {
+  var container = $("div#filterCandidatesModal").find('.filter-container')
+  var filter_skills = container.find('#filter_skills').val()
+  var filter_posting = container.find('#filter_posting').val()
+  var filter_status = container.find('input[name="filter_status"]:checked').val();
+  var filter_years = container.find('#filter_years').val()
+  var filter_gender = container.find('#filter_gender').val()
+  var user_region = container.find('#user_region').val()
+  var user_province = container.find('#user_province').val()
+  var user_municipality = container.find('#user_municipality').val()
+
+  var filters = {
+    "filter_skills" : filter_skills,
+    "filter_posting" : filter_posting,
+    "filter_status" : filter_status,
+    "filter_years" : filter_years,
+    "filter_gender" : filter_gender,
+    "user_region" : user_region,
+    "user_province" : user_province,
+    "user_municipality" : user_municipality,
+  };
+
+  reload_candidates(filter_posting, filters);
 }
 
 function reload_invites(_id) {
@@ -84,6 +123,32 @@ function reload_invites(_id) {
         console.log(error);
     }
   });
+
+}
+
+function disable_enable_filter_fields(disable) {
+  var parent = $("div#filterCandidatesModal")
+  parent.find("#filter_skills").prop( "disabled", disable );
+  parent.find("#filter_status1").prop( "disabled", disable );
+  parent.find("#filter_status2").prop( "disabled", disable );
+  parent.find("#filter_status3").prop( "disabled", disable );
+  parent.find("#filter_years").prop( "disabled", disable );
+  parent.find("#filter_gender").prop( "disabled", disable );
+  parent.find("#user_region").prop( "disabled", disable );
+  parent.find("#user_province").prop( "disabled", disable );
+  parent.find("#user_municipality").prop( "disabled", disable );
+
+  if (disable) {
+    parent.find("#filter_skills").val('')
+    parent.find("#filter_status1").val('')
+    parent.find("#filter_status2").val('')
+    parent.find("#filter_status3").val('')
+    parent.find("#filter_years").val('')
+    parent.find("#filter_gender").val('')
+    parent.find("#user_region").val('')
+    parent.find("#user_province").val('')
+    parent.find("#user_municipality").val('')
+  }
 
 }
 
@@ -162,10 +227,8 @@ $(document).on('click', '#addExperienceSubmit', function (e) {
               <td>${current}</td>
               <td>${row.reference_person} ${mobile_number}</td>
               <td class="p-0">
-                <span class="table-remove">
-                  <span class="remove-row" data-id="${row.id}">
-                    <i class="fas fa-times-circle"></i>
-                  </span>
+                <span class="remove-row" data-id="${row.id}">
+                  <i class="fas fa-times-circle"></i>
                 </span>
               </td>
             </tr>
@@ -263,10 +326,8 @@ $(document).on('click', '#addEducationSubmit', function (e) {
               <td>${end}</td>
               <td>${row.reference_person} ${mobile_number}</td>
               <td class="p-0">
-                <span class="table-remove">
-                  <span class="remove-row" data-id="${row.id}">
-                    <i class="fas fa-times-circle"></i>
-                  </span>
+                <span class="remove-row" data-id="${row.id}">
+                  <i class="fas fa-times-circle"></i>
                 </span>
               </td>
             </tr>
@@ -400,10 +461,8 @@ $(document).on('click', '#addSkillSubmit', function (e) {
               <td>${row.efficiency}</td>
               <td>${attachment}</td>
               <td class="p-0">
-                <span class="table-remove">
-                  <span class="remove-row" data-id="${row.id}" data-table="ApplicantSkill">
-                    <i class="fas fa-times-circle"></i>
-                  </span>
+                <span class="remove-row" data-id="${row.id}" data-table="ApplicantSkill">
+                  <i class="fas fa-times-circle"></i>
                 </span>
               </td>
             </tr>
@@ -443,7 +502,8 @@ $(document).on('submit', '#projectDetailForm', function (e) {
 
 });
 
-$(document).on('click', 'table .remove-row', function() {
+$(document).on('click', 'table .remove-row', function(e) {
+  e.stopPropagation();
   var _this = $(this)
   var _id = _this.attr("data-id");
   var _table = _this.attr("data-table");
@@ -502,12 +562,13 @@ $(document).on('click', '.badge .delete-file', function() {
 
 }) ;
 
-$(document).on('click', 'tr.job_posting_table_item', function() {
+$(document).on('click', 'td.job_posting_table_item', function() {
   var _this = $(this)
-  var _id = _this.attr("data-id");
+  var _id = _this.closest('tr').attr("data-id");
+  var _url = _this.closest('tr').attr("data-ajax-url");
 
   $.ajax({
-    url: '/jobs/ajax/job-details/',
+    url: _url,
     data: {
       'id': _id,
     },
@@ -710,36 +771,66 @@ $(document).on('click', '.declineApplicant', function (e) {
 });
 
 $(document).on('click', 'button.filterCandidates', function (e) {
+  filter_candidates();
+
+});
+
+$(document).on('click', 'span.candidates-modal-open', function (e) {
+  e.stopPropagation();
+  clear_filters();
   var _this = $(this)
   var posting_id = $(this).attr("data-posting-id");
+  var skills = $(this).attr("data-skills");
 
-  var container = _this.closest('.accordion-body').find('.filter-container')
-  var searchInput = container.find('#searchInput').val()
-  var filter_status = container.find('input[name="filter_status"]:checked').val();
-  var filter_years = container.find('#filter_years').val()
-  var filter_gender = container.find('#filter_gender').val()
-  var user_region = container.find('#user_region').val()
-  var user_province = container.find('#user_province').val()
-  var user_municipality = container.find('#user_municipality').val()
+  $('#filterCandidatesModal').modal('show');
+  $("div#filterCandidatesModal select#filter_posting").val(posting_id);
+  $("div#filterCandidatesModal input#filter_skills").val(skills);
 
-  var filters = {
-    "searchInput" : searchInput,
-    "filter_status" : filter_status,
-    "filter_years" : filter_years,
-    "filter_gender" : filter_gender,
-    "user_region" : user_region,
-    "user_province" : user_province,
-    "user_municipality" : user_municipality,
-  };
+  filter_candidates();
+
+});
+
+$(document).on('change', 'div#filterCandidatesModal select#filter_posting', function (e) {
+  var _this = $(this)
+  var posting_id = $(this).val();
+
+  if (posting_id == '') {
+    disable_enable_filter_fields(true);
+  } else {
+    disable_enable_filter_fields(false);
+    $.ajax({
+      url: `/jobs/ajax/get-posting-details/`,
+      data: {
+        '_id': posting_id,
+      },
+      success: function (data) {
+        $("div#filterCandidatesModal #filter_skills").val(data.posting.preferred_skills)
+      },
+      error: function(xhr, textStatus, error){
+          console.log(xhr.statusText);
+          console.log(textStatus);
+          console.log(error);
+      }
+    });
+
+  }
+
+});
+
+$(document).on('click', '#profile_settings_link', function() {
+  var _this = $(this)
+  var _id = _this.attr("data-user-id");
+  var _url = _this.attr("data-ajax-url");
 
   $.ajax({
-    url: '/jobs/ajax/get-invites/',
+    url: _url,
     data: {
-      '_id': posting_id,
-      'filters': filters
+      'id': _id,
     },
     success: function (data) {
-      reload_candidates(posting_id, filters);
+      $(".navbar").css("position", "inherit");
+      $("#emptyModal").modal('toggle');
+      $("#emptyModal .modal-content").html(data.htmlStr);
     },
     error: function(xhr, textStatus, error){
         console.log(xhr.statusText);
@@ -747,5 +838,33 @@ $(document).on('click', 'button.filterCandidates', function (e) {
         console.log(error);
     }
   });
+
+}) ;
+
+$(document).on('hidden.bs.modal', '.modal', function (e) {
+  $(".navbar").css("position", "relative");
+})
+
+$(document).on('submit', '#updateConfigurationForm', function(e) {
+  e.preventDefault();
+  var _this = $(this)
+  var password = _this.find('#password1').val()
+
+  if (password_valid()) {
+    $.ajax({
+      url: '/users/ajax/change-password/',
+      data: {
+        'password': password,
+      },
+      success: function (data) {
+        $("form#updateConfigurationForm").parent().find("#message-container").html(`<div class="alert alert-success alert-dismissible fade show" role="alert">${ data.message }</div>`)
+      },
+      error: function (xhr, textStatus, error) {
+        console.log(xhr.statusText);
+        console.log(textStatus);
+        console.log(error);
+      }
+    });
+  }
 
 });

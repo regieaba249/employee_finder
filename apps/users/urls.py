@@ -6,6 +6,7 @@ urlpatterns = [
     path('board/', views.ApplicantBoardView.as_view(), name='user-board'),
     path('test/', views.test, name='test'),
     path('profile/edit/<int:pk>/', views.CustomUserUpdateView.as_view(), name='profile_edit'),
+    path('profile/settings/<int:pk>/', views.profile_settings, name='profile_settings'),
     path('profile/view/<int:pk>/', views.CustomUserView.as_view(), name='profile_view'),
     path('register/<str:_type>/', views.RegistrationView.as_view(), name='register'),
     path('activate/<str:uidb64>/<str:token>/', views.activate, name='activate'),
@@ -18,5 +19,6 @@ urlpatterns = [
     path('ajax/delete-attachment/', views.ajax_delete_attachment, name='ajax_delete_attachment'),
     path('ajax/check-email/', views.ajax_check_email, name='ajax_check_email'),
     path('ajax/check-password/', views.ajax_check_password, name='ajax_check_password'),
+    path('ajax/change-password/', views.ajax_change_password, name='ajax_change_password'),
     path('logout/', views.Logout, name='logout'),
 ]

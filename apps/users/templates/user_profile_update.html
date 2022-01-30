@@ -223,10 +223,10 @@
                       <label class="w-100" for="attachments">Other Attachments <small class="form-text text-muted">   (Certificates, Diploma, TOR, etc...)</small></label>
                       <small class="form-text text-muted">Upload more attachments that would boost your profile</small>
                       <input type="file" id="attachments" name="attachments" class="form-control form-control-lg mb-2" multiple/>
-                      {% for file in object.applicant_data.applicant_attachments.all %}
+                      {% for attachment_obj in object.applicant_data.applicant_attachments.all %}
                         <span class="badge rounded-pill bg-info">
-                          <a href="{{ file.url }}">{{ file }}</a> |
-                          <span class="delete-file" data-id="{{ file.id }}" data-type="attachment"><i class="fas fa-times"></i></span>
+                          <a href="{{ attachment_obj.attachment.url }}" target="_blank">{{ attachment_obj.filename }}</a> |
+                          <span class="delete-file" data-id="{{ attachment_obj.id }}" data-type="attachment"><i class="fas fa-times"></i></span>
                         </span>
                       {% endfor %}
                     </div>
@@ -285,10 +285,8 @@
                             {% endif %}
                             <td>{{ data.full_reference }}</td>
                             <td class="p-0">
-                              <span class="table-remove">
-                                <span class="remove-row" data-id="{{ data.id }}" data-table="ApplicantExperience">
-                                  <i class="fas fa-times-circle"></i>
-                                </span>
+                              <span class="remove-row" data-id="{{ data.id }}" data-table="ApplicantExperience">
+                                <i class="fas fa-times-circle"></i>
                               </span>
                             </td>
                           </tr>
@@ -333,10 +331,8 @@
                             <td>{{ school.end }}</td>
                             <td>{{ school.full_reference }}</td>
                             <td class="p-0">
-                              <span class="table-remove">
-                                <span class="remove-row" data-id="{{ school.id }}" data-table="ApplicantEducation">
-                                  <i class="fas fa-times-circle"></i>
-                                </span>
+                              <span class="remove-row" data-id="{{ school.id }}" data-table="ApplicantEducation">
+                                <i class="fas fa-times-circle"></i>
                               </span>
                             </td>
                           </tr>
@@ -383,10 +379,8 @@
                               {% endif %}
                             </td>
                             <td class="p-0">
-                              <span class="table-remove">
-                                <span class="remove-row" data-id="{{ skill.id }}" data-table="ApplicantSkill">
-                                  <i class="fas fa-times-circle"></i>
-                                </span>
+                              <span class="remove-row" data-id="{{ skill.id }}" data-table="ApplicantSkill">
+                                <i class="fas fa-times-circle"></i>
                               </span>
                             </td>
                           </tr>
@@ -429,10 +423,8 @@
                             <td>{{ project.start }}</td>
                             <td>{{ project.end }}</td>
                             <td class="p-0">
-                              <span class="table-remove">
-                                <span class="remove-row" data-id="{{ project.id }}" data-table="ApplicantProject">
-                                  <i class="fas fa-times-circle"></i>
-                                </span>
+                              <span class="remove-row" data-id="{{ project.id }}" data-table="ApplicantProject">
+                                <i class="fas fa-times-circle"></i>
                               </span>
                             </td>
                           </tr>

@@ -1,4 +1,5 @@
 import re
+import os
 
 from django.db import models
 from django.db.models import Q
@@ -60,15 +61,20 @@ class CompanyJobPosting(BaseModel):
         return [x.applicant for x in self.job_applicants.filter(status='declined')]
 
     @property
-    def get_candidates(self):
-        preferred_skills = re.split(', |,', self.preferred_skills)
-        applicant_ids = ApplicantSkill.objects.filter(
-            reduce(lambda x, y: x | y, [
-                Q(name__contains=word) for word in preferred_skills
-            ])
-        ).values_list('applicant', flat=True)
+    def get_candidates_list(self):
         picked_ids = self.job_applicants.all().values_list('applicant__id', flat=True)
-        queryset = Applicant.objects.filter(id__in=applicant_ids).exclude(id__in=picked_ids)
+
+        queryset = Applicant.objects.all().exclude(id__in=picked_ids)
+
+        if self.preferred_skills:
+            preferred_skills = re.split(', |,', self.preferred_skills)
+            applicant_ids = ApplicantSkill.objects.filter(
+                reduce(lambda x, y: x | y, [
+                    Q(name__contains=word) for word in preferred_skills
+                ])
+            ).values_list('applicant', flat=True)
+            queryset = Applicant.objects.filter(id__in=applicant_ids).exclude(id__in=picked_ids)
+
         return sorted(queryset, key=lambda t: t.get_total_points, reverse=True)
 
 
@@ -91,6 +97,10 @@ class JobPostingAttachment(BaseModel):
     @property
     def get_user_id(self):
         return self.job_posting.company.owner.id
+
+    @property
+    def filename(self):
+        return os.path.basename(self.attachment.name)
 
 
 class JobPostingApplicant(BaseModel):

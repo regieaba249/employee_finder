@@ -11,9 +11,9 @@
                               {% else %}
                                   {% if user.applicant_data not in posting.get_declined %}
                                     {% if user.applicant_data in posting.get_applicants %}
-                                        <button class="jobPostingApply" data-posting-id="{{ posting.id }}" data-user-id="{{ user.id }}" data-ajax-url="{% url 'jobs:ajax_apply' %}" data-action="cancel">Cancel</button>
+                                        <button class="jobPostingApply" data-posting-id="{{ posting.id }}" data-user-id="{{ user.id }}" data-ajax-url="{% url 'jobs:ajax_invite' %}" data-action="cancel">Cancel</button>
                                     {% else %}
-                                        <button class="jobPostingApply" data-posting-id="{{ posting.id }}" data-user-id="{{ user.id }}" data-ajax-url="{% url 'jobs:ajax_apply' %}" data-action="apply">Apply</button>
+                                        <button class="jobPostingApply" data-posting-id="{{ posting.id }}" data-user-id="{{ user.id }}" data-ajax-url="{% url 'jobs:ajax_invite' %}" data-action="apply">Apply</button>
                                     {% endif %}
                                   {% endif %}
                               {% endif %}

@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.http import (HttpResponseRedirect, JsonResponse)
@@ -18,6 +18,7 @@ from django.views.generic.edit import FormView, UpdateView
 from .tokens import account_activation_token
 from .forms import LoginForm, RegistrationForm, UpdateForm
 from apps.companies.models import Company
+from apps.payments.models import UserSubscription
 from apps.jobs.models import (
     JobPostingApplicant,
     CompanyJobPosting
@@ -35,7 +36,6 @@ from .models import (
     Municipality,
     Barangay,
 )
-
 from employee_finder.helpers import (
     EFFICIENCY_CHOICES,
     MONTH_CHOICES,
@@ -45,6 +45,7 @@ from employee_finder.helpers import (
 
 
 User = get_user_model()
+
 
 Tables = {
     'CustomUser': CustomUser,
@@ -61,6 +62,19 @@ Tables = {
     'Municipality': Municipality,
     'Barangay': Barangay,
 }
+
+
+def profile_settings(request, pk):
+    user = CustomUser.objects.get(id=pk)
+
+    htmlStr = render_to_string('user_setting_render.html', {
+        'user': user,
+    })
+
+    return JsonResponse({
+        'success': True,
+        'htmlStr': htmlStr,
+    })
 
 
 def test(request):
@@ -102,15 +116,27 @@ def activate(request, uidb64, token):
     return HttpResponseRedirect(reverse_lazy('login'))
 
 
+def ajax_change_password(request):
+    password = request.GET.get("password")
+    u = User.objects.get(id=request.user.id)
+    u.set_password(password)
+    u.save()
+
+    return JsonResponse({
+        'success': True,
+        'message': 'Successfully Updated Password!',
+    })
+
+
 def ajax_check_password(request):
-    password1 = request.GET.get("password1")
-    password2 = request.GET.get("password2")
+    password1 = request.GET.get("password1", None)
+    password2 = request.GET.get("password2", None)
     MIN_LENGTH = 8
     valid = True
     _type = ""
     message = ""
 
-    if password1 and password2 and password1 != password2:
+    if bool(password1 and password2) and password1 != password2:
         return JsonResponse({
             'valid': False,
             'type': 'match',
@@ -191,13 +217,15 @@ def ajax_add_employment_history(request):
         'employment_type': employment_type,
         'start_month': start_month,
         'start_year': start_year,
-        'end_month': end_month,
-        'end_year': end_year,
         'current': current,
         'description': overview,
         'reference_person': reference_person,
         'mobile_number': mobile_number,
     }
+    if end_month:
+        data['end_month'] = end_month
+    if end_year:
+        data['end_year'] = end_year
     ApplicantExperience.objects.create(**data)
 
     queryset = ApplicantExperience.objects.filter(
@@ -362,6 +390,20 @@ class LoginView(FormView):
                 kwargs={'pk': self.request.user.pk}
             ))
         return super(LoginView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        email = request.POST.get('email')
+        user = CustomUser.objects.get(email=email)
+        current = UserSubscription.objects.filter(user=user, is_current=True)
+
+        import pdb; pdb.set_trace()
+
+        if user.user_type == 'employer' and not current and not user.is_active:
+            return HttpResponseRedirect(reverse_lazy(
+                'payments:cc_subscription_page',
+                kwargs={'pk': user.id}
+            ))
+        return super(LoginView, self).post(request, *args, **kwargs)
 
     def form_invalid(self, form):
         for key, value in form.errors.items():
@@ -531,11 +573,15 @@ class RegistrationView(FormView):
         return super(RegistrationView, self).form_valid(form)
 
 
-class CustomUserUpdateView(LoginRequiredMixin, UpdateView):
+class CustomUserUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 
     model = CustomUser
     form_class = UpdateForm
     template_name = 'user_profile_update.html'
+
+    def test_func(self):
+        user_id = self.kwargs.get('pk')
+        return self.request.user.id == user_id
 
     def get_success_url(self):
         return reverse_lazy(
@@ -577,7 +623,7 @@ class CustomUserUpdateView(LoginRequiredMixin, UpdateView):
             context['barangays'] = Barangay.objects.all()
 
         context['employment_history'] = applicant.applicant_experience.all(
-        ).order_by('-start_year', '-start_month')
+        ).order_by('-start_year', '-start_month', '-current')
         context['educational_history'] = applicant.applicant_education.all(
         ).order_by('-start_year', '-start_month')
         context['skills'] = applicant.applicant_skills.all()

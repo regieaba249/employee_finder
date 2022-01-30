@@ -1,3 +1,7 @@
+import os
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.core.validators import RegexValidator
@@ -199,6 +203,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             numbers = ""
         return numbers
 
+    @property
+    def current_subscription(self):
+        user = CustomUser.objects.get(id=self.id)
+        current = user.subscriptions.filter(is_active=True).first()
+        return current
+
 
 class Applicant(BaseModel):
     user = models.OneToOneField(
@@ -269,6 +279,20 @@ class Applicant(BaseModel):
 
         return points
 
+    @property
+    def get_years_experience(self):
+        first = self.applicant_experience.order_by('start_year').first()
+        start_date = datetime.strptime(f"01/{first.start_month:02}/{first.start_year}", '%d/%m/%Y')
+
+        last = self.applicant_experience.order_by('-end_year').first()
+        end_date = datetime.strptime(f"01/{last.end_month:02}/{last.end_year}", '%d/%m/%Y')
+
+        current = self.applicant_experience.filter(current=True)[0]
+        if current:
+            end_date = datetime.today()
+
+        return relativedelta(end_date, start_date).years
+
 
 class ApplicantAttachment(BaseModel):
     applicant = models.ForeignKey(
@@ -289,6 +313,10 @@ class ApplicantAttachment(BaseModel):
     @property
     def get_user_id(self):
         return self.applicant.user.id
+
+    @property
+    def filename(self):
+        return os.path.basename(self.attachment.name)
 
 
 class ApplicantExperience(BaseModel):
@@ -323,7 +351,7 @@ class ApplicantExperience(BaseModel):
     mobile_number = models.CharField(validators=[mobile_regex], max_length=13, **optional) # validators should be a list
 
     def __str__(self):
-        return f"{self.applicant.user.email}"
+        return f"{self.applicant.user.email} - {self.company_name}"
 
     @property
     def start(self):
@@ -338,6 +366,16 @@ class ApplicantExperience(BaseModel):
             months = dict(MONTH_CHOICES)
             return f'{months[self.end_month]} / {self.end_year}'
         return ''
+
+    @property
+    def start_date(self):
+        return datetime.strptime(f"01/{self.start_month:02}/{self.start_year}", '%d/%m/%Y')
+
+    @property
+    def end_date(self):
+        if self.start_month and self.start_year:
+            return datetime.strptime(f"01/{self.start_month:02}/{self.start_year}", '%d/%m/%Y')
+        return None
 
     @property
     def full_reference(self):

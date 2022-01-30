@@ -23,17 +23,16 @@ class SubscriptionType(BaseModel):
         return f"{self.name} ({self.price})"
 
 
-
 # Create your models here.
 class UserSubscription(BaseModel):
-    user = models.OneToOneField(
+    user = models.ForeignKey(
         CustomUser,
         related_name='subscriptions',
         on_delete=models.CASCADE,
         blank=False
     )
-    is_active = models.BooleanField(_('is_active'), default=True)
-    _type = models.CharField(
+    is_current = models.BooleanField(_('is_current'), default=True)
+    payment_type = models.CharField(
         choices=SUBSCRIPTION_TYPE,
         max_length=8,
         default='monthly',
@@ -41,7 +40,7 @@ class UserSubscription(BaseModel):
     )
     price = models.FloatField(default=150, blank=False)
     paid_date = models.DateTimeField(auto_now_add=True, null=True)
-    expiry_date = models.DateTimeField(auto_now=True, **optional)
+    expiry_date = models.DateTimeField(blank=False)
 
     def __str__(self):
-        return f"{self.user.email} ({self._type})"
+        return f"{self.user.email} ({self.payment_type})"

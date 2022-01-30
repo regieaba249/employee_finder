@@ -62,11 +62,12 @@
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
                 {% if user.user_type == "applicant" %}
-                <button class="dropdown-item" type="button"><a class="nav-link" href="{% url 'users:profile_edit' pk=user.id %}">Profile</a></button>
+                <button class="dropdown-item" type="button"><a class="nav-link p-0" href="{% url 'users:profile_edit' pk=user.id %}">Profile</a></button>
                 {% else %}
-                <button class="dropdown-item" type="button"><a class="nav-link" href="{% url 'companies:profile_edit' pk=user.id %}">Profile</a></button>
+                <button class="dropdown-item" type="button"><a class="nav-link p-0" href="{% url 'companies:profile_edit' pk=user.id %}">Profile</a></button>
                 {% endif %}
-                <button class="dropdown-item" type="button"><a class="nav-link" href="{% url 'users:logout' %}">Logout</a></button>
+                <button class="dropdown-item" id="profile_settings_link" type="button" data-user-id="{{ user.id }}" data-ajax-url="{% url 'users:profile_settings' pk=user.id %}">Configurations</button>
+                <button class="dropdown-item" type="button"><a class="nav-link p-0" href="{% url 'users:logout' %}">Logout</a></button>
               </ul>
             </div>
           </div>
@@ -95,6 +96,7 @@
         </div>
       </div>
     </div>
+
     </main>
   </body>
 

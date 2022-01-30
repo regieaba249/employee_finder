@@ -1,23 +1,27 @@
+import re
 import django
 from datetime import datetime
-
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import (HttpResponseRedirect, JsonResponse)
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
+from functools import reduce
+
 from apps.users.models import (
     CustomUser,
     Applicant,
     ApplicantExperience,
+    ApplicantSkill,
     Region,
     Province,
-    Municipality,
-    Barangay,
+    Municipality
 )
 from .models import (
     CompanyJobPosting,
@@ -27,43 +31,181 @@ from .models import (
 from employee_finder.helpers import EMPLOYMENT_TYPE_CHOICES
 
 
-def ajax_get_candidates(request):
-    _id = request.GET.get('_id')
-    searchInput = None if request.GET.get('filters[searchInput]') == '' else request.GET.get('filters[searchInput]')
-    filter_status = request.GET.get('filters[filter_status]', None)
-    filter_years = None if request.GET.get('filters[filter_years]') == '' else request.GET.get('filters[filter_years]')
-    filter_gender = None if request.GET.get('filters[filter_gender]') == '' else request.GET.get('filters[filter_gender]')
-    user_region = None if request.GET.get('filters[user_region]') == '' else request.GET.get('filters[user_region]')
-    user_province = None if request.GET.get('filters[user_province]') == '' else request.GET.get('filters[user_province]')
-    user_municipality = None if request.GET.get('filters[user_municipality]') == '' else request.GET.get('filters[user_municipality]')
+def ajax_invite(request):
+    _id = request.GET.get('id')
+    user_id = request.GET.get('user_id')
+    action = request.GET.get('action')
 
-    if any([searchInput,
+    job_posting = CompanyJobPosting.objects.get(id=_id)
+    user = CustomUser.objects.get(id=user_id)
+
+    data = {
+        'company_job': job_posting,
+        'applicant': user.applicant_data,
+    }
+
+    if action == 'apply':
+        JobPostingApplicant.objects.create(**data)
+    else:
+        applicants = JobPostingApplicant.objects.filter(**data)
+        applicants.delete()
+
+    # EMAIL
+    mail_subject = f'Invitation for position: {job_posting.job_title}'
+    message = render_to_string('job_invitation_email.html', {
+        'user': user,
+        'hiring_agent': job_posting.company.owner,
+        'job_posting': job_posting,
+        'accept_link': request.build_absolute_uri(
+            reverse_lazy(
+                'jobs:accept_job_invite',
+                kwargs={
+                    'user_id': user.id,
+                    'posting_id': job_posting.id
+                }
+            )
+        ),
+        'user_profile': reverse_lazy('users:profile_edit',
+                                     kwargs={'pk': user_id})
+    })
+    to_email = user.email
+    msg = EmailMessage(
+        mail_subject,
+        message,
+        settings.EMAIL_HOST_USER,
+        [to_email],
+    )
+    msg.content_subtype = "html"
+    for file in job_posting.job_posting_attachments.all():
+        msg.attach_file(file.attachment.url[1:])
+    msg.send()
+
+    return JsonResponse({
+        'success': True,
+    })
+
+
+def accept_job_invite(request, user_id, posting_id):
+
+    user = CustomUser.objects.get(id=user_id)
+    posting = CompanyJobPosting.objects.get(id=posting_id)
+    agent = posting.company.owner
+
+    applicant = JobPostingApplicant.objects.get(
+        company_job=posting,
+        applicant=user.applicant_data
+    )
+
+    applicant.status = 'accepted'
+    applicant.save()
+    messages.success(
+        request,
+        "You have successfully accepted the job invite..."
+    )
+
+    # EMAIL
+    mail_subject = f'Job Invitation Accepted for position: {posting.job_title}'
+    message = render_to_string('accept_invitation_email.html', {
+        'user': user,
+        'hiring_agent': agent,
+        'job_posting': posting,
+        'user_profile': request.build_absolute_uri(
+            reverse_lazy(
+                'users:profile_view',
+                kwargs={
+                    'pk': user.id,
+                }
+            )
+        ),
+    })
+    to_email = user.email
+    send_mail(
+        mail_subject,
+        message,
+        settings.EMAIL_HOST_USER,
+        [to_email],
+        fail_silently=True,
+    )
+
+    logout(request)
+    return HttpResponseRedirect(reverse_lazy('login'))
+
+
+def ajax_get_posting_details(request):
+    _id = request.GET.get('_id')
+    posting = CompanyJobPosting.objects.get(id=_id)
+    posting = {
+        'company': posting.company.id,
+        'job_title': posting.job_title,
+        'description': posting.description,
+        'vacancy': posting.vacancy,
+        'salary_range_start': posting.salary_range_start,
+        'salary_range_end': posting.salary_range_end,
+        'employment_type': posting.employment_type,
+        'preferred_skills': posting.preferred_skills,
+        'salary_range': posting.salary_range,
+    }
+    return JsonResponse({
+        'success': True,
+        'posting': posting,
+    })
+
+
+def ajax_get_candidates(request):
+    _id = request.GET.get('_id', None)
+    filter_skills = request.GET.get('filters[filter_skills]', None)
+    filter_status = request.GET.get('filters[filter_status]', None)
+    filter_years = request.GET.get('filters[filter_years]', None)
+    filter_gender = request.GET.get('filters[filter_gender]', None)
+    user_region = request.GET.get('filters[user_region]', None)
+    user_province = request.GET.get('filters[user_province]', None)
+    user_municipality = request.GET.get('filters[user_municipality]', None)
+    posting = CompanyJobPosting.objects.get(id=_id)
+
+    if any([filter_skills,
             filter_status,
             filter_years,
             filter_gender,
             user_region,
             user_province,
             user_municipality]):
-
-        q = Q()
+        _q = Q()
+        if filter_skills:
+            preferred_skills = re.split(', |,', filter_skills)
+            applicant_ids = ApplicantSkill.objects.filter(
+                reduce(lambda x, y: x | y, [
+                    Q(name__contains=word) for word in preferred_skills
+                ])
+            ).values_list('applicant', flat=True)
+            _q &= Q(id__in=applicant_ids)
         if filter_status:
-            q &= Q(applicant_status=filter_status)
+            if filter_status != 'both':
+                _q &= Q(applicant_status=filter_status)
         if filter_gender:
-            q &= Q(user__gender=filter_gender)
+            _q &= Q(user__gender=filter_gender)
         if user_region:
-            q &= Q(user__region__id=user_region)
+            _q &= Q(user__region__id=user_region)
         if user_province:
-            q &= Q(user__province__id=user_province)
+            _q &= Q(user__province__id=user_province)
         if user_municipality:
-            q &= Q(user__municipality__id=user_municipality)
+            _q &= Q(user__municipality__id=user_municipality)
 
-        candidates = Applicant.objects.filter(q)
+        picked_ids = posting.job_applicants.all().values_list('applicant__id',
+                                                              flat=True)
+        candidates = Applicant.objects.filter(_q).exclude(id__in=picked_ids)
+
+        if filter_years:
+            if filter_years == '10':
+                candidates = [x for x in candidates if x.get_years_experience >= 10]
+            else:
+                candidates = [x for x in candidates if x.get_years_experience == int(filter_years)]
+
     else:
-        posting = CompanyJobPosting.objects.get(id=_id)
-        candidates = posting.get_candidates
+        candidates = posting.get_candidates_list
 
     htmlStr = render_to_string('posting_candidates_list_render.html', {
-        'candidates': candidates
+        'candidates': candidates,
+        'posting': posting
     })
 
     return JsonResponse({
@@ -336,6 +478,7 @@ def ajax_schedule_interview(request):
     user = CustomUser.objects.get(id=user_id)
     job_posting = CompanyJobPosting.objects.get(id=posting_id)
 
+    # EMAIL
     mail_subject = f'Scheduled Interview for job title: {job_posting.job_title}'
     message = render_to_string('schedule_interview_email.html', {
         'user': user,
@@ -345,7 +488,6 @@ def ajax_schedule_interview(request):
         # 'job_posting_link': reverse_lazy('users:profile_edit', kwargs={'pk': request.user.pk})
         'job_posting_link': ""
     })
-
     to_email = user.email
     msg = EmailMessage(
         mail_subject,
@@ -367,56 +509,6 @@ def ajax_schedule_interview(request):
 
     return JsonResponse({
         'success': True,
-    })
-
-
-def ajax_apply(request):
-    _id = request.GET.get('id')
-    user_id = request.GET.get('user_id')
-    action = request.GET.get('action')
-    job_posting = CompanyJobPosting.objects.get(id=_id)
-    user = CustomUser.objects.get(id=user_id)
-
-    data = {
-        'company_job': job_posting,
-        'applicant': user.applicant_data,
-    }
-
-    if action == 'apply':
-        JobPostingApplicant.objects.create(**data)
-    else:
-        applicants = JobPostingApplicant.objects.filter(**data)
-        applicants.delete()
-
-    applicantsStr = ""
-    for applicant in job_posting.job_applicants.all():
-        applicantsStr += render_to_string('new_applicant_email.html', {
-            'job_applicant': request.user,
-            'posting': job_posting,
-        })
-
-    mail_subject = f'Invitation for position: {job_posting.job_title}'
-    message = render_to_string('job_invitation_email.html', {
-        'user': user,
-        'hiring_agent': job_posting.company.owner,
-        'job_posting': job_posting,
-        'user_profile': reverse_lazy('users:profile_edit',
-                                     kwargs={'pk': user_id})
-    })
-
-    to_email = user.email
-
-    send_mail(
-        mail_subject,
-        message,
-        settings.EMAIL_HOST_USER,
-        [to_email],
-        fail_silently=True,
-    )
-
-    return JsonResponse({
-        'success': True,
-        'applicantsStr': applicantsStr,
     })
 
 

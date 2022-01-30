@@ -30,6 +30,7 @@ function email_check(email_element) {
     }
   });
 };
+
 function password_valid() {
   var password1 = $("#password1").val()
   var password2 = $("#password2").val()
@@ -43,7 +44,9 @@ function password_valid() {
     },
     success: function (data) {
 
-      document.querySelector('.step-experience').disabled = true
+      if ($('.step-experience').length) {
+        document.querySelector('.step-experience').disabled = true
+      }
       if (password1.length === 0) {
         $("#password1").removeClass("is-invalid").removeClass("is-valid");
       }
@@ -58,7 +61,9 @@ function password_valid() {
           $("#password2").removeClass("is-invalid").addClass("is-valid");
           $("#password1").parent().children(".error").remove()
           $("#password2").parent().children(".error").remove()
-          document.querySelector('.step-experience').disabled = false
+          if ($('.step-experience').length) {
+            document.querySelector('.step-experience').disabled = false
+          }
         } else {
           $("#password1").removeClass("is-invalid").removeClass("is-valid");
           $("#password1").parent().children(".error").remove()
@@ -193,7 +198,11 @@ $(document).on('focusout', ".number_only", function (e) {
 });
 
 $(document).on('focusout', '#password2', function (e) {
-  password_valid()
+  password_valid();
+});
+
+$(document).on('focusout', '#password1', function (e) {
+  password_valid();
 });
 
 $(document).on('change', ".address-select", function (e) {
@@ -248,10 +257,6 @@ $(document).on('keyup', '.phone_number', function (e) {
     $(this).val(value + '-')
   }
 })
-
-$(document).on('focusout', '#password1', function (e) {
-  password_valid();
-});
 
 $(document).on('click', '.see-password', function (e) {
   var input = $(this).parent().find('input')

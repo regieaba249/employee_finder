@@ -1,0 +1,46 @@
+{% autoescape off %}
+
+    <div class="modal-header">
+      <h5 class="modal-title" id="">Configurations</h5>
+      <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <div class="row justify-content-md-center">
+          <div class="col-md-7 col-md-auto border p-4 mb-2">
+            <div id="message-container">
+
+            </div>
+            <h5>Change Password</h5>
+            <form id="updateConfigurationForm">
+              <div class="form-group my-2">
+                <label class="required-field-label" for="password1">Password</label>
+                <input value="{{ form.data.password1 }}" type="password" id="password1" name="password1" class="form-control required" required/>
+              </div>
+              <div class="form-group mb-4">
+                <label class="required-field-label" for="password2">Re-type Password</label>
+                <input value="{{ form.data.password2 }}" type="password" id="password2" name="password2" class="form-control required" required/>
+                <div class="valid-feedback">Passwords Matched!</div>
+              </div>
+              <div class="form-group text-center">
+                <button type="submit" value="submit" class="btn btn-primary" id="updateConfigurationButton">Change Password</button>
+              </div>
+            </form>
+          </div>
+
+          {% if user.user_type == "employer" %}
+          <div class="col-md-7 col-md-auto border p-4">
+            <h5>Subscription Details:</h5>
+            <p>Payment Type: {{ user.current_subscription.payment_type }}</p>
+            <p>Amount Paid: P{{ user.current_subscription.price }}</p>
+            <p>Payment Date: {{ user.current_subscription.paid_date }}</p>
+            <p>Expiry Date: {{ user.current_subscription.expiry_date }}</p>
+          </div>
+          {% endif %}
+
+
+        </div>
+    </div>
+
+{% endautoescape %}
